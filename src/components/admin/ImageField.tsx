@@ -1,0 +1,61 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { ImagePlus, Loader2, X } from "lucide-react";
+import { browserClient } from "@/lib/supabase";
+
+export async function upload(file: File, folder: string): Promise<string> {
+  const db = browserClient();
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await db.storage.from("media").upload(path, file, { cacheControl: "31536000", upsert: false });
+  if (error) throw error;
+  return db.storage.from("media").getPublicUrl(path).data.publicUrl;
+}
+
+export default function ImageField({ value, onChange, folder, multiple = false }: { value: string | string[] | null | undefined; onChange: (v: string | string[] | null) => void; folder: string; multiple?: boolean }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const list = multiple ? ((value as string[]) ?? []) : value ? [value as string] : [];
+
+  const pick = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setBusy(true); setErr("");
+    try {
+      const urls: string[] = [];
+      for (const f of Array.from(files)) urls.push(await upload(f, folder));
+      onChange(multiple ? [...list, ...urls] : urls[0]);
+    } catch (e) {
+      setErr((e as Error).message || "Upload failed");
+    }
+    setBusy(false);
+    if (ref.current) ref.current.value = "";
+  };
+
+  const remove = (u: string) => onChange(multiple ? list.filter((x) => x !== u) : null);
+  const makeMain = (u: string) => onChange([u, ...list.filter((x) => x !== u)]);
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-3">
+        {list.map((u, i) => (
+          <div key={u} className="group relative h-24 w-24 overflow-hidden rounded-xl border border-line">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={u} alt="" className="h-full w-full object-cover" />
+            <button type="button" onClick={() => remove(u)} aria-label="Remove image" className="absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full bg-hot text-white"><X size={14} /></button>
+            {multiple && i > 0 && <button type="button" onClick={() => makeMain(u)} className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-[11px] font-semibold text-white opacity-0 transition group-hover:opacity-100">Make main</button>}
+            {multiple && i === 0 && <span className="absolute inset-x-0 bottom-0 bg-brand-600 py-0.5 text-center text-[11px] font-semibold text-white">Main</span>}
+          </div>
+        ))}
+        {(multiple || list.length === 0) && (
+          <button type="button" onClick={() => ref.current?.click()} disabled={busy} className="grid h-24 w-24 place-items-center rounded-xl border-2 border-dashed border-line text-muted transition hover:border-brand-500 hover:text-brand-600">
+            {busy ? <Loader2 className="animate-spin" /> : <span className="grid place-items-center gap-1 text-xs font-semibold"><ImagePlus size={22} />Upload</span>}
+          </button>
+        )}
+      </div>
+      <input ref={ref} type="file" accept="image/*" multiple={multiple} className="hidden" onChange={(e) => pick(e.target.files)} />
+      {err && <p className="mt-2 text-sm font-semibold text-hot">{err}</p>}
+    </div>
+  );
+}
