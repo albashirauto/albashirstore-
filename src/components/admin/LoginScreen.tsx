@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion, useAnimationControls } from "motion/react";
 import { ArrowLeft, ArrowRight, BarChart3, Eye, EyeOff, Lock, Mail, MailCheck, PackagePlus, ShieldCheck } from "lucide-react";
 import Logo from "@/components/Logo";
@@ -20,6 +20,15 @@ export default function LoginScreen({ denied, onSignedIn, onSignOut }: { denied:
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [resetEmail, setResetEmail] = useState(ADMIN_EMAIL);
+  // "Forgot password" may only send to the official addresses set on the Team page (staff never get links)
+  const [resetTo, setResetTo] = useState<string[]>([ADMIN_EMAIL]);
+  useEffect(() => {
+    browserClient().from("settings").select("key,value").in("key", ["team_reset_email", "team_reset_email2"])
+      .then(({ data }: { data: { key: string; value: string }[] | null }) => {
+        const list = (data ?? []).map((r) => (r.value ?? "").trim()).filter(Boolean);
+        if (list.length) { setResetTo(list); setResetEmail(list[0]); }
+      });
+  }, []);
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [err, setErr] = useState("");
@@ -134,11 +143,13 @@ export default function LoginScreen({ denied, onSignedIn, onSignOut }: { denied:
               <motion.form key="forgot" onSubmit={forgot} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.35, ease }}>
                 <button type="button" onClick={() => { setMode("login"); setErr(""); }} className="mb-6 flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:text-hot"><ArrowLeft size={15} />Back to sign in</button>
                 <h2 className="text-5xl font-extrabold uppercase leading-none text-brand-900 dark:text-white">Reset password</h2>
-                <p className="mt-2 text-muted">We will email you a link to choose a new password.</p>
+                <p className="mt-2 text-muted">Links go only to the owner’s official email. Team members: ask the owner for a new password.</p>
                 <label className="mt-8 block text-sm font-semibold">Send the link to
                   <span className="relative mt-1.5 block">
                     <Mail size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
-                    <input type="email" required value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className={field} />
+                    <select value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className={field}>
+                      {resetTo.map((e) => <option key={e} value={e}>{e}</option>)}
+                    </select>
                   </span>
                 </label>
                 <AnimatePresence>{err && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} role="alert" className="mt-4 text-sm font-semibold text-hot">{err}</motion.p>}</AnimatePresence>

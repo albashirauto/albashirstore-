@@ -2,6 +2,7 @@ import AboutBrands from "@/components/about/AboutBrands";
 import AboutNumbers from "@/components/about/AboutNumbers";
 import AboutServe from "@/components/about/AboutServe";
 import AboutStory from "@/components/about/AboutStory";
+import AboutTeam from "@/components/about/AboutTeam";
 import AboutValues from "@/components/about/AboutValues";
 import AboutVisit from "@/components/about/AboutVisit";
 import CtaBand from "@/components/home/CtaBand";
@@ -28,6 +29,7 @@ export default async function About() {
         { label: "Bike models", value: vehicles.length },
       ]} />
       <AboutServe />
+      <AboutTeam />
       <AboutValues features={features} />
       <AboutBrands brands={brands} />
       <AboutVisit settings={settings} />

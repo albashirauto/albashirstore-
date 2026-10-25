@@ -203,7 +203,7 @@ export const RESOURCES: Record<string, Resource> = {
   },
 };
 
-export type NavItem = { href: string; label: string };
+export type NavItem = { href: string; label: string; /** hidden from staff, never grantable */ ownerOnly?: boolean };
 /** Admin sidebar, in groups. Icons live in AdminShell (keyed by href). */
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Overview", items: [
@@ -231,6 +231,10 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   ] },
   { title: "Settings", items: [
     { href: "/admin/settings", label: "Store settings" },
+    { href: "/admin/team", label: "Team", ownerOnly: true },
   ] },
 ];
 
+
+/** Sections an owner can grant to staff (the Team page shows these as tick boxes). */
+export const GRANTABLE = NAV_GROUPS.flatMap((g) => g.items.filter((i) => !i.ownerOnly).map((i) => ({ ...i, group: g.title })));

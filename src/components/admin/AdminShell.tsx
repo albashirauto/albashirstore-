@@ -3,35 +3,40 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X } from "lucide-react";
+import { Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X, Lock, UserCog } from "lucide-react";
 
 const ICONS: Record<string, React.ElementType> = {
   "/admin": LayoutDashboard, "/admin/orders": ClipboardList, "/admin/products": Boxes, "/admin/categories": Layers,
   "/admin/brands": Tag, "/admin/vehicles": Bike, "/admin/promotions": Megaphone, "/admin/banners": Images,
   "/admin/pages": FileText, "/admin/testimonials": Star, "/admin/features": ShieldCheck, "/admin/settings": Settings,
-  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail,
+  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail, "/admin/team": UserCog,
 };
 import { NAV_GROUPS } from "@/lib/admin-config";
 import { browserClient, hasSupabase } from "@/lib/supabase";
 import LoginScreen from "./LoginScreen";
 import ResetPassword from "./ResetPassword";
 
-type State = "loading" | "setup" | "login" | "denied" | "ok";
+type State = "loading" | "setup" | "login" | "denied" | "disabled" | "ok";
+type Access = { role: "owner" | "staff"; permissions: string[]; name: string | null };
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const [state, setState] = useState<State>("loading");
   const [open, setOpen] = useState(false);
   const [newOrders, setNewOrders] = useState(0);
+  const [access, setAccess] = useState<Access>({ role: "owner", permissions: [], name: null });
 
   const check = async () => {
     if (!hasSupabase) return setState("setup");
     const db = browserClient();
     const { data } = await db.auth.getUser();
     if (!data.user) return setState("login");
-    const { data: row } = await db.from("admins").select("user_id").eq("user_id", data.user.id).maybeSingle();
+    // select("*") keeps working even before the team columns exist
+    const { data: row } = await db.from("admins").select("*").eq("user_id", data.user.id).maybeSingle();
+    if (row && (row.status ?? "active") !== "active") return setState("disabled");
+    if (row) setAccess({ role: row.role === "staff" ? "staff" : "owner", permissions: row.permissions ?? [], name: row.name ?? null });
     setState(row ? "ok" : "denied");
-    if (row) {
+    if (row && (row.role !== "staff" || (row.permissions ?? []).includes("/admin/orders"))) {
       const { count } = await db.from("orders").select("id", { count: "exact", head: true }).eq("status", "new");
       setNewOrders(count ?? 0);
     }
@@ -64,6 +69,27 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   if (state === "login" || state === "denied")
     return <LoginScreen denied={state === "denied"} onSignedIn={check} onSignOut={logout} />;
 
+  if (state === "disabled")
+    return (
+      <div className="grid min-h-dvh place-items-center bg-soft px-4 text-center">
+        <div className="max-w-sm rounded-3xl border border-line bg-card p-8">
+          <Lock className="mx-auto text-hot" size={36} />
+          <h1 className="mt-3 text-3xl font-extrabold uppercase">Access turned off</h1>
+          <p className="mt-2 text-muted">Your admin account has been disabled by the owner. Ask them to turn it back on.</p>
+          <button onClick={logout} className="mt-5 rounded-full bg-brand-600 px-6 py-2.5 font-bold text-white">Sign out</button>
+        </div>
+      </div>
+    );
+
+  // what this person may open: owners everything; staff only what the owner ticked (never owner-only pages)
+  const owner = access.role === "owner";
+  const allowed = (href: string) => owner || (!NAV_GROUPS.some((g) => g.items.some((i) => i.href === href && i.ownerOnly)) && access.permissions.includes(href));
+  const navFor = NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => allowed(i.href)) })).filter((g) => g.items.length);
+  // the section this URL belongs to (longest matching href)
+  const section = NAV_GROUPS.flatMap((g) => g.items).map((i) => i.href).filter((h) => (h === "/admin" ? path === "/admin" : path === h || path.startsWith(h + "/"))).sort((a, b) => b.length - a.length)[0];
+  const blocked = !owner && section !== undefined && !allowed(section);
+  const firstAllowed = navFor[0]?.items[0]?.href;
+
   const sidebar = (
     <nav className="flex h-full flex-col">
       <div className="flex items-center gap-2 px-6 pb-4 pt-6 text-brand-700 dark:text-white">
@@ -72,7 +98,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto px-3 pb-4 scrollbar-none">
-        {NAV_GROUPS.map((g) => (
+        {navFor.map((g) => (
           <div key={g.title}>
             <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted/70">{g.title}</p>
             <div className="space-y-0.5">
@@ -111,7 +137,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <button onClick={() => setOpen(!open)} aria-label="Menu">{open ? <X /> : <Menu />}</button>
           <span className="font-display text-xl font-extrabold uppercase text-brand-700">Store admin</span>
         </div>
-        <main className="mx-auto max-w-6xl p-4 md:p-8">{children}</main>
+        <main className="mx-auto max-w-6xl p-4 md:p-8">
+          {blocked ? (
+            <div className="mx-auto max-w-md rounded-3xl border border-line bg-card p-8 text-center">
+              <Lock className="mx-auto text-amber-600" size={34} />
+              <h1 className="mt-3 text-3xl font-extrabold uppercase">No access</h1>
+              <p className="mt-2 text-muted">{access.name ? `${access.name}, this` : "This"} section is not part of your role. Ask the owner if you need it.</p>
+              {firstAllowed && <Link href={firstAllowed} className="mt-5 inline-block rounded-full bg-brand-600 px-6 py-2.5 font-bold text-white">Go to my sections</Link>}
+            </div>
+          ) : children}
+        </main>
       </div>
     </div>
   );
