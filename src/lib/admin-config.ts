@@ -227,6 +227,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin/faqs", label: "FAQs" },
     { href: "/admin/testimonials", label: "Testimonials" },
     { href: "/admin/banners", label: "Home banners" },
+    { href: "/admin/media", label: "Media library" },
     { href: "/admin/features", label: "Trust bar" },
   ] },
   { title: "Marketing", items: [

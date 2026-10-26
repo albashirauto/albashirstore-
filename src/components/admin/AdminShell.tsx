@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BellRing, ChartColumn, History, Route, MessageSquareText, ShoppingCart, TicketPercent, Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X, Lock, UserCog } from "lucide-react";
+import { BellRing, ChartColumn, History, Image, Route, MessageSquareText, ShoppingCart, TicketPercent, Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X, Lock, UserCog } from "lucide-react";
 
 const ICONS: Record<string, React.ElementType> = {
   "/admin": LayoutDashboard, "/admin/orders": ClipboardList, "/admin/products": Boxes, "/admin/categories": Layers,
   "/admin/brands": Tag, "/admin/vehicles": Bike, "/admin/promotions": Megaphone, "/admin/banners": Images,
   "/admin/pages": FileText, "/admin/testimonials": Star, "/admin/features": ShieldCheck, "/admin/settings": Settings,
-  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail, "/admin/team": UserCog, "/admin/notifications": BellRing, "/admin/reviews": MessageSquareText, "/admin/coupons": TicketPercent, "/admin/carts": ShoppingCart, "/admin/reports": ChartColumn, "/admin/activity": History, "/admin/redirects": Route,
+  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail, "/admin/team": UserCog, "/admin/notifications": BellRing, "/admin/reviews": MessageSquareText, "/admin/coupons": TicketPercent, "/admin/carts": ShoppingCart, "/admin/reports": ChartColumn, "/admin/activity": History, "/admin/redirects": Route, "/admin/media": Image,
 };
 import { NAV_GROUPS } from "@/lib/admin-config";
 import { browserClient, hasSupabase } from "@/lib/supabase";
