@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { BadgeCheck, Headset, Truck } from "lucide-react";
+import { BadgeCheck, Headset, Phone, Truck } from "lucide-react";
 import Logo from "@/components/Logo";
+import { OpenBadge } from "@/components/OpenNow";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import Sprocket from "@/components/Sprocket";
 import type { Category, Page, Settings } from "@/lib/types";
@@ -29,6 +31,24 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
             <div className="inline-block rounded-2xl bg-white p-3"><Logo name={settings.store_name} size={42} src={settings.logo} /></div>
             <p className="mt-4 max-w-sm text-white/70">{settings.tagline}</p>
             <div className="mt-6"><SocialLinks settings={settings} /></div>
+            {(settings.phone || settings.whatsapp) && (
+              <div className="mt-6 max-w-sm rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Shop helpline</p>
+                  <OpenBadge hours={settings.open_hours} light />
+                </div>
+                {settings.phone && (
+                  <a href={`tel:${settings.phone}`} className="mt-2 flex items-center gap-2 font-display text-3xl font-bold tracking-wide transition hover:text-hot">
+                    <Phone size={22} className="text-hot" />{settings.phone}
+                  </a>
+                )}
+                {settings.whatsapp && (
+                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[#25D366] py-2.5 text-sm font-bold transition hover:bg-[#1ebe5b]">
+                    <WhatsAppIcon size={18} />Chat on WhatsApp
+                  </a>
+                )}
+              </div>
+            )}
           </Reveal>
 
           <Reveal y={16} delay={0.08}>
