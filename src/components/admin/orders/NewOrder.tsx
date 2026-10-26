@@ -9,11 +9,13 @@ import { money } from "@/lib/format";
 import { freeQty } from "@/lib/scheme";
 import { PAYMENTS, STATUSES, type Order } from "./types";
 import { PAY_METHODS } from "@/lib/receipt";
+import PlacePicker from "@/components/checkout/PlacePicker";
 
 export type PickProduct = { id: string; name: string; sku: string | null; price: number; stock: number | null; active: boolean; scheme_buy: number | null; scheme_free: number | null };
 type Line = { p: PickProduct; qty: number; price: number };
 
 const input = "w-full rounded-xl border border-line bg-bg px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10";
+const EMPTY = { name: "", phone: "", province: "", district: "", city: "", address: "", note: "" };
 
 /** Admin-made order (phone, WhatsApp or walk-in). Saves like a website order; can also reduce stock. */
 export default function NewOrder({ open, onClose, onSaved, products, orders, shipping, editing = null }: {
@@ -22,7 +24,7 @@ export default function NewOrder({ open, onClose, onSaved, products, orders, shi
   /** when set, the panel edits this order instead of creating one */
   editing?: Order | null;
 }) {
-  const [c, setC] = useState({ name: "", phone: "", city: "", address: "", note: "" });
+  const [c, setC] = useState(EMPTY);
   const [lines, setLines] = useState<Line[]>([]);
   const [q, setQ] = useState("");
   const [delivery, setDelivery] = useState<string>(String(shipping));
@@ -36,7 +38,7 @@ export default function NewOrder({ open, onClose, onSaved, products, orders, shi
   // fill the form from the order being edited (deleted products are kept as plain lines)
   useEffect(() => {
     if (!open || !editing) return;
-    setC({ name: editing.customer_name, phone: editing.phone, city: editing.city ?? "", address: editing.address, note: editing.note ?? "" });
+    setC({ name: editing.customer_name, phone: editing.phone, province: editing.province ?? "", district: editing.district ?? "", city: editing.city ?? "", address: editing.address, note: editing.note ?? "" });
     setLines((editing.items ?? []).map((i) => ({
       p: products.find((p) => p.id === i.id) ?? { id: i.id ?? `gone-${i.name}`, name: i.name, sku: null, price: i.price, stock: null, active: false, scheme_buy: null, scheme_free: null },
       qty: i.qty, price: i.price,
@@ -69,7 +71,7 @@ export default function NewOrder({ open, onClose, onSaved, products, orders, shi
   const ship = Math.max(0, Number(delivery) || 0);
   const total = subtotal + ship;
 
-  const reset = () => { setC({ name: "", phone: "", city: "", address: "", note: "" }); setLines([]); setQ(""); setDelivery(String(shipping)); setStatus("confirmed"); setPayment("unpaid"); setErr(""); };
+  const reset = () => { setC(EMPTY); setLines([]); setQ(""); setDelivery(String(shipping)); setStatus("confirmed"); setPayment("unpaid"); setErr(""); };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +82,7 @@ export default function NewOrder({ open, onClose, onSaved, products, orders, shi
     const db = browserClient();
     const items = lines.map((l) => ({ id: l.p.id, name: l.p.name, price: l.price, qty: l.qty, free: freeQty(l.qty, l.p) }));
     const row = {
-      customer_name: c.name.trim(), phone: c.phone.trim(), city: c.city.trim() || null, address: c.address.trim(), note: c.note.trim() || null,
+      customer_name: c.name.trim(), phone: c.phone.trim(), province: c.province || null, district: c.district || null, city: c.city.trim() || null, address: c.address.trim(), note: c.note.trim() || null,
       items, subtotal, shipping: ship, total, status, payment_status: payment, payment_method: method || null,
     };
     const { data, error } = editing
@@ -130,15 +132,17 @@ export default function NewOrder({ open, onClose, onSaved, products, orders, shi
                     <div className="flex flex-wrap gap-2 sm:col-span-2">
                       <span className="text-xs font-semibold text-muted">Past customer?</span>
                       {custHits.map((o) => (
-                        <button key={o.phone} type="button" onClick={() => setC({ ...c, name: o.customer_name, phone: o.phone, city: o.city ?? "", address: o.address })}
+                        <button key={o.phone} type="button" onClick={() => setC({ ...c, name: o.customer_name, phone: o.phone, province: o.province ?? "", district: o.district ?? "", city: o.city ?? "", address: o.address })}
                           className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700 transition hover:bg-brand-600 hover:text-white dark:bg-brand-900 dark:text-white">
                           {o.customer_name} · {o.phone}
                         </button>
                       ))}
                     </div>
                   )}
-                  <input className={input} placeholder="City" value={c.city} onChange={(e) => setC({ ...c, city: e.target.value })} />
-                  <input className={input} placeholder="Address *" value={c.address} onChange={(e) => setC({ ...c, address: e.target.value })} />
+                  <div className="sm:col-span-2">
+                    <PlacePicker optional input={input} value={{ province: c.province, district: c.district, city: c.city }} onChange={(p) => setC({ ...c, ...p })} />
+                  </div>
+                  <input className={`${input} sm:col-span-2`} placeholder="Address *" value={c.address} onChange={(e) => setC({ ...c, address: e.target.value })} />
                   <input className={`${input} sm:col-span-2`} placeholder="Note (optional)" value={c.note} onChange={(e) => setC({ ...c, note: e.target.value })} />
                 </div>
               </section>

@@ -7,20 +7,21 @@ import { PROVINCES, districtsOf, townsOf } from "@/lib/pk-places";
 export type Place = { province: string; district: string; city: string };
 
 /** Province -> District -> City / town. Each list is searchable (type to filter); the town can also be typed freely. */
-export default function PlacePicker({ value, onChange, input }: { value: Place; onChange: (p: Place) => void; input: string }) {
+export default function PlacePicker({ value, onChange, input, optional = false }: { value: Place; onChange: (p: Place) => void; input: string; optional?: boolean }) {
   const districts = useMemo(() => districtsOf(value.province), [value.province]);
   const towns = useMemo(() => townsOf(value.province, value.district), [value.province, value.district]);
+  const required = !optional;
   return (
     <div className="grid gap-4 sm:grid-cols-3">
-      <Combo label="Province" required value={value.province} options={PROVINCES} input={input} placeholder="Choose province"
+      <Combo label="Province" required={required} value={value.province} options={PROVINCES} input={input} placeholder="Choose province"
         onPick={(province) => onChange({ province, district: "", city: "" })} />
-      <Combo label="District" required value={value.district} options={districts} input={input} disabled={!value.province}
+      <Combo label="District" required={required} value={value.district} options={districts} input={input} disabled={!value.province}
         placeholder={value.province ? "Search district…" : "Choose province first"}
         onPick={(district) => {
           const t = townsOf(value.province, district);
           onChange({ ...value, district, city: t.length === 1 ? t[0] : "" });
         }} />
-      <Combo label="City / town" required free value={value.city} options={towns} input={input} disabled={!value.district}
+      <Combo label="City / town" required={required} free value={value.city} options={towns} input={input} disabled={!value.district}
         placeholder={value.district ? "Search or type your town…" : "Choose district first"}
         onPick={(city) => onChange({ ...value, city })} />
     </div>
