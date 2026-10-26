@@ -1,4 +1,5 @@
 import { money } from "@/lib/format";
+import { placeLine } from "@/lib/pk-places";
 import type { Order } from "@/components/admin/orders/types";
 import { statusOf } from "@/components/admin/dashboard/types";
 
@@ -33,7 +34,7 @@ export default function Receipt({ o, s, skus, paper }: { o: Order; s: Record<str
         <p className="my-1.5 border-y border-dashed border-black py-1 text-center font-bold">RECEIPT #{no(o)}</p>
         <p>{when(o.created_at)}</p>
         <p>{o.customer_name} · {o.phone}</p>
-        <p className="leading-tight">{o.address}{o.city ? `, ${o.city}` : ""}</p>
+        <p className="leading-tight">{[o.address, placeLine(o)].filter(Boolean).join(", ")}</p>
         <div className="my-1.5 border-t border-dashed border-black" />
         {(o.items ?? []).map((i, k) => (
           <div key={k} className="mb-1">
@@ -76,7 +77,7 @@ export default function Receipt({ o, s, skus, paper }: { o: Order; s: Record<str
           <p className="text-[0.85em] font-bold uppercase tracking-wider text-neutral-500">Bill to</p>
           <p className="font-bold">{o.customer_name}</p>
           <p>{o.phone}</p>
-          <p className="leading-snug">{o.address}{o.city ? `, ${o.city}` : ""}</p>
+          <p className="leading-snug">{[o.address, placeLine(o)].filter(Boolean).join(", ")}</p>
         </div>
         {(o.courier || o.tracking_no || o.note) && (
           <div>

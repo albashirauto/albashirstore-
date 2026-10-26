@@ -1,7 +1,7 @@
 export type OItem = { id?: string; name: string; qty: number; price: number; free?: number };
 
 export type Order = {
-  id: string; order_no?: number; customer_name: string; phone: string; email: string | null; city: string | null; address: string; note: string | null;
+  id: string; order_no?: number; customer_name: string; phone: string; email: string | null; city: string | null; district?: string | null; province?: string | null; address: string; note: string | null;
   items: OItem[]; subtotal: number; shipping: number; total: number;
   status: string; payment_status?: string | null; payment_method?: string | null; created_at: string;
   payment_ref?: string | null;

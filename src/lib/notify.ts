@@ -3,6 +3,7 @@
 import nodemailer from "nodemailer";
 import { adminClient } from "./supabaseAdmin";
 import { money } from "./format";
+import { placeLine } from "./pk-places";
 import { payLabel } from "./receipt";
 import { SITE_URL } from "./seo";
 import type { Kind } from "./notify-kinds";
@@ -39,7 +40,7 @@ async function compose(db: ReturnType<typeof adminClient>, kind: Kind, id: strin
   if (!o) return null;
   const n = no(o.id);
   const items = ((o.items as Item[]) ?? []).map((i) => `${i.qty} × ${i.name}${i.free ? ` (+${i.free} free)` : ""} · ${money(i.price * i.qty)}`);
-  const customer: [string, string][] = [["Customer", o.customer_name], ["Phone", o.phone], ["City", o.city ?? "—"]];
+  const customer: [string, string][] = [["Customer", o.customer_name], ["Phone", o.phone], ["City", placeLine(o) || "—"]];
   const link = `${SITE_URL}/admin/orders`;
 
   if (kind === "new_order") {

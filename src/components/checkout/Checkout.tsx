@@ -7,7 +7,9 @@ import { placeOrder } from "@/app/actions";
 import { useCart } from "@/components/CartProvider";
 import ProductImage from "@/components/ProductImage";
 import { money } from "@/lib/format";
-import { PK_CITIES, receiptText, type PayMethod } from "@/lib/receipt";
+import { receiptText, type PayMethod } from "@/lib/receipt";
+import { placeLine } from "@/lib/pk-places";
+import PlacePicker from "./PlacePicker";
 import { freeQty } from "@/lib/scheme";
 import { track } from "@/lib/analytics";
 import type { Settings } from "@/lib/types";
@@ -35,7 +37,7 @@ export default function Checkout({ s }: { s: Settings }) {
   const total = subtotal + shipping;
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
-  const [f, setF] = useState({ name: "", phone: "", email: "", city: "", address: "", note: "" });
+  const [f, setF] = useState({ name: "", phone: "", email: "", province: "", district: "", city: "", address: "", note: "" });
   const [method, setMethod] = useState<PayMethod | "">("");
   const [ref, setRef] = useState("");
   const [done, setDone] = useState<{ no: string; total: number; text: string } | null>(null);
@@ -56,16 +58,17 @@ export default function Checkout({ s }: { s: Settings }) {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!f.province || !f.district || !f.city) return setError("Choose your province, district and city / town.");
     if (!method) return setError("Choose how you will pay: JazzCash, Easypaisa or bank transfer.");
     const tItems = items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty }));
     track("begin_checkout", { value: subtotal, items: tItems });
     start(async () => {
       const r = await placeOrder({ ...f, payment_method: method, payment_ref: ref, items: items.map((i) => ({ id: i.id, qty: i.qty })) });
       if (!r.ok || !r.receipt) return setError(r.message ?? "Something went wrong.");
-      try { const { name, phone, email, city, address } = f; localStorage.setItem("aba-customer", JSON.stringify({ name, phone, email, city, address })); } catch {}
+      try { const { name, phone, email, province, district, city, address } = f; localStorage.setItem("aba-customer", JSON.stringify({ name, phone, email, province, district, city, address })); } catch {}
       const no = String(r.orderNo ?? "");
       track("purchase", { value: r.receipt.total, items: tItems, orderNo: no });
-      setDone({ no, total: r.receipt.total, text: receiptText({ orderNo: no, name: f.name, phone: f.phone, city: f.city, address: f.address, ...r.receipt, method, ref, store: s.store_name || "Al Bashir Autos" }) });
+      setDone({ no, total: r.receipt.total, text: receiptText({ orderNo: no, name: f.name, phone: f.phone, city: placeLine(f), address: f.address, ...r.receipt, method, ref, store: s.store_name || "Al Bashir Autos" }) });
       clear();
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
@@ -82,12 +85,11 @@ export default function Checkout({ s }: { s: Settings }) {
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-semibold">Full name *<input required autoComplete="name" value={f.name} onChange={set("name")} className={input} /></label>
               <label className="block text-sm font-semibold">Phone / WhatsApp *<input required type="tel" autoComplete="tel" value={f.phone} onChange={set("phone")} placeholder="03xx xxxxxxx" className={input} /></label>
-              <label className="block text-sm font-semibold">City *
-                <input required list="pk-cities" autoComplete="address-level2" value={f.city} onChange={set("city")} placeholder="Start typing…" className={input} />
-                <datalist id="pk-cities">{PK_CITIES.map((c) => <option key={c} value={c} />)}</datalist>
-              </label>
-              <label className="block text-sm font-semibold">Email <span className="font-normal text-muted">(optional)</span><input type="email" autoComplete="email" value={f.email} onChange={set("email")} className={input} /></label>
             </div>
+            <div className="mt-4">
+              <PlacePicker input={input} value={{ province: f.province, district: f.district, city: f.city }} onChange={(p) => setF({ ...f, ...p })} />
+            </div>
+            <label className="mt-4 block text-sm font-semibold">Email <span className="font-normal text-muted">(optional)</span><input type="email" autoComplete="email" value={f.email} onChange={set("email")} className={input} /></label>
             <label className="mt-4 block text-sm font-semibold">Full address *<textarea required rows={2} autoComplete="street-address" value={f.address} onChange={set("address")} placeholder="House / shop, street, area, nearby landmark" className={input} /></label>
             <label className="mt-4 block text-sm font-semibold">Note <span className="font-normal text-muted">(bike model, part number…)</span><textarea rows={2} value={f.note} onChange={set("note")} className={input} /></label>
             <p className="mt-4 flex items-center gap-2 rounded-xl bg-brand-50 p-3 text-sm font-semibold text-brand-900 dark:bg-brand-900 dark:text-brand-100"><Truck size={18} />Delivery all over Pakistan: {money(shipping)}</p>

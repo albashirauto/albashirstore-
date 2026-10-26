@@ -29,7 +29,7 @@ export async function subscribe(_prev: unknown, form: FormData) {
 }
 
 export type OrderInput = {
-  name: string; phone: string; email?: string; city?: string; address: string; note?: string;
+  name: string; phone: string; email?: string; province?: string; district?: string; city?: string; address: string; note?: string;
   items: { id: string; qty: number }[];
   /** jazzcash | easypaisa | bank */
   payment_method?: string;
@@ -97,7 +97,8 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   if (!hasSupabase) return { ok: true, orderNo: `DEMO-${Date.now().toString().slice(-5)}`, receipt };
 
   const id = crypto.randomUUID();
-  const row = { id, customer_name: name, phone, email: input.email || null, city: input.city || null, address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method };
+  const cut = (s?: string) => s?.trim().slice(0, 80) || null;
+  const row = { id, customer_name: name, phone, email: input.email || null, province: cut(input.province), district: cut(input.district), city: cut(input.city), address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method };
   let { error } = await serverClient().from("orders").insert({ ...row, payment_ref: ref });
   // database not upgraded yet (no payment_ref column): still save the order, keep the TID in the note
   if (error?.message.includes("payment_ref")) ({ error } = await serverClient().from("orders").insert({ ...row, note: [row.note, ref && `TID: ${ref}`].filter(Boolean).join(" · ") || null }));

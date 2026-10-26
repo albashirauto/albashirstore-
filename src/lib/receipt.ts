@@ -32,9 +32,3 @@ export function receiptText(o: {
     `${o.address}${o.city ? `, ${o.city}` : ""}`,
   ].join("\n");
 }
-
-export const PK_CITIES = [
-  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan", "Gujranwala", "Peshawar", "Quetta", "Sialkot",
-  "Hyderabad", "Bahawalpur", "Sargodha", "Sukkur", "Sahiwal", "Okara", "Depalpur", "Haveli Lakha", "Pakpattan", "Kasur",
-  "Sheikhupura", "Jhang", "Gujrat", "Rahim Yar Khan", "Dera Ghazi Khan", "Mardan", "Abbottabad", "Larkana", "Chiniot", "Kamoke",
-];

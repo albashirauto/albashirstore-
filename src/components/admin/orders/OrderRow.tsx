@@ -5,6 +5,7 @@ import { ChevronDown, Copy, MapPin, Pencil, Phone, Printer, Tag, Trash2, Truck, 
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { PAYMENT, ago, statusOf } from "@/components/admin/dashboard/types";
 import { money } from "@/lib/format";
+import { placeLine } from "@/lib/pk-places";
 import { payLabel, receiptText } from "@/lib/receipt";
 import { SITE_URL } from "@/lib/seo";
 import { PAYMENTS, STATUSES, methodLabel, orderNo, pieces, type Order } from "./types";
@@ -17,7 +18,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
   onStatus: (o: Order, s: string) => void; setPayment: (id: string, s: string) => void;
   onEdit: (o: Order) => void; onDelete: (o: Order) => void; store: string;
 }) {
-  const receipt = receiptText({ orderNo: orderNo(o), name: o.customer_name, phone: o.phone, city: o.city, address: o.address, lines: (o.items ?? []).map((i) => ({ ...i, free: i.free ?? 0 })), subtotal: o.subtotal, shipping: o.shipping, total: o.total, method: o.payment_method, ref: o.payment_ref, paid: o.payment_status === "paid", store });
+  const receipt = receiptText({ orderNo: orderNo(o), name: o.customer_name, phone: o.phone, city: placeLine(o), address: o.address, lines: (o.items ?? []).map((i) => ({ ...i, free: i.free ?? 0 })), subtotal: o.subtotal, shipping: o.shipping, total: o.total, method: o.payment_method, ref: o.payment_ref, paid: o.payment_status === "paid", store });
   const s = statusOf(o.status);
   const pay = PAYMENT[o.payment_status ?? "unpaid"] ?? PAYMENT.unpaid;
   const showReason = (o.status === "cancelled" || o.status === "returned") && o.status_reason;
@@ -67,7 +68,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
 
             <div className="grid gap-5 border-t border-line p-4 md:grid-cols-[1fr_1.3fr]">
               <div className="space-y-3 text-sm">
-                <p className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-hot" />{o.address}{o.city ? `, ${o.city}` : ""}</p>
+                <p className="flex gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-hot" />{[o.address, placeLine(o)].filter(Boolean).join(", ")}</p>
                 <p className="font-semibold">{o.phone}{o.email ? <span className="font-normal text-muted"> · {o.email}</span> : null}</p>
                 {o.note && <p className="rounded-lg bg-soft p-2.5 italic">“{o.note}”</p>}
                 {(o.courier || o.tracking_no) && (

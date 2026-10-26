@@ -27,6 +27,7 @@ export default function ShippingLabel({ o, s, width, height }: { o: Order; s: Re
         <p className="text-[16px] font-extrabold tracking-wide">{o.phone}</p>
         <p className="mt-1 text-[12px] font-semibold leading-tight">{o.address}</p>
         {o.city && <p className="mt-1 inline-block border-2 border-black px-2 py-0.5 font-display text-[22px] font-extrabold uppercase leading-none">{o.city}</p>}
+        {(o.district || o.province) && <p className="mt-1 text-[11px] font-bold uppercase">{[o.district !== o.city ? o.district : null, o.province].filter(Boolean).join(" · ")}</p>}
       </div>
 
       {/* barcode + courier */}
