@@ -1,5 +1,6 @@
 import AboutBrands from "@/components/about/AboutBrands";
 import AboutNumbers from "@/components/about/AboutNumbers";
+import AboutOwners from "@/components/about/AboutOwners";
 import AboutServe from "@/components/about/AboutServe";
 import AboutStory from "@/components/about/AboutStory";
 import AboutTeam from "@/components/about/AboutTeam";
@@ -8,6 +9,7 @@ import AboutVisit from "@/components/about/AboutVisit";
 import CtaBand from "@/components/home/CtaBand";
 import PageHero from "@/components/PageHero";
 import { getBrands, getCategories, getFeatures, getPage, getProducts, getSettings, getVehicles } from "@/lib/data";
+import { teamOf } from "@/lib/location";
 
 export const metadata = { title: "About us" };
 export const revalidate = 60;
@@ -29,6 +31,7 @@ export default async function About() {
         { label: "Bike models", value: vehicles.length },
       ]} />
       <AboutServe />
+      <AboutOwners owners={teamOf(settings)} store={settings.store_name || "Al Bashir Autos"} />
       <AboutTeam />
       <AboutValues features={features} />
       <AboutBrands brands={brands} />

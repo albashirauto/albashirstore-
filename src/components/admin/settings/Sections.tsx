@@ -68,9 +68,9 @@ export function BrandingSection(p: CardProps) {
 
 // ---------------------------------------------------------------- Team phones
 export function TeamSection(p: CardProps) {
-  const keys = [1, 2, 3, 4].flatMap((n) => [`contact${n}_name`, `contact${n}_role`, `contact${n}_phone`, `contact${n}_whatsapp`]);
+  const keys = [1, 2, 3, 4].flatMap((n) => ["name", "role", "phone", "whatsapp", "photo", "bio", "quote"].map((f) => `contact${n}_${f}`));
   return (
-    <SettingsCard {...p} title="Team & phone numbers" sub="People customers can call. Shown in the footer, About and Contact pages." icon={Users} keys={keys}>
+    <SettingsCard {...p} title="Owners & phone numbers" sub={'Shown in the "Meet the owners" section on the About page.'} icon={Users} keys={keys}>
       <div className="grid gap-4 lg:grid-cols-2">
         {[1, 2, 3, 4].map((n) => (
           <div key={n} className="rounded-xl border border-line p-4">
@@ -89,6 +89,12 @@ export function TeamSection(p: CardProps) {
                 <input type="checkbox" checked={p.v[`contact${n}_whatsapp`] !== "no"} onChange={(e) => p.set(`contact${n}_whatsapp`, e.target.checked ? "" : "no")} className="h-4 w-4 accent-[#25D366]" />
                 <WhatsAppIcon size={15} className="text-[#25D366]" />Also on WhatsApp
               </label>
+              <div className="sm:col-span-2">
+                <p className="mb-1.5 text-xs font-semibold text-muted">Photo (square, face in the middle)</p>
+                <ImageField value={p.v[`contact${n}_photo`] || null} onChange={(x) => p.set(`contact${n}_photo`, (x as string) ?? "")} folder="owners" />
+              </div>
+              <textarea rows={3} value={p.v[`contact${n}_bio`] ?? ""} onChange={(e) => p.set(`contact${n}_bio`, e.target.value)} placeholder="Short bio, e.g. 20 years in motorcycle parts. Ask me about any Honda or Suzuki part." className={`${input} resize-y sm:col-span-2`} />
+              <div className="sm:col-span-2">{T(p, `contact${n}_quote`, "Quote (optional), e.g. The right part at the right price.")}</div>
             </div>
           </div>
         ))}

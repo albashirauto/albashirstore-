@@ -3,14 +3,11 @@ import OpeningHours from "@/components/OpenNow";
 import Reveal from "@/components/Reveal";
 import SectionTitle from "@/components/SectionTitle";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { directionsUrl, mapEmbed, teamOf } from "@/lib/location";
+import { directionsUrl, mapEmbed } from "@/lib/location";
 import type { Settings } from "@/lib/types";
 
-const waNumber = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "92");
-
-/** Team contacts (Settings > Team & phones) and the shop location with a live map (exact pin when set). */
+/** Shop helpline and the shop location with a live map (exact pin when set). The owners have their own section on About. */
 export default function AboutVisit({ settings }: { settings: Settings }) {
-  const team = teamOf(settings);
   const directions = directionsUrl(settings);
 
   return (
@@ -18,20 +15,22 @@ export default function AboutVisit({ settings }: { settings: Settings }) {
       <SectionTitle eyebrow="Visit or call" title="Come say salam" sub="Walk in, call or message. A real person will help you find the right part." />
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className="grid content-start gap-3">
-          {team.map((p, i) => (
-            <Reveal key={i} delay={i * 0.06} y={14}>
-              <div className="group flex items-center gap-4 rounded-2xl border border-line bg-card p-4 transition duration-300 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 font-display text-xl font-bold text-white">{(p.name || "?").charAt(0)}</span>
+          {settings.phone && (
+            <Reveal y={14}>
+              <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-card p-5">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white"><Phone size={20} /></span>
                 <span className="min-w-0 flex-1 leading-tight">
-                  <span className="block truncate font-bold">{p.name}</span>
-                  {p.role && <span className="block truncate text-sm text-muted">{p.role}</span>}
-                  <a href={`tel:${p.phone}`} className="mt-0.5 block text-sm font-semibold text-brand-600 hover:text-hot">{p.phone}</a>
+                  <span className="block text-sm text-muted">Shop helpline</span>
+                  <a href={`tel:${settings.phone}`} className="font-display text-2xl font-bold tracking-wide hover:text-brand-600">{settings.phone}</a>
                 </span>
-                <a href={`tel:${p.phone}`} aria-label={`Call ${p.name}`} className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:border-brand-600 hover:bg-brand-600 hover:text-white"><Phone size={16} /></a>
-                {p.whatsapp && <a href={`https://wa.me/${waNumber(p.phone)}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${p.name}`} className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white transition hover:scale-105"><WhatsAppIcon size={18} /></a>}
+                {settings.whatsapp && (
+                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#1ebe5b]">
+                    <WhatsAppIcon size={18} />WhatsApp
+                  </a>
+                )}
               </div>
             </Reveal>
-          ))}
+          )}
           <Reveal y={14} delay={0.2}>
             <ul className="grid gap-3 rounded-2xl bg-soft p-5 text-sm">
               {settings.address && <li className="flex gap-3"><MapPin size={18} className="mt-0.5 shrink-0 text-hot" />{settings.address}</li>}

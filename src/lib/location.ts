@@ -25,6 +25,10 @@ export function coordsFromLink(link: string) {
   return m ? { lat: m[1], lng: m[2] } : null;
 }
 
-/** Team phone numbers (Store settings > Team): contact1_… to contact4_… */
+/** Owners / contacts (Store settings > Team): contact1_… to contact4_… */
 export const teamOf = (s: S) =>
-  [1, 2, 3, 4].map((n) => ({ name: s[`contact${n}_name`] ?? "", role: s[`contact${n}_role`] ?? "", phone: s[`contact${n}_phone`] ?? "", whatsapp: s[`contact${n}_whatsapp`] !== "no" })).filter((p) => p.phone);
+  [1, 2, 3, 4].map((n) => ({
+    name: s[`contact${n}_name`] ?? "", role: s[`contact${n}_role`] ?? "", phone: s[`contact${n}_phone`] ?? "", whatsapp: s[`contact${n}_whatsapp`] !== "no",
+    photo: s[`contact${n}_photo`] ?? "", bio: s[`contact${n}_bio`] ?? "", quote: s[`contact${n}_quote`] ?? "",
+  })).filter((p) => p.phone);
+export type Owner = ReturnType<typeof teamOf>[number];

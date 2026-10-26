@@ -7,7 +7,6 @@ import Reveal from "@/components/Reveal";
 import Sprocket from "@/components/Sprocket";
 import type { Category, Page, Settings } from "@/lib/types";
 import BackToTop from "./BackToTop";
-import FooterContacts from "./FooterContacts";
 import FooterMap from "./FooterMap";
 import SocialLinks from "./SocialLinks";
 
@@ -72,9 +71,8 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
           </Reveal>
         </div>
 
-        {/* team phones + location */}
-        <div className="grid gap-8 py-10">
-          <FooterContacts settings={settings} />
+        {/* location (owners' phones are on the About page) */}
+        <div className="py-10">
           <FooterMap settings={settings} />
         </div>
 
