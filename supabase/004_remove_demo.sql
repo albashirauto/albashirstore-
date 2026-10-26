@@ -14,9 +14,13 @@ delete from public.activity where detail in (
 alter table public.products enable trigger products_activity;
 alter table public.orders enable trigger orders_activity;
 
--- Demo contact details: blank them so the dashboard checklist reminds you to add real ones
-update public.settings set value = '' where key in
-  ('contact1_name','contact1_role','contact1_phone','contact2_name','contact2_role','contact2_phone',
-   'contact3_name','contact3_role','contact3_phone','facebook','instagram','tiktok');
-update public.settings set value = '+92 300 0000000' where key = 'phone';
-update public.settings set value = '923000000000' where key = 'whatsapp';
+-- Demo contact details: blank them so the dashboard checklist reminds you to add real ones.
+-- Only values that are still exactly the demo ones, so real owners / phones are never touched.
+update public.settings s set value = '' from (values
+  ('contact1_name','Shop counter'), ('contact1_role','Sales & orders'), ('contact1_phone','+92 300 1234567'),
+  ('contact2_name','Parts expert'), ('contact2_role','Fitment & part numbers'), ('contact2_phone','+92 301 2345678'),
+  ('contact3_name','Delivery desk'), ('contact3_role','Order tracking'), ('contact3_phone','+92 302 3456789'),
+  ('facebook','https://www.facebook.com/'), ('instagram','https://www.instagram.com/'), ('tiktok','https://www.tiktok.com/')
+) as d(key, value) where s.key = d.key and s.value = d.value;
+update public.settings set value = '+92 300 0000000' where key = 'phone' and value = '+92 300 1234567';
+update public.settings set value = '923000000000' where key = 'whatsapp' and value = '923001234567';
