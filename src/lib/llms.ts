@@ -1,6 +1,7 @@
 // /llms.txt and /llms-full.txt: a plain-text guide to the store for AI assistants (llmstxt.org format).
 // Built from the database on request, so new products / categories / brands appear automatically.
 import { getBrands, getCategories, getPages, getPosts, getProducts, getPromotions, getSettings, getVehicles } from "./data";
+import { feeRange } from "./delivery";
 import { money } from "./format";
 import { teamOf } from "./location";
 import { hasScheme, schemeLabel } from "./scheme";
