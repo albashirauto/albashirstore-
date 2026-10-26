@@ -7,14 +7,14 @@ import ProductRow from "@/components/home/ProductRow";
 import SpeedBands from "@/components/home/SpeedBands";
 import Testimonials from "@/components/home/Testimonials";
 import TrustBar from "@/components/home/TrustBar";
-import { countByCategory, getBanners, getBrands, getCategories, getFeatures, getProducts, getPromotions, getSettings, getTestimonials, getVehicles } from "@/lib/data";
+import { countByCategory, getBanners, getBrands, getCategories, getFeatures, getProducts, getSettings, getTestimonials, getVehicles } from "@/lib/data";
 
 export const revalidate = 60;
 
 /** Home page. Each section lives in its own file under src/components/home/. */
 export default async function Home() {
-  const [banners, features, categories, promotions, trending, vehicles, brands, testimonials, settings, counts] = await Promise.all([
-    getBanners(), getFeatures(), getCategories(), getPromotions(),
+  const [banners, features, categories, all, trending, vehicles, brands, testimonials, settings, counts] = await Promise.all([
+    getBanners(), getFeatures(), getCategories(), getProducts(),
     getProducts({ trending: true, limit: 8 }),
     getVehicles(), getBrands(), getTestimonials(), getSettings(), countByCategory(),
   ]);
@@ -25,7 +25,7 @@ export default async function Home() {
       <TrustBar features={features} />
       <SpeedBands brands={brands.map((b) => ({ label: b.name, href: `/brands/${b.slug}`, logo: b.logo }))} />
       <Categories categories={categories} counts={counts} />
-      <DealZone promotions={promotions} />
+      <DealZone products={all} />
       <ProductRow eyebrow="Popular" title="Trending now" sub="What riders around Okara and Depalpur are buying this week." href="/shop?sort=newest" products={trending} />
       <ByBike vehicles={vehicles} />
       <CtaBand settings={settings} />
