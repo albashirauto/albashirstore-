@@ -2,15 +2,15 @@ import Link from "next/link";
 
 type Item = { label: string; href: string; logo?: string | null };
 
-/** Quiet, straight marquee of the bikes and brands we stock. Pauses on hover. */
-export default function SpeedBands({ bikes, brands }: { bikes: Item[]; brands: Item[] }) {
-  const items = [...brands, ...bikes];
+/** Quiet, straight marquee of the brands we stock (bikes have their own section). Pauses on hover. */
+export default function SpeedBands({ brands }: { brands: Item[] }) {
+  const items = brands;
   if (!items.length) return null;
   const row = [...items, ...items];
 
   return (
-    <section aria-label="Bikes and brands we stock" className="mx-auto mt-16 max-w-7xl px-4">
-      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.2em] text-muted">Parts for the bikes and brands you trust</p>
+    <section aria-label="Brands we stock" className="mx-auto mt-16 max-w-7xl px-4">
+      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.2em] text-muted">Genuine parts from the brands you trust</p>
       <div className="group overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <div className="flex w-max items-center [animation:marquee_50s_linear_infinite] group-hover:[animation-play-state:paused]">
           {row.map((x, i) => (
