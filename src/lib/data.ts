@@ -176,7 +176,7 @@ const withRatings = (rows: Product[], m: Map<string, { rating: number; reviews: 
 /** Approved reviews of one product, newest first (public columns only). */
 export async function getReviews(productId: string): Promise<Review[]> {
   if (!hasSupabase) return [];
-  const { data } = await serverClient().from("product_reviews").select("id,name,city,rating,title,body,verified,reply,reply_at,created_at")
+  const { data } = await serverClient().from("product_reviews").select("id,name,city,rating,title,body,verified,reply,reply_at,created_at,images")
     .eq("product_id", productId).eq("status", "approved").order("created_at", { ascending: false }).limit(200);
   return (data as Review[]) ?? [];
 }

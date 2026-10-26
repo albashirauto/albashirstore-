@@ -56,7 +56,7 @@ export type Post = {
   schema_type?: string | null; noindex?: boolean; canonical_url?: string | null;
   og_title?: string | null; og_description?: string | null; og_image?: string | null; updated_at?: string | null; created_at?: string;
 };
-export type Review = { id: string; name: string; city?: string | null; rating: number; title?: string | null; body: string; verified: boolean; reply?: string | null; reply_at?: string | null; created_at: string };
+export type Review = { id: string; name: string; city?: string | null; rating: number; title?: string | null; body: string; verified: boolean; reply?: string | null; reply_at?: string | null; created_at: string; images?: string[] | null };
 export type Testimonial = { id: string; name: string; city?: string | null; body: string; rating?: number; sort_order?: number; active?: boolean };
 export type Feature = { id: string; title: string; body?: string | null; icon?: string; sort_order?: number; active?: boolean };
 export type Settings = Record<string, string>;

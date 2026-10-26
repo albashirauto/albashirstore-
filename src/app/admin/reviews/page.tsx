@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { BadgeCheck, Check, ExternalLink, MessageSquareReply, Search, Star, Trash2, X } from "lucide-react";
+import { BadgeCheck, Check, ExternalLink, MessageSquareReply, Pencil, Plus, Search, Star, Trash2, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Stars from "@/components/reviews/Stars";
 import { browserClient } from "@/lib/supabase";
@@ -11,6 +11,7 @@ import { browserClient } from "@/lib/supabase";
 type R = {
   id: string; product_id: string; name: string; phone: string | null; city: string | null; rating: number; title: string | null; body: string;
   verified: boolean; status: "pending" | "approved" | "rejected"; reply: string | null; reply_at: string | null; created_at: string;
+  images?: string[] | null; source?: string | null;
   product?: { name: string; slug: string; images: string[] | null } | null;
 };
 type Tab = "pending" | "approved" | "rejected" | "all";
@@ -39,6 +40,11 @@ export default function Reviews() {
     setSel(new Set());
   }, [db]);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get("saved");
+    const t: Record<string, string> = { added: "Review added", saved: "Review saved", deleted: "Review deleted" };
+    if (s && t[s]) { flash(true, t[s]); setTab("all"); window.history.replaceState(null, "", window.location.pathname); }
+  }, []);
 
   const counts = useMemo(() => ({ pending: rows.filter((r) => r.status === "pending").length, approved: rows.filter((r) => r.status === "approved").length, rejected: rows.filter((r) => r.status === "rejected").length, all: rows.length }), [rows]);
   const approved = rows.filter((r) => r.status === "approved");
@@ -69,9 +75,12 @@ export default function Reviews() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Product reviews</h1>
-        <p className="mt-1.5 text-muted">Customers review parts on the product page. Nothing shows until you approve it. Approved stars also appear in Google.</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Product reviews</h1>
+          <p className="mt-1.5 text-muted">Customers review parts on the product page. Nothing shows until you approve it. Approved stars also appear in Google.</p>
+        </div>
+        <Link href="/admin/reviews/new" className="inline-flex items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark"><Plus size={18} />Add review</Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -136,10 +145,17 @@ export default function Reviews() {
                     <Stars value={r.rating} size={15} />
                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${r.status === "approved" ? "bg-green-100 text-green-800" : r.status === "rejected" ? "bg-hot/10 text-hot" : "bg-amber-100 text-amber-800"}`}>{r.status === "pending" ? "Waiting" : r.status === "approved" ? "Approved" : "Rejected"}</span>
                     {r.verified && <span className="inline-flex items-center gap-1 rounded-full bg-green-600/10 px-2 py-0.5 text-[11px] font-bold text-green-700"><BadgeCheck size={12} />Verified buyer</span>}
+                    {r.source === "admin" && <span className="rounded-full bg-soft px-2 py-0.5 text-[11px] font-bold text-muted">Added by shop</span>}
                   </div>
                   {r.product && <Link href={`/products/${r.product.slug}#reviews`} target="_blank" className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-brand-600 hover:underline">{r.product.name}<ExternalLink size={11} /></Link>}
                   {r.title && <p className="mt-1.5 font-bold">{r.title}</p>}
                   <p className="mt-0.5 whitespace-pre-line text-sm leading-relaxed text-muted">{r.body}</p>
+                  {!!r.images?.length && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      {r.images.map((u) => <a key={u} href={u} target="_blank" rel="noreferrer"><img src={u} alt="" className="h-14 w-14 rounded-lg object-cover ring-1 ring-line" /></a>)}
+                    </div>
+                  )}
                   <p className="mt-2 flex flex-wrap items-center gap-x-3 text-xs text-muted">
                     <b className="text-fg">{r.name}</b>{r.city && <span>{r.city}</span>}
                     {r.phone && <a href={`https://wa.me/${wa(r.phone)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-green-700"><WhatsAppIcon size={12} />{r.phone}</a>}
@@ -159,6 +175,7 @@ export default function Reviews() {
                 <div className="flex w-full flex-wrap gap-1.5 sm:w-auto sm:flex-col">
                   {r.status !== "approved" && <button onClick={() => setStatus([r.id], "approved")} className="inline-flex items-center justify-center gap-1 rounded-full bg-green-600 px-3 py-1.5 text-xs font-bold text-white"><Check size={13} />Approve</button>}
                   {r.status !== "rejected" && <button onClick={() => setStatus([r.id], "rejected")} className="inline-flex items-center justify-center gap-1 rounded-full border border-line px-3 py-1.5 text-xs font-bold"><X size={13} />Reject</button>}
+                  <Link href={`/admin/reviews/${r.id}`} className="inline-flex items-center justify-center gap-1 rounded-full border border-line px-3 py-1.5 text-xs font-bold"><Pencil size={13} />Edit</Link>
                   <button onClick={() => { setReplying(r.id); setReply(r.reply ?? ""); }} className="inline-flex items-center justify-center gap-1 rounded-full border border-line px-3 py-1.5 text-xs font-bold"><MessageSquareReply size={13} />{r.reply ? "Edit reply" : "Reply"}</button>
                   <button onClick={() => remove([r.id])} className="inline-flex items-center justify-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold text-hot hover:bg-hot/10"><Trash2 size={13} />Delete</button>
                 </div>

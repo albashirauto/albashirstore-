@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { BadgeCheck, MessageSquarePlus, PenLine, Star, Store } from "lucide-react";
+import { BadgeCheck, Camera, ChevronLeft, ChevronRight, MessageSquarePlus, PenLine, Star, Store, X } from "lucide-react";
 import { submitReview } from "@/app/actions";
 import type { Review } from "@/lib/types";
 import Stars from "./Stars";
@@ -17,6 +17,8 @@ export default function ProductReviews({ productId, productName, reviews }: { pr
   const [only, setOnly] = useState(0);
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(6);
+  const [photo, setPhoto] = useState<{ list: string[]; i: number } | null>(null);
+  const allPhotos = reviews.flatMap((r) => r.images ?? []);
 
   const count = reviews.length;
   const avg = count ? reviews.reduce((n, r) => n + r.rating, 0) / count : 0;
@@ -59,6 +61,19 @@ export default function ProductReviews({ productId, productName, reviews }: { pr
                 ))}
               </ul>
               {only > 0 && <button onClick={() => setOnly(0)} className="mt-2 text-xs font-bold text-brand-600">Show all ratings</button>}
+              {allPhotos.length > 0 && (
+                <div className="mt-5 border-t border-line pt-4">
+                  <p className="flex items-center gap-1.5 text-sm font-bold"><Camera size={15} />Customer photos ({allPhotos.length})</p>
+                  <div className="mt-2 grid grid-cols-4 gap-1.5">
+                    {allPhotos.slice(0, 8).map((u, k) => (
+                      <button key={u + k} type="button" onClick={() => setPhoto({ list: allPhotos, i: k })} className="aspect-square overflow-hidden rounded-lg ring-1 ring-line" aria-label="Open photo">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={u} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="text-center">
@@ -99,6 +114,16 @@ export default function ProductReviews({ productId, productName, reviews }: { pr
                 <div className="mt-3 flex items-center gap-2"><Stars value={r.rating} size={16} /><span className="text-xs font-bold text-muted">{WORDS[r.rating]}</span></div>
                 {r.title && <p className="mt-2 font-bold">{r.title}</p>}
                 <p className="mt-1 whitespace-pre-line leading-relaxed text-muted">{r.body}</p>
+                {!!r.images?.length && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {r.images.map((u, k) => (
+                      <button key={u} type="button" onClick={() => setPhoto({ list: r.images!, i: k })} className="overflow-hidden rounded-xl ring-1 ring-line transition hover:ring-brand-500" aria-label="Open photo">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={u} alt={`Photo from ${r.name}`} loading="lazy" className="h-20 w-20 object-cover transition duration-500 hover:scale-110" />
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {r.reply && (
                   <div className="mt-4 rounded-2xl border-l-4 border-brand-600 bg-soft p-4">
                     <p className="flex items-center gap-1.5 text-sm font-bold"><Store size={15} className="text-brand-600" />Reply from the shop{r.reply_at && <span className="font-normal text-muted"> · {when(r.reply_at)}</span>}</p>
@@ -112,6 +137,20 @@ export default function ProductReviews({ productId, productName, reviews }: { pr
         </div>
       </div>
 
+      <AnimatePresence>
+        {photo && (
+          <motion.div className="fixed inset-0 z-[80] grid place-items-center bg-black/90 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPhoto(null)} role="dialog" aria-label="Customer photo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photo.list[photo.i]} alt="Customer photo" className="max-h-[85dvh] max-w-full rounded-2xl object-contain" onClick={(e) => e.stopPropagation()} />
+            <button onClick={() => setPhoto(null)} aria-label="Close" className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25"><X size={22} /></button>
+            {photo.list.length > 1 && <>
+              <button onClick={(e) => { e.stopPropagation(); setPhoto({ ...photo, i: (photo.i - 1 + photo.list.length) % photo.list.length }); }} aria-label="Previous photo" className="absolute left-3 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25"><ChevronLeft size={24} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setPhoto({ ...photo, i: (photo.i + 1) % photo.list.length }); }} aria-label="Next photo" className="absolute right-3 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white hover:bg-white/25"><ChevronRight size={24} /></button>
+              <span className="absolute bottom-5 rounded-full bg-white/15 px-3 py-1 text-sm font-bold text-white">{photo.i + 1} / {photo.list.length}</span>
+            </>}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>{open && <ReviewForm productId={productId} productName={productName} onClose={() => setOpen(false)} />}</AnimatePresence>
     </section>
   );
