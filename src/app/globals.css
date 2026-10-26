@@ -73,6 +73,18 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.
 @keyframes wiggle { 0%, 85%, 100% { transform: rotate(0); } 88% { transform: rotate(-14deg); } 91% { transform: rotate(12deg); } 94% { transform: rotate(-8deg); } 97% { transform: rotate(5deg); } }
 .animate-wiggle { animation: wiggle 4s ease-in-out infinite; }
 
+/* social icons: pop in one by one, bob now and then, brand colour fills on hover */
+@keyframes social-pop { from { opacity: 0; transform: scale(0.4) rotate(-25deg); } to { opacity: 1; transform: none; } }
+@keyframes social-bob { 0%, 90%, 100% { transform: translateY(0); } 94% { transform: translateY(-4px); } 97% { transform: translateY(1px); } }
+@keyframes icon-wiggle { 0%, 100% { transform: rotate(0) scale(1.1); } 25% { transform: rotate(-12deg) scale(1.15); } 60% { transform: rotate(10deg) scale(1.15); } }
+.social-pop { animation: social-pop 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+.social-bob { display: inline-block; animation: social-bob 7s ease-in-out infinite; }
+.social-bob:hover { animation-play-state: paused; }
+.social-btn { transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, border-color .3s; }
+.social-btn .social-fill { background: var(--brand); transform: scale(0); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.social-btn:hover, .social-btn:focus-visible { transform: translateY(-4px); border-color: transparent; box-shadow: 0 10px 24px -6px var(--brand); }
+.social-btn:hover .social-fill, .social-btn:focus-visible .social-fill { transform: scale(1); }
+
 .btn-shine { position: relative; overflow: hidden; }
 .btn-shine::after {
   content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;

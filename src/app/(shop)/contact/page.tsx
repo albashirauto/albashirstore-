@@ -6,6 +6,7 @@ import PageHero from "@/components/PageHero";
 import { getFaqs, getSettings, getVehicles } from "@/lib/data";
 import { coords, teamOf } from "@/lib/location";
 import { SITE_URL } from "@/lib/seo";
+import { NETWORKS, parseCustom } from "@/lib/social";
 
 export const metadata = { title: "Contact us" };
 export const revalidate = 60;
@@ -22,7 +23,7 @@ export default async function Contact() {
     geo: c ? { "@type": "GeoCoordinates", latitude: c.lat, longitude: c.lng } : undefined,
     hasMap: settings.map_link || undefined,
     contactPoint: teamOf(settings).map((p) => ({ "@type": "ContactPoint", name: p.name, contactType: p.role || "sales", telephone: p.phone })),
-    sameAs: [settings.facebook, settings.instagram, settings.tiktok, settings.youtube, settings.x].filter(Boolean),
+    sameAs: [...NETWORKS.map((n) => settings[n.key]), ...parseCustom(settings.social_custom).map((c) => c.url)].filter(Boolean),
   };
 
   return (

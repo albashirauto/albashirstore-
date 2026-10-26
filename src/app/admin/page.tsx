@@ -17,6 +17,7 @@ import SetupChecklist, { type Step } from "@/components/admin/dashboard/SetupChe
 import TopProducts from "@/components/admin/dashboard/TopProducts";
 import type { DActivity, DOrder, DProduct } from "@/components/admin/dashboard/types";
 import { browserClient } from "@/lib/supabase";
+import { NETWORKS } from "@/lib/social";
 
 function Heading({ children }: { children: React.ReactNode }) {
   return <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-muted">{children}</h2>;
@@ -72,7 +73,7 @@ export default function Dashboard() {
     { label: "Add your first product", done: products.length > 0, href: "/admin/products" },
     { label: "Add cost prices (for profit)", done: products.length > 0 && costs.size >= products.length, href: "/admin/products" },
     { label: "Set a buy-X-get-Y scheme", done: products.some((p) => (p.scheme_buy ?? 0) > 0), href: "/admin/products" },
-    { label: "Add social media links", done: Boolean(settings.facebook || settings.instagram || settings.tiktok), href: "/admin/settings" },
+    { label: "Add social media links", done: NETWORKS.some((n) => settings[n.key]), href: "/admin/settings" },
   ];
   const hour = new Date().getHours();
   const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";

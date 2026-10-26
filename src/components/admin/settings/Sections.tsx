@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Facebook, Globe, Image as ImageIcon, Instagram, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users, Youtube } from "lucide-react";
+import { Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
+import SocialIcon from "@/components/SocialIcon";
+import { NETWORKS, SOCIAL_KEYS, networkFor, parseCustom, validUrl, type CustomLink } from "@/lib/social";
 import ImageField from "@/components/admin/ImageField";
 import Logo from "@/components/Logo";
 import { OpenBadge } from "@/components/OpenNow";
@@ -104,29 +106,55 @@ export function TeamSection(p: CardProps) {
 }
 
 // ---------------------------------------------------------------- Social media
-const SOCIAL = [
-  { k: "facebook", l: "Facebook", icon: Facebook, ph: "https://facebook.com/yourpage" },
-  { k: "instagram", l: "Instagram", icon: Instagram, ph: "https://instagram.com/yourpage" },
-  { k: "tiktok", l: "TikTok", icon: Share2, ph: "https://tiktok.com/@yourpage" },
-  { k: "youtube", l: "YouTube", icon: Youtube, ph: "https://youtube.com/@yourchannel" },
-  { k: "x", l: "X (Twitter)", icon: Share2, ph: "https://x.com/yourpage" },
-  { k: "whatsapp_channel", l: "WhatsApp channel", icon: Globe, ph: "https://whatsapp.com/channel/…" },
-];
 export function SocialSection(p: CardProps) {
+  const custom = parseCustom(p.v.social_custom, true);
+  const setCustom = (list: CustomLink[]) => p.set("social_custom", JSON.stringify(list));
+  const editCustom = (i: number, v: Partial<CustomLink>) => setCustom(custom.map((c, j) => (j === i ? { ...c, ...v } : c)));
+  const move = (i: number, d: number) => { const l = [...custom]; [l[i], l[i + d]] = [l[i + d], l[i]]; setCustom(l); };
+  const filled = NETWORKS.filter((n) => p.v[n.key]).length + custom.length;
+  // rows without a valid address are kept here while typing, but never shown in the footer
   return (
-    <SettingsCard {...p} title="Social media" sub="Icons in the footer. Empty = hidden." icon={Share2} keys={SOCIAL.map((s) => s.k)}>
+    <SettingsCard {...p} title="Social media" sub={`Animated icons in the footer. Empty = hidden. ${filled} link${filled === 1 ? "" : "s"} set.`} icon={Share2} keys={[...SOCIAL_KEYS, "social_custom"]}>
       <div className="grid gap-4 sm:grid-cols-2">
-        {SOCIAL.map(({ k, l, icon: I, ph }) => {
-          const ok = !p.v[k] || /^https?:\/\/\S+\.\S+/.test(p.v[k]);
+        {NETWORKS.map((net) => {
+          const v = p.v[net.key] ?? "", ok = !v || validUrl(v);
           return (
-            <Field key={k} label={l} help={ok ? undefined : "Start with https://"}>
+            <Field key={net.key} label={net.label} help={ok ? undefined : "Start with https://"}>
               <div className="relative">
-                <I size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
-                <input type="url" value={p.v[k] ?? ""} onChange={(e) => p.set(k, e.target.value)} placeholder={ph} className={`${input} pl-10 ${ok ? "" : "border-hot"}`} />
+                <span className="pointer-events-none absolute left-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-lg text-white transition" style={{ background: v ? net.color : "var(--line)" }}><SocialIcon net={net} size={14} /></span>
+                <input type="url" value={v} onChange={(e) => p.set(net.key, e.target.value)} placeholder={net.ph} className={`${input} pl-11 ${ok ? "" : "border-hot"}`} />
               </div>
             </Field>
           );
         })}
+      </div>
+
+      <div className="mt-6 rounded-xl border border-dashed border-line p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="font-bold">Custom links</p>
+            <p className="text-xs text-muted">Any other page: a second Facebook page, Linktree, OLX, a marketplace store… The icon is picked from the address.</p>
+          </div>
+          <button type="button" onClick={() => setCustom([...custom, { label: "", url: "" }])} className="rounded-full border border-brand-600 px-4 py-1.5 text-sm font-bold text-brand-600 transition hover:bg-brand-600 hover:text-white">+ Add link</button>
+        </div>
+        <ul className="mt-3 grid gap-2">
+          {custom.map((c, i) => {
+            const net = networkFor(c.url), ok = !c.url || validUrl(c.url);
+            return (
+              <li key={i} className="flex flex-wrap items-center gap-2">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white" style={{ background: net.color }}><SocialIcon net={net} size={17} /></span>
+                <input value={c.label} onChange={(e) => editCustom(i, { label: e.target.value })} placeholder={net.key === "_link" ? "Name, e.g. Our OLX shop" : net.label} className={`${input} w-40 flex-1 basis-32`} />
+                <input type="url" value={c.url} onChange={(e) => editCustom(i, { url: e.target.value })} placeholder="https://…" className={`${input} flex-[2] basis-56 ${ok ? "" : "border-hot"}`} />
+                <span className="flex">
+                  <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move up" className="rounded-lg px-2 py-2 text-muted hover:bg-soft disabled:opacity-30">↑</button>
+                  <button type="button" disabled={i === custom.length - 1} onClick={() => move(i, 1)} aria-label="Move down" className="rounded-lg px-2 py-2 text-muted hover:bg-soft disabled:opacity-30">↓</button>
+                  <button type="button" onClick={() => setCustom(custom.filter((_, j) => j !== i))} aria-label="Remove" className="rounded-lg px-2 py-2 text-hot hover:bg-hot/10">✕</button>
+                </span>
+              </li>
+            );
+          })}
+          {!custom.length && <li className="text-sm text-muted">No custom links yet.</li>}
+        </ul>
       </div>
     </SettingsCard>
   );
