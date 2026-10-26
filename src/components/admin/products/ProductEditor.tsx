@@ -21,11 +21,12 @@ import Seo from "./sections/Seo";
 import Specs from "./sections/Specs";
 import Variants from "./sections/Variants";
 import Visibility from "./sections/Visibility";
+import History from "./sections/History";
 
 const NAV = [
   { id: "basic", label: "Basic info" }, { id: "media", label: "Images & video" }, { id: "pricing", label: "Pricing & stock" },
   { id: "seller", label: "Seller & purchase" }, { id: "descriptions", label: "Descriptions" }, { id: "specs", label: "Specifications" },
-  { id: "variants", label: "Variants" }, { id: "bundle", label: "Bundle" }, { id: "seo", label: "SEO" }, { id: "visibility", label: "Visibility" },
+  { id: "variants", label: "Variants" }, { id: "bundle", label: "Bundle" }, { id: "seo", label: "SEO" }, { id: "visibility", label: "Visibility" }, { id: "history", label: "History" },
 ];
 
 /** Full product editor: one long page, sticky section menu, sticky save bar. Sections live in ./sections/. */
@@ -223,6 +224,7 @@ export default function ProductEditor({ id }: { id: string }) {
           <Bundle p={p} set={set} opts={opts} />
           <Seo p={p} set={set} ctx={ctx} tpl={tpl} result={seo} inStock={inStock} />
           <Visibility p={p} set={set} opts={opts} quick={(kind) => setQuick({ kind })} />
+          {!isNew && <History id={id} />}
         </div>
       </div>
 

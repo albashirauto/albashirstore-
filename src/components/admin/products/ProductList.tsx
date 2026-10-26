@@ -6,10 +6,11 @@ import { ChevronLeft, ChevronRight, Copy, Eye, EyeOff, Gift, ImageOff, PackagePl
 import { browserClient } from "@/lib/supabase";
 import { money } from "@/lib/format";
 import { isOut } from "@/lib/stock";
+import { BulkEdit, ExportButton, ImportCsv, type InvRow } from "./InventoryTools";
 import { analyze, fillVars, scoreTone } from "@/lib/seo";
 
 type Row = {
-  id: string; name: string; slug: string; sku: string | null; price: number; stock: number | null; images: string[] | null; active: boolean;
+  id: string; name: string; slug: string; sku: string | null; price: number; compare_price?: number | null; stock: number | null; images: string[] | null; active: boolean;
   stock_status?: "auto" | "in_stock" | "out_of_stock" | null; scheme_buy: number | null; scheme_free: number | null;
   category_id: string | null; brand_id: string | null; vehicle_id: string | null;
 };
@@ -136,6 +137,9 @@ export default function ProductList() {
     setSel(new Set());
   };
 
+  // rows changed by import / bulk edit
+  const merge = (changed: InvRow[]) => setRows((c) => c.map((r) => { const x = changed.find((y) => y.id === r.id); return x ? { ...r, ...x } : r; }));
+
   const chip = (on: boolean) => `rounded-full px-3 py-1.5 text-sm font-bold transition ${on ? "bg-brand-900 text-white dark:bg-white dark:text-brand-900" : "bg-card text-muted ring-1 ring-line hover:text-fg"}`;
 
   return (
@@ -145,7 +149,11 @@ export default function ProductList() {
           <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Products</h1>
           <p className="mt-1.5 text-muted">{rows.length} products · {rows.filter((r) => r.active).length} live on the website</p>
         </div>
-        <Link href="/admin/products/new" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><PackagePlus size={18} />Add product</Link>
+        <div className="flex flex-wrap gap-2">
+          <ExportButton rows={shown} nameOf={(id) => names.get(id ?? "") ?? ""} />
+          <ImportCsv rows={rows} onDone={merge} />
+          <Link href="/admin/products/new" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><PackagePlus size={18} />Add product</Link>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -174,6 +182,7 @@ export default function ProductList() {
       {sel.size > 0 && (
         <div className="sticky top-2 z-20 flex flex-wrap items-center gap-2 rounded-2xl bg-brand-900 px-4 py-3 text-sm text-white shadow-xl">
           <b className="mr-2">{sel.size} selected</b>
+          <BulkEdit rows={rows} ids={[...sel]} onDone={(c) => { merge(c); setSel(new Set()); }} />
           <button onClick={() => setLive([...sel], true)} className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 font-bold hover:bg-white/20"><Eye size={14} />Show on site</button>
           <button onClick={() => setLive([...sel], false)} className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 font-bold hover:bg-white/20"><EyeOff size={14} />Hide</button>
           <button onClick={() => removeMany([...sel])} className="inline-flex items-center gap-1.5 rounded-full bg-hot px-3 py-1.5 font-bold hover:bg-hot-dark"><Trash2 size={14} />Delete</button>
