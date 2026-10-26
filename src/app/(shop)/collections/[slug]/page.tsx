@@ -41,7 +41,7 @@ export default async function Collection({ params, searchParams }: { params: Pro
       subtitle={`${cat.name} for motorcycles, rickshaws, loaders and cycles. Filter by bike model, brand or price.`}
       parents={[{ label: "Categories", href: "/categories" }, ...(parent ? [{ label: parent.name, href: `/collections/${parent.slug}` }] : [])]}
       basePath={`/collections/${slug}`} fixed={{ category: slug }} sp={sp} tiles={tiles} aboutHtml={cat.description_html} />
-    <AdminSeoPanel editHref={`/admin/categories?edit=${cat.id}`} label="category" input={entityInput("category", cat, cats, settings.store_name)} />
+    <AdminSeoPanel editHref={`/admin/categories/${cat.id}`} label="category" input={entityInput("category", cat, cats, settings.store_name)} />
     </>
   );
 }

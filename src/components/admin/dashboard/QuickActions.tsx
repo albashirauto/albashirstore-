@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Bike, ClipboardList, FilePlus2, Gift, PackagePlus, Settings } from "lucide-react";
 
 const ACTIONS = [
-  { href: "/admin/products", label: "Add product", icon: PackagePlus },
-  { href: "/admin/vehicles", label: "Add vehicle", icon: Bike },
+  { href: "/admin/products/new", label: "Add product", icon: PackagePlus },
+  { href: "/admin/vehicles/new", label: "Add vehicle", icon: Bike },
   { href: "/admin/orders?status=new", label: "Pending orders", icon: ClipboardList },
   { href: "/admin/products", label: "Set a scheme", icon: Gift },
-  { href: "/admin/orders?new=1", label: "New order", icon: FilePlus2 },
+  { href: "/admin/orders/new", label: "New order", icon: FilePlus2 },
   { href: "/admin/settings", label: "Store settings", icon: Settings },
 ];
 

@@ -6,5 +6,5 @@ export default async function ResourcePage({ params }: { params: Promise<{ resou
   const { resource } = await params;
   const R = RESOURCES[resource];
   if (!R) notFound();
-  return <ResourceManager key={resource} resource={R} />;
+  return <ResourceManager key={resource} resource={R} slug={resource} />;
 }

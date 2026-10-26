@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Inbox, Plus } from "lucide-react";
 import { inRange, presetRange, ymd, type Preset } from "@/components/admin/dashboard/range";
-import NewOrder, { type PickProduct } from "@/components/admin/orders/NewOrder";
 import OrderFilters, { type Filters } from "@/components/admin/orders/OrderFilters";
 import OrderRow from "@/components/admin/orders/OrderRow";
 import OrderSummary from "@/components/admin/orders/OrderSummary";
@@ -18,11 +19,9 @@ const PER_PAGE = 20;
 export default function Orders() {
   const db = browserClient();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [products, setProducts] = useState<PickProduct[]>([]);
-  const [shipping, setShipping] = useState(400);
+  const router = useRouter();
+  const [products, setProducts] = useState<{ id: string; sku: string | null }[]>([]);
   const [storeName, setStoreName] = useState("Al Bashir Autos");
-  const [creating, setCreating] = useState(false);
-  const [editing, setEditing] = useState<Order | null>(null);
   const [asking, setAsking] = useState<StatusChange | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [f, setF] = useState<Filters>({ q: "", status: "all", payment: "all", method: "all" });
@@ -34,14 +33,12 @@ export default function Orders() {
   const load = useCallback(async () => {
     const [o, p, s] = await Promise.all([
       db.from("orders").select("*").order("created_at", { ascending: false }).limit(5000),
-      db.from("products").select("id,name,sku,price,stock,active,scheme_buy,scheme_free").order("name"),
-      db.from("settings").select("key,value").in("key", ["shipping_flat", "store_name"]),
+      db.from("products").select("id,sku"),
+      db.from("settings").select("value").eq("key", "store_name").maybeSingle(),
     ]);
     setOrders((o.data as Order[]) ?? []);
-    setProducts((p.data as PickProduct[]) ?? []);
-    const st = Object.fromEntries(((s.data as { key: string; value: string }[]) ?? []).map((r) => [r.key, r.value]));
-    if (st.shipping_flat) setShipping(Number(st.shipping_flat) || 0);
-    if (st.store_name) setStoreName(st.store_name);
+    setProducts((p.data as { id: string; sku: string | null }[]) ?? []);
+    if (s.data?.value) setStoreName(s.data.value);
     setLoaded(true);
   }, [db]);
   useEffect(() => { load(); }, [load]);
@@ -51,7 +48,8 @@ export default function Orders() {
     const sp = new URLSearchParams(window.location.search);
     const s = sp.get("status");
     if (s && (STATUSES as readonly string[]).includes(s)) setF((x) => ({ ...x, status: s }));
-    if (sp.has("new")) setCreating(true);
+    if (sp.has("new")) router.replace("/admin/orders/new");
+    if (sp.get("open")) { setOpen(sp.get("open")); window.history.replaceState(null, "", window.location.pathname); }
     const q = sp.get("q");
     if (q) setF((x) => ({ ...x, q }));
   }, []);
@@ -131,11 +129,8 @@ export default function Orders() {
           <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Orders</h1>
           <p className="mt-1.5 text-muted">Find any order, update its status and payment, and see totals for any period.</p>
         </div>
-        <button onClick={() => setCreating(true)} className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><Plus size={18} />New order</button>
+        <Link href="/admin/orders/new" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><Plus size={18} />New order</Link>
       </div>
-
-      <NewOrder open={creating || !!editing} editing={editing} onClose={() => { setCreating(false); setEditing(null); }} products={products} orders={orders} shipping={shipping}
-        onSaved={async (id) => { setCreating(false); setEditing(null); setF({ q: "", status: "all", payment: "all", method: "all" }); setPreset("all"); setPage(1); await load(); setOpen(id); }} />
 
       <OrderFilters f={f} set={set} counts={counts} methods={methods} preset={preset} setPreset={setPresetReset}
         custom={custom} setCustom={(c) => { setCustom(c); setPage(1); }} range={range} onExport={exportCsv} exportCount={shown.length} />
@@ -157,7 +152,7 @@ export default function Orders() {
           <ul className="space-y-2.5">
             {pageItems.map((o) => (
               <OrderRow key={o.id} o={o} skus={skus} open={open === o.id} toggle={() => setOpen(open === o.id ? null : o.id)}
-                onStatus={onStatus} setPayment={(id, payment_status) => update(id, { payment_status })} onEdit={setEditing} onDelete={remove} store={storeName} />
+                onStatus={onStatus} setPayment={(id, payment_status) => update(id, { payment_status })} onEdit={(x) => router.push(`/admin/orders/${x.id}`)} onDelete={remove} store={storeName} />
             ))}
           </ul>
 

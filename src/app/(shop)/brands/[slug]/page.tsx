@@ -33,7 +33,7 @@ export default async function BrandPage({ params, searchParams }: { params: Prom
     <>
     <ShopListing title={brand.name} eyebrow="Brand" logo={brand.logo} subtitle={facts}
       parents={[{ label: "Brands", href: "/brands" }]} basePath={`/brands/${slug}`} fixed={{ brand: slug }} sp={sp} aboutHtml={brand.description_html} />
-    <AdminSeoPanel editHref={`/admin/brands?edit=${brand.id}`} label="brand" input={entityInput("brand", brand, brands, settings.store_name)} />
+    <AdminSeoPanel editHref={`/admin/brands/${brand.id}`} label="brand" input={entityInput("brand", brand, brands, settings.store_name)} />
     </>
   );
 }
