@@ -27,7 +27,7 @@ export const getFaqs = () => list<Faq>("faqs", demoFaqs);
 export async function getPosts(limit?: number): Promise<Post[]> {
   if (!hasSupabase) return [];
   try {
-    let q = serverClient().from("posts").select("*").eq("active", true).lte("published_at", new Date().toISOString()).order("published_at", { ascending: false });
+    let q = serverClient().from("posts").select("*").eq("active", true).is("deleted_at", null).lte("published_at", new Date().toISOString()).order("published_at", { ascending: false });
     if (limit) q = q.limit(limit);
     const { data, error } = await q;
     if (error) throw error;

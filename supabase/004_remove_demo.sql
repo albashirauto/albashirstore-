@@ -7,6 +7,7 @@ alter table public.orders disable trigger orders_activity;
 
 delete from public.orders where note = 'DEMO';
 delete from public.products where sku like 'DEMO-%';   -- cost prices go with them (on delete cascade)
+delete from public.posts where slug = 'cd-70-chain-kit-guide';   -- demo blog post
 delete from public.activity where detail in (
   'Spark Plug (Standard) · 160 → 200', 'Hamza Tariq · confirmed → shipped', 'Bilal Hussain · Rs. 4,350',
   'Headlight Bulb Set LED · Rs. 950 → Rs. 899', 'Usman Khalid · Rs. 2,700', 'Bicycle Chain (Heavy)');

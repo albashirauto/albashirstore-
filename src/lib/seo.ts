@@ -25,8 +25,10 @@ export type SeoInput = {
   keywords: string[]; title: string; description: string; slug: string;
   name: string; shortDesc: string; html: string; images: number; video: boolean; specs: number;
   otherKeywords: string[]; // main keywords already used by other products (or other categories / brands)
-  /** "page" = category or brand page: no specifications, one picture or logo is enough */
-  kind?: "product" | "page";
+  /** "page" = category or brand page: no specifications, one picture or logo is enough. "post" = blog article. */
+  kind?: "product" | "page" | "post";
+  /** posts: alt texts of the cover + pictures in the article */
+  alts?: string[];
 };
 export type Check = { id: string; group: "Basic SEO" | "Additional" | "Title readability" | "Content readability"; ok: boolean; warn?: boolean; text: string; weight: number };
 
@@ -84,6 +86,16 @@ export function analyze(i: SeoInput): { score: number; checks: Check[] } {
         : x.id === "kwAlt" ? { ...x, ok: i.images > 0 && has(i.name, kw), text: i.images ? "Picture alt text (the name) contains the focus keyword." : "Add a picture or logo." }
         : x.id === "length" ? { ...x, ok: w.length >= 100, warn: w.length >= 40 && w.length < 100, text: `Description is ${w.length} words. ${w.length >= 100 ? "Good." : "Aim for 100+ words: what is in it, which bikes, why buy here."}` }
         : x.id === "unique" ? { ...x, text: x.ok ? "Focus keyword not used by another page." : x.text.replace("Another product", "Another page") }
+        : x)
+    : i.kind === "post"
+    ? c.filter((x) => x.id !== "specs").map((x) =>
+        x.id === "length" ? { ...x, ok: w.length >= 600, warn: w.length >= 300 && w.length < 600, text: `Article is ${w.length} words. ${w.length >= 600 ? "Good." : "Aim for 600+ words: posts that fully answer the question rank better."}` }
+        : x.id === "kwStart" ? { ...x, text: "Focus keyword in the first paragraph of the article." }
+        : x.id === "kwHead" ? { ...x, text: heads.length ? "Focus keyword in a subheading (H2–H4)." : "Add subheadings (H2/H3); put the focus keyword in one of them." }
+        : x.id === "kwAlt" ? { ...x, ok: !!kw && (i.alts ?? []).some((a) => has(a, kw)), text: i.images ? "A picture's alt text contains the focus keyword." : "Add a picture with the focus keyword in its alt text." }
+        : x.id === "media" ? { ...x, ok: i.images >= 1, text: `${i.images} picture${i.images === 1 ? "" : "s"}${i.video ? " + video" : ""}. ${i.images ? "Good." : "Add a cover picture or a picture in the article."}` }
+        : x.id === "internal" ? { ...x, text: "Link to a page of your store (a category, product or another article)." }
+        : x.id === "unique" ? { ...x, text: x.ok ? "Focus keyword not used by another post." : x.text.replace("Another product", "Another post") }
         : x)
     : c;
   const total = checks.reduce((n, x) => n + x.weight, 0);

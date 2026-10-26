@@ -50,6 +50,9 @@ export type Faq = { id: string; question: string; answer: string; sort_order?: n
 export type Post = {
   id: string; title: string; slug: string; cover?: string | null; excerpt?: string | null; content_html?: string | null;
   author?: string | null; published_at: string; seo_title?: string | null; seo_description?: string | null; focus_keywords?: string | null; active?: boolean;
+  category?: string | null; tags?: string[] | null; cover_alt?: string | null; featured?: boolean; deleted_at?: string | null;
+  schema_type?: string | null; noindex?: boolean; canonical_url?: string | null;
+  og_title?: string | null; og_description?: string | null; og_image?: string | null; updated_at?: string | null; created_at?: string;
 };
 export type Testimonial = { id: string; name: string; city?: string | null; body: string; rating?: number; sort_order?: number; active?: boolean };
 export type Feature = { id: string; title: string; body?: string | null; icon?: string; sort_order?: number; active?: boolean };
