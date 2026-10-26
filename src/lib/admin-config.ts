@@ -232,6 +232,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   { title: "Settings", items: [
     { href: "/admin/settings", label: "Store settings" },
     { href: "/admin/team", label: "Team", ownerOnly: true },
+    { href: "/admin/notifications", label: "Notifications", ownerOnly: true },
   ] },
 ];
 

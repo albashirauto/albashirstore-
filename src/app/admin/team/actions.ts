@@ -1,6 +1,7 @@
 "use server";
 
 import { adminClient, hasServiceKey } from "@/lib/supabaseAdmin";
+import { requireOwner as requireOwnerOf } from "@/lib/requireOwner";
 
 export type Member = {
   user_id: string; name: string | null; username: string | null; email: string | null; phone: string | null;
@@ -16,15 +17,7 @@ type Result<T = undefined> = { ok: boolean; message?: string; data?: T };
 
 const SETUP = "Team needs the server key: add SUPABASE_SERVICE_ROLE_KEY to .env.local (and on Vercel).";
 
-/** The caller must be an active owner. The browser sends its own login token; we check it on the server. */
-async function requireOwner(token: string) {
-  const db = adminClient();
-  const { data, error } = await db.auth.getUser(token);
-  if (error || !data.user) throw new Error("Please sign in again.");
-  const { data: me } = await db.from("admins").select("role,status").eq("user_id", data.user.id).maybeSingle();
-  if (!me || me.role !== "owner" || (me.status ?? "active") !== "active") throw new Error("Only owners can manage the team.");
-  return { db, me: data.user };
-}
+const requireOwner = (token: string) => requireOwnerOf(token, "manage the team");
 
 const clean = (i: MemberInput) => ({
   name: i.name.trim() || null, username: i.username.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "") || null,
