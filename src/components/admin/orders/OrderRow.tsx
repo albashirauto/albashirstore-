@@ -34,6 +34,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
             <span className="block truncate font-bold">{o.customer_name} <span className="font-normal text-muted">· #{orderNo(o)}</span></span>
             <span className="block truncate text-xs text-muted">{new Date(o.created_at).toLocaleString("en-PK", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })} · {ago(o.created_at)} · {pieces(o)} pcs{o.city ? ` · ${o.city}` : ""}</span>
             {showReason && <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-hot/10 px-2 py-0.5 text-[11px] font-semibold text-hot"><TriangleAlert size={11} />{o.status_reason}</span>}
+            {o.delivery_method === "pickup" && <span className="mt-1 mr-1 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Collect from shop</span>}
             {shipped && <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-semibold text-purple-800"><Truck size={11} />{o.courier}{o.tracking_no ? ` · ${o.tracking_no}` : ""}</span>}
           </span>
         </button>

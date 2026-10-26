@@ -12,7 +12,9 @@ import { parseKey } from "@/lib/stock";
 import type { Product } from "@/lib/types";
 
 export default function CartPage() {
-  const { items, setQty, remove, subtotal, shipping } = useCart();
+  const { items, setQty, remove, subtotal, shipping, shippingMax, freeOver } = useCart();
+  const free = freeOver > 0 && subtotal >= freeOver;
+  const ship = free ? 0 : shipping;
   const wish = useWishlist();
   const pcs = items.reduce((n, i) => n + i.qty, 0);
 
@@ -79,8 +81,15 @@ export default function CartPage() {
             <h2 className="text-xl font-bold">Order summary</h2>
             <dl className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between"><dt className="text-muted">Subtotal ({pcs} pcs)</dt><dd>{money(subtotal)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">Delivery (all Pakistan)</dt><dd>{money(shipping)}</dd></div>
-              <div className="flex justify-between border-t border-line pt-3 text-2xl font-extrabold"><dt>Total</dt><dd>{money(subtotal + shipping)}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted">Delivery{shippingMax > shipping && !free ? " (from)" : ""}</dt><dd>{free ? <b className="text-green-700 dark:text-green-400">FREE</b> : money(ship)}</dd></div>
+              {freeOver > 0 && (
+                <div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-line"><div className="h-full rounded-full bg-green-500 transition-all duration-700" style={{ width: `${Math.min(100, (subtotal / freeOver) * 100)}%` }} /></div>
+                  <p className="mt-1 text-xs font-semibold text-green-700 dark:text-green-400">{free ? "You get FREE delivery!" : `Add ${money(freeOver - subtotal)} more for FREE delivery`}</p>
+                </div>
+              )}
+              <div className="flex justify-between border-t border-line pt-3 text-2xl font-extrabold"><dt>Total{shippingMax > shipping && !free ? " (est.)" : ""}</dt><dd>{money(subtotal + ship)}</dd></div>
+              {shippingMax > shipping && !free && <p className="text-xs text-muted">Exact delivery charge for your area is shown at checkout.</p>}
             </dl>
             <Link href="/checkout" className="group mt-5 flex items-center justify-center gap-2 rounded-full bg-hot py-4 text-lg font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark">
               Checkout <ArrowRight size={19} className="transition group-hover:translate-x-1" />
@@ -88,7 +97,7 @@ export default function CartPage() {
             <p className="mt-3 text-center text-xs text-muted">Pay with JazzCash, Easypaisa or bank transfer</p>
           </div>
           <ul className="space-y-2 rounded-2xl bg-soft p-4 text-sm">
-            <li className="flex gap-2.5"><Truck size={17} className="shrink-0 text-brand-600" />Delivery all over Pakistan for {money(shipping)}</li>
+            <li className="flex gap-2.5"><Truck size={17} className="shrink-0 text-brand-600" />{free ? "FREE delivery on this order" : `Delivery all over Pakistan ${shippingMax > shipping ? "from " : "for "}${money(shipping)}`}{freeOver > 0 && !free ? ` · free over ${money(freeOver)}` : ""}</li>
             <li className="flex gap-2.5"><ShieldCheck size={17} className="shrink-0 text-brand-600" />Genuine parts, checked before dispatch</li>
           </ul>
         </aside>

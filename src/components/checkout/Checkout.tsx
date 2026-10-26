@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
-import { Gift, Lock, MapPin, ShieldCheck, TicketPercent, Truck, Wallet, X } from "lucide-react";
+import { Gift, Lock, MapPin, ShieldCheck, Store, TicketPercent, Truck, Wallet, X } from "lucide-react";
+import { deliveryQuote } from "@/lib/delivery";
 import { checkCoupon, placeOrder, type CouponQuote } from "@/app/actions";
 import { useCart } from "@/components/CartProvider";
 import ProductImage from "@/components/ProductImage";
@@ -38,11 +39,14 @@ export default function Checkout({ s }: { s: Settings }) {
   const [couponMsg, setCouponMsg] = useState("");
   const [checking, setChecking] = useState(false);
   const discount = coupon?.ok ? Math.min(subtotal, coupon.discount ?? 0) : 0;
-  const shipping = coupon?.ok && coupon.free_shipping ? 0 : Number(s.shipping_flat || 400);
-  const total = subtotal - discount + shipping;
+  const [pickup, setPickup] = useState(false);
+  const canPickup = s.pickup_enabled === "yes";
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
   const [f, setF] = useState({ name: "", phone: "", email: "", province: "", district: "", city: "", address: "", note: "" });
+  const dq = deliveryQuote(s, f, subtotal, pickup && canPickup);
+  const shipping = coupon?.ok && coupon.free_shipping ? 0 : dq.fee;
+  const total = subtotal - discount + shipping;
   const [method, setMethod] = useState<PayMethod | "">("");
   const [ref, setRef] = useState("");
   const [done, setDone] = useState<{ no: string; total: number; text: string } | null>(null);
@@ -84,12 +88,12 @@ export default function Checkout({ s }: { s: Settings }) {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!f.province || !f.district || !f.city) return setError("Choose your province, district and city / town.");
+    if (!pickup && (!f.province || !f.district || !f.city)) return setError("Choose your province, district and city / town.");
     if (!method) return setError("Choose how you will pay: JazzCash, Easypaisa or bank transfer.");
     const tItems = items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty }));
     track("begin_checkout", { value: subtotal, items: tItems });
     start(async () => {
-      const r = await placeOrder({ ...f, payment_method: method, payment_ref: ref, coupon: coupon?.ok ? coupon.code : "", items: items.map((i) => ({ id: i.id, qty: i.qty })) });
+      const r = await placeOrder({ ...f, pickup: pickup && canPickup, payment_method: method, payment_ref: ref, coupon: coupon?.ok ? coupon.code : "", items: items.map((i) => ({ id: i.id, qty: i.qty })) });
       if (!r.ok || !r.receipt) return setError(r.message ?? "Something went wrong.");
       try { const { name, phone, email, province, district, city, address } = f; localStorage.setItem("aba-customer", JSON.stringify({ name, phone, email, province, district, city, address })); } catch {}
       const no = String(r.orderNo ?? "");
@@ -112,13 +116,30 @@ export default function Checkout({ s }: { s: Settings }) {
               <label className="block text-sm font-semibold">Full name *<input required autoComplete="name" value={f.name} onChange={set("name")} className={input} /></label>
               <label className="block text-sm font-semibold">Phone / WhatsApp *<input required type="tel" autoComplete="tel" value={f.phone} onChange={set("phone")} placeholder="03xx xxxxxxx" className={input} /></label>
             </div>
+            {canPickup && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {([[false, "Home delivery", Truck, "Courier to your door"], [true, "Collect from shop", Store, "Free · at our shop"]] as const).map(([v, l, I, d]) => (
+                  <button key={l} type="button" onClick={() => setPickup(v)} aria-pressed={pickup === v} className={`flex items-center gap-3 rounded-xl border-2 p-3 text-left transition ${pickup === v ? "border-brand-600 bg-brand-50 dark:bg-brand-900" : "border-line hover:border-brand-500/50"}`}>
+                    <I size={20} className="shrink-0 text-brand-600" /><span className="leading-tight"><b className="block text-sm">{l}</b><span className="text-xs text-muted">{v && s.pickup_note ? s.pickup_note.slice(0, 40) : d}</span></span>
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="mt-4">
-              <PlacePicker input={input} value={{ province: f.province, district: f.district, city: f.city }} onChange={(p) => setF({ ...f, ...p })} />
+              <PlacePicker optional={pickup} input={input} value={{ province: f.province, district: f.district, city: f.city }} onChange={(p) => setF({ ...f, ...p })} />
             </div>
             <label className="mt-4 block text-sm font-semibold">Email <span className="font-normal text-muted">(optional)</span><input type="email" autoComplete="email" value={f.email} onChange={set("email")} className={input} /></label>
-            <label className="mt-4 block text-sm font-semibold">Full address *<textarea required rows={2} autoComplete="street-address" value={f.address} onChange={set("address")} placeholder="House / shop, street, area, nearby landmark" className={input} /></label>
+            {!pickup && <label className="mt-4 block text-sm font-semibold">Full address *<textarea required rows={2} autoComplete="street-address" value={f.address} onChange={set("address")} placeholder="House / shop, street, area, nearby landmark" className={input} /></label>}
             <label className="mt-4 block text-sm font-semibold">Note <span className="font-normal text-muted">(bike model, part number…)</span><textarea rows={2} value={f.note} onChange={set("note")} className={input} /></label>
-            <p className="mt-4 flex items-center gap-2 rounded-xl bg-brand-50 p-3 text-sm font-semibold text-brand-900 dark:bg-brand-900 dark:text-brand-100"><Truck size={18} />Delivery all over Pakistan: {money(shipping)}</p>
+            <div className="mt-4 flex items-start gap-3 rounded-xl bg-brand-50 p-3 text-sm text-brand-900 dark:bg-brand-900 dark:text-brand-100">
+              {pickup ? <Store size={18} className="mt-0.5 shrink-0" /> : <Truck size={18} className="mt-0.5 shrink-0" />}
+              <span>
+                <b>{pickup ? "Collect from the shop: free" : `Delivery to ${dq.area}: ${shipping ? money(shipping) : "FREE"}`}</b>
+                {!pickup && dq.days && <span className="block">Usually arrives in {dq.days}.</span>}
+                {pickup && s.pickup_note && <span className="block">{s.pickup_note}</span>}
+                {pickup && s.address && <span className="block text-xs opacity-80">{s.address}</span>}
+              </span>
+            </div>
           </Step>
 
           <Step n={2} title="Payment" icon={Wallet}>
@@ -169,7 +190,13 @@ export default function Checkout({ s }: { s: Settings }) {
             <dl className="mt-4 space-y-1.5 border-t border-line pt-4 text-sm">
               <div className="flex justify-between"><dt className="text-muted">Subtotal</dt><dd>{money(subtotal)}</dd></div>
               {discount > 0 && <div className="flex justify-between font-semibold text-green-700 dark:text-green-400"><dt>Discount ({coupon?.code})</dt><dd>−{money(discount)}</dd></div>}
-              <div className="flex justify-between"><dt className="text-muted">Delivery (all Pakistan)</dt><dd>{shipping ? money(shipping) : <b className="text-green-700 dark:text-green-400">FREE</b>}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted">{pickup ? "Collect from shop" : `Delivery · ${dq.area}`}</dt><dd>{shipping ? money(shipping) : <b className="text-green-700 dark:text-green-400">FREE</b>}</dd></div>
+              {!pickup && dq.freeOver && !(coupon?.ok && coupon.free_shipping) && (
+                <div className="pt-1">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-line"><div className="h-full rounded-full bg-green-500 transition-all duration-700" style={{ width: `${Math.min(100, (subtotal / dq.freeOver) * 100)}%` }} /></div>
+                  <p className="mt-1 text-xs font-semibold text-green-700 dark:text-green-400">{dq.missing ? `Add ${money(dq.missing)} more for FREE delivery` : "You get FREE delivery!"}</p>
+                </div>
+              )}
               <div className="flex justify-between border-t border-line pt-2 text-xl font-extrabold"><dt>Total</dt><dd>{money(total)}</dd></div>
             </dl>
             {error && <p role="alert" className="mt-4 rounded-xl bg-hot/10 p-3 text-sm font-semibold text-hot">{error}</p>}

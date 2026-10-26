@@ -6,6 +6,8 @@ export type Order = {
   status: string; payment_status?: string | null; payment_method?: string | null; created_at: string;
   payment_ref?: string | null;
   coupon_code?: string | null; discount?: number | null;
+  /** delivery | pickup (collect from shop) */
+  delivery_method?: string | null;
   status_reason?: string | null; courier?: string | null; tracking_no?: string | null; dispatched_at?: string | null;
 };
 

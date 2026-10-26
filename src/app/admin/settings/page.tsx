@@ -15,7 +15,7 @@ const TABS = [
   { k: "team", l: "Team & phones", icon: Users, C: TeamSection, keys: /^contact\d_/ },
   { k: "social", l: "Social media", icon: Share2, C: SocialSection, keys: new RegExp(`^(${[...SOCIAL_KEYS, "social_custom"].join("|")})$`) },
   { k: "location", l: "Location", icon: MapPin, C: LocationSection, keys: /^(address|map_link|latitude|longitude)$/ },
-  { k: "payments", l: "Delivery & payments", icon: Landmark, C: PaymentsSection, keys: /^(shipping_flat|jazzcash_|easypaisa_|bank_)/ },
+  { k: "payments", l: "Delivery & payments", icon: Landmark, C: PaymentsSection, keys: /^(shipping_|pickup_|jazzcash_|easypaisa_|bank_)/ },
   { k: "text", l: "Site text", icon: Megaphone, C: SiteTextSection, keys: /^announcement$/ },
   { k: "seo", l: "SEO & site files", icon: Search, C: SeoSection, keys: /^(seo_|ai_crawlers)/ },
   { k: "tracking", l: "Verification & analytics", icon: BarChart3, C: TrackingTab, keys: /^(google_site_verification|bing_|yandex_|pinterest_|facebook_domain|ga4_|gtm_|meta_pixel|tiktok_pixel|clarity_)/ },

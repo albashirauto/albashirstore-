@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
 import SocialIcon from "@/components/SocialIcon";
+import { parseZones, type Zone } from "@/lib/delivery";
+import { PROVINCES, districtsOf, townsOf } from "@/lib/pk-places";
 import { NETWORKS, SOCIAL_KEYS, networkFor, parseCustom, validUrl, type CustomLink } from "@/lib/social";
 import ImageField from "@/components/admin/ImageField";
 import Logo from "@/components/Logo";
@@ -215,10 +217,15 @@ export function LocationSection(p: CardProps) {
 export function PaymentsSection(p: CardProps) {
   return (
     <SettingsCard {...p} title="Delivery & payments" sub="Delivery charge and the accounts customers pay into at checkout." icon={Landmark}
-      keys={["shipping_flat", "jazzcash_number", "jazzcash_name", "easypaisa_number", "easypaisa_name", "bank_name", "bank_title", "bank_iban"]}>
+      keys={["shipping_flat", "shipping_free_over", "shipping_zones", "pickup_enabled", "pickup_note", "jazzcash_number", "jazzcash_name", "easypaisa_number", "easypaisa_name", "bank_name", "bank_title", "bank_iban"]}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Delivery charge (Rs.), all Pakistan" help="One price for every order."><div className="relative"><Truck size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" /><input inputMode="numeric" value={p.v.shipping_flat ?? ""} onChange={(e) => p.set("shipping_flat", e.target.value.replace(/[^\d]/g, ""))} placeholder="400" className={`${input} pl-10`} /></div></Field>
-        <div />
+        <Field label="Normal delivery charge (Rs.)" help="For every area without its own charge below."><div className="relative"><Truck size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" /><input inputMode="numeric" value={p.v.shipping_flat ?? ""} onChange={(e) => p.set("shipping_flat", e.target.value.replace(/[^\d]/g, ""))} placeholder="400" className={`${input} pl-10`} /></div></Field>
+        <Field label="Free delivery over (Rs.)" help="Parts total that gets free delivery. Empty = never free."><input inputMode="numeric" value={p.v.shipping_free_over ?? ""} onChange={(e) => p.set("shipping_free_over", e.target.value.replace(/[^d]/g, ""))} placeholder="e.g. 5000" className={input} /></Field>
+        <div className="sm:col-span-2"><ZoneEditor p={p} /></div>
+        <div className="rounded-xl border border-line p-4 sm:col-span-2">
+          <label className="flex items-center gap-2.5 text-sm font-bold"><input type="checkbox" checked={p.v.pickup_enabled === "yes"} onChange={(e) => p.set("pickup_enabled", e.target.checked ? "yes" : "")} className="h-4 w-4 accent-brand-600" /><Store size={16} className="text-brand-600" />Customers can collect from the shop (free)</label>
+          {p.v.pickup_enabled === "yes" && <div className="mt-3">{T(p, "pickup_note", "e.g. Ready in 2 hours. Open Sat–Thu 8 am – 8 pm.")}</div>}
+        </div>
         <div className="rounded-xl border border-[#d71f26]/30 p-4 sm:col-span-1">
           <p className="mb-3 text-sm font-bold text-[#d71f26]">JazzCash</p>
           <div className="grid gap-3">{T(p, "jazzcash_number", "0300 1234567")}{T(p, "jazzcash_name", "Account name")}</div>
@@ -234,6 +241,39 @@ export function PaymentsSection(p: CardProps) {
       </div>
       <p className="mt-3 text-xs text-muted">Empty accounts are hidden at checkout. Customers then get the details on WhatsApp.</p>
     </SettingsCard>
+  );
+}
+
+// ---------------------------------------------------------------- Delivery areas
+function ZoneEditor({ p }: { p: CardProps }) {
+  const zones = parseZones(p.v.shipping_zones);
+  const save = (z: Zone[]) => p.set("shipping_zones", JSON.stringify(z));
+  const edit = (i: number, v: Partial<Zone>) => save(zones.map((z, j) => (j === i ? { ...z, ...v } : z)));
+  const flat = Number(p.v.shipping_flat || 400);
+  const scope = (z: Zone) => (z.city ? "City" : z.district ? "District" : "Province");
+  return (
+    <div className="rounded-xl border border-dashed border-line p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="font-bold">Delivery charge by area</p>
+          <p className="text-xs text-muted">e.g. cheaper near the shop, more for far areas. A city beats its district, a district beats its province. Other areas pay Rs. {flat}.</p>
+        </div>
+        <button type="button" onClick={() => save([...zones, { province: "Punjab", fee: flat }])} className="rounded-full border border-brand-600 px-4 py-1.5 text-sm font-bold text-brand-600 transition hover:bg-brand-600 hover:text-white">+ Add area</button>
+      </div>
+      <ul className="mt-3 grid gap-2">
+        {zones.map((z, i) => (
+          <li key={i} className="grid items-center gap-2 rounded-xl bg-soft p-2 sm:grid-cols-[1fr_1fr_1fr_100px_120px_auto]">
+            <select value={z.province} onChange={(e) => edit(i, { province: e.target.value, district: undefined, city: undefined })} className={input} aria-label="Province">{PROVINCES.map((x) => <option key={x}>{x}</option>)}</select>
+            <select value={z.district ?? ""} onChange={(e) => edit(i, { district: e.target.value || undefined, city: undefined })} className={input} aria-label="District"><option value="">Whole province</option>{districtsOf(z.province).map((x) => <option key={x}>{x}</option>)}</select>
+            <select value={z.city ?? ""} disabled={!z.district} onChange={(e) => edit(i, { city: e.target.value || undefined })} className={`${input} disabled:opacity-50`} aria-label="City"><option value="">{z.district ? "Whole district" : "—"}</option>{z.district && townsOf(z.province, z.district).map((x) => <option key={x}>{x}</option>)}</select>
+            <input inputMode="numeric" value={String(z.fee)} onChange={(e) => edit(i, { fee: Number(e.target.value.replace(/D/g, "")) || 0 })} className={input} aria-label="Charge (Rs.)" title="Charge (Rs.)" />
+            <input value={z.days ?? ""} onChange={(e) => edit(i, { days: e.target.value || undefined })} placeholder="e.g. 1–2 days" className={input} aria-label="Delivery time" />
+            <span className="flex items-center justify-between gap-2 sm:justify-end"><span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-bold text-muted">{scope(z)}</span><button type="button" onClick={() => save(zones.filter((_, j) => j !== i))} aria-label="Remove area" className="rounded-lg px-2 py-1.5 text-hot hover:bg-hot/10">✕</button></span>
+          </li>
+        ))}
+        {!zones.length && <li className="text-sm text-muted">No areas yet: every order pays Rs. {flat}.</li>}
+      </ul>
+    </div>
   );
 }
 

@@ -28,7 +28,7 @@ export async function buildLlms(full: boolean) {
     `- Location: ${s.address || "Pakistan"}${s.latitude && s.longitude ? ` (${s.latitude}, ${s.longitude})` : ""}`,
     `- Phone: ${s.phone || "see website"}${s.whatsapp ? ` · WhatsApp: +${s.whatsapp}` : ""}${s.email ? ` · Email: ${s.email}` : ""}`,
     `- Opening hours (Pakistan time): ${s.open_hours?.split(/\r?\n/).filter((l) => l.trim()).join("; ") || "see website"}`,
-    `- Delivery: all over Pakistan, ${money(Number(s.shipping_flat || 400))} per order`,
+    `- Delivery: all over Pakistan, ${feeRange(s).max > feeRange(s).min ? `from ${money(feeRange(s).min)}` : money(feeRange(s).min)} per order${Number(s.shipping_free_over) > 0 ? `, free over ${money(Number(s.shipping_free_over))}` : ""}${s.pickup_enabled === "yes" ? "; free collection from the shop" : ""}`,
     "- Payment: JazzCash, Easypaisa or bank transfer; orders are confirmed by phone",
     `- Catalogue: ${live.length} parts in ${categories.length} categories from ${brands.length} brands`,
     "- Many parts have bulk schemes (buy X, get Y free)",

@@ -15,8 +15,10 @@ type Ctx = {
   items: CartItem[];
   count: number;
   subtotal: number;
-  /** flat delivery charge (Store settings) */
+  /** lowest delivery charge (Store settings; the exact one depends on the area, see src/lib/delivery.ts) */
   shipping: number;
+  /** "from Rs. X" when areas cost more; free delivery from this parts total (0 = never) */
+  shippingMax: number; freeOver: number;
   add: (p: Product, qty?: number, variant?: number | null) => void;
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
@@ -32,7 +34,7 @@ export const useCart = () => {
   return c;
 };
 
-export default function CartProvider({ children, shipping = 400 }: { children: React.ReactNode; shipping?: number }) {
+export default function CartProvider({ children, shipping = 400, shippingMax = shipping, freeOver = 0 }: { children: React.ReactNode; shipping?: number; shippingMax?: number; freeOver?: number }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -67,10 +69,10 @@ export default function CartProvider({ children, shipping = 400 }: { children: R
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<Ctx>(() => ({
-    items, add, setQty, remove, clear, open, setOpen, shipping,
+    items, add, setQty, remove, clear, open, setOpen, shipping, shippingMax, freeOver,
     count: items.reduce((n, i) => n + i.qty, 0),
     subtotal: items.reduce((n, i) => n + i.price * i.qty, 0),
-  }), [items, add, setQty, remove, clear, open, shipping]);
+  }), [items, add, setQty, remove, clear, open, shipping, shippingMax, freeOver]);
 
   return (
     <CartCtx.Provider value={value}>
@@ -128,7 +130,13 @@ export default function CartProvider({ children, shipping = 400 }: { children: R
               {items.length > 0 && (
                 <div className="border-t border-line p-5">
                   <div className="mb-3 flex justify-between text-lg font-bold"><span>Subtotal</span><span>{money(value.subtotal)}</span></div>
-                  <p className="mb-3 text-xs text-muted">Delivery all over Pakistan: {money(shipping)}. Pay by JazzCash, Easypaisa or bank.</p>
+                  {freeOver > 0 && (
+                    <div className="mb-3">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-line"><div className="h-full rounded-full bg-green-500 transition-all duration-700" style={{ width: `${Math.min(100, (value.subtotal / freeOver) * 100)}%` }} /></div>
+                      <p className="mt-1 text-xs font-semibold text-green-700 dark:text-green-400">{value.subtotal >= freeOver ? "You get FREE delivery!" : `Add ${money(freeOver - value.subtotal)} more for FREE delivery`}</p>
+                    </div>
+                  )}
+                  <p className="mb-3 text-xs text-muted">Delivery {shippingMax > shipping ? `from ${money(shipping)}` : money(shipping)} all over Pakistan. Pay by JazzCash, Easypaisa or bank.</p>
                   <Link href="/checkout" onClick={() => setOpen(false)} className="btn-shine block rounded-full bg-hot py-3.5 text-center text-lg font-bold text-white transition hover:bg-hot-dark">Checkout</Link>
                   <Link href="/cart" onClick={() => setOpen(false)} className="mt-2 block text-center text-sm font-semibold text-brand-600 hover:underline">View full cart</Link>
                 </div>

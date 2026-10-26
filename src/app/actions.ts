@@ -7,6 +7,7 @@ import { freeQty } from "@/lib/scheme";
 import { parseKey } from "@/lib/stock";
 import type { Product } from "@/lib/types";
 import { PAY_METHODS } from "@/lib/receipt";
+import { deliveryQuote } from "@/lib/delivery";
 
 /** Cart key (product id, optionally ~variant index) -> order line with the real database price. */
 function toLine(p: Product | undefined, key: string, qtyIn: number) {
@@ -37,6 +38,8 @@ export type OrderInput = {
   payment_ref?: string;
   /** coupon code (checked again here) */
   coupon?: string;
+  /** collect from the shop instead of delivery (only when the shop allows it) */
+  pickup?: boolean;
 };
 
 export type OrderResult = {
@@ -88,13 +91,13 @@ export async function submitReview(input: { productId: string; name: string; pho
 
 /** Prices are re-read from the database here, so the browser can never set its own price. */
 export async function placeOrder(input: OrderInput): Promise<OrderResult> {
-  const name = input.name?.trim(), phone = input.phone?.trim(), address = input.address?.trim();
+  const settings = await getSettings();
+  const pickup = !!input.pickup && settings.pickup_enabled === "yes";
+  const name = input.name?.trim(), phone = input.phone?.trim(), address = pickup ? (input.address?.trim() || "Collect from shop") : input.address?.trim();
   if (!name || !phone || !address) return { ok: false, message: "Please fill in your name, phone and address." };
   if (!/^[+\d][\d\s-]{8,}$/.test(phone)) return { ok: false, message: "Enter a valid phone number." };
   if (!input.items?.length) return { ok: false, message: "Your cart is empty." };
 
-  const settings = await getSettings();
-  const flat = Number(settings.shipping_flat || 400);
 
   // free = scheme pieces sent at no charge (worked out here from the database, never trusted from the browser)
   let lines: { id: string; name: string; variant: string | null; price: number; qty: number; free: number }[] = [];
@@ -117,7 +120,8 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
     if (!coupon.ok) return { ok: false, message: coupon.message ?? "This coupon cannot be used." };
   }
   const discount = Math.min(subtotal, Math.max(0, Number(coupon?.discount ?? 0)));
-  const shipping = coupon?.free_shipping ? 0 : flat;
+  // delivery by area / free over / pickup: same rules as the checkout page (src/lib/delivery.ts)
+  const shipping = coupon?.free_shipping ? 0 : deliveryQuote(settings, input, subtotal, pickup).fee;
   const total = subtotal - discount + shipping;
 
   const method = PAY_METHODS.some((m) => m.key === input.payment_method) ? input.payment_method! : null;
@@ -129,7 +133,7 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
 
   const id = crypto.randomUUID();
   const cut = (s?: string) => s?.trim().slice(0, 80) || null;
-  const row = { id, customer_name: name, phone, email: input.email || null, province: cut(input.province), district: cut(input.district), city: cut(input.city), address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method, ...(coupon?.code ? { coupon_code: coupon.code, discount } : {}) };
+  const row = { id, customer_name: name, phone, email: input.email || null, province: cut(input.province), district: cut(input.district), city: cut(input.city), address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method, delivery_method: pickup ? "pickup" : "delivery", ...(coupon?.code ? { coupon_code: coupon.code, discount } : {}) };
   let { error } = await serverClient().from("orders").insert({ ...row, payment_ref: ref });
   // database not upgraded yet (no payment_ref column): still save the order, keep the TID in the note
   if (error?.message.includes("payment_ref")) ({ error } = await serverClient().from("orders").insert({ ...row, note: [row.note, ref && `TID: ${ref}`].filter(Boolean).join(" · ") || null }));

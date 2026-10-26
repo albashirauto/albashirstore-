@@ -22,7 +22,7 @@ export default function ShippingLabel({ o, s, width, height }: { o: Order; s: Re
 
       {/* TO */}
       <div className="flex-1 border-b-2 border-black px-3 py-2">
-        <p className="text-[9px] font-extrabold uppercase tracking-[0.2em]">Ship to</p>
+        <p className="text-[9px] font-extrabold uppercase tracking-[0.2em]">{o.delivery_method === "pickup" ? "Collect from shop" : "Ship to"}</p>
         <p className="mt-0.5 text-[17px] font-extrabold leading-tight">{o.customer_name}</p>
         <p className="text-[16px] font-extrabold tracking-wide">{o.phone}</p>
         <p className="mt-1 text-[12px] font-semibold leading-tight">{o.address}</p>
