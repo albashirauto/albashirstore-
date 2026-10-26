@@ -122,13 +122,19 @@ export const RESOURCES: Record<string, Resource> = {
   },
   promotions: {
     table: "promotions", title: "Promotions", singular: "promotion", searchKey: "title", orderBy: "sort_order",
-    description: "Deal zone offers. Assign products to a promotion from the product form.",
-    columns: [{ key: "title", label: "Title" }, { key: "badge", label: "Badge" }, { key: "show_on_home", label: "On home", kind: "bool" }, { key: "active", label: "Live", kind: "bool" }],
+    description: "Offers. Give each one a rule (e.g. under Rs. 999, 30% off or more) and products join it by themselves; you can also assign products by hand.",
+    columns: [{ key: "title", label: "Title" }, { key: "badge", label: "Badge" }, { key: "rule", label: "Fills by" }, { key: "rule_value", label: "Value" }, { key: "show_on_home", label: "On home", kind: "bool" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "title", label: "Title", type: "text", required: true },
       { key: "slug", label: "Web address (slug)", type: "slug", from: "title", required: true },
       { key: "subtitle", label: "Short description", type: "text" },
       { key: "badge", label: "Badge text (e.g. 30% OFF)", type: "text", half: true },
+      { key: "rule", label: "Fill automatically with…", type: "select", half: true, help: "New and changed products join by themselves. Products you assign by hand always show too.", options: [
+        { value: "manual", label: "Only products I assign by hand" }, { value: "under_price", label: "Products under a price (Rs.)" },
+        { value: "min_discount", label: "Products with at least X% off" }, { value: "scheme", label: "Products with a bulk scheme" },
+        { value: "new", label: "New products (last X days)" }, { value: "best_sellers", label: "Best sellers (last X days)" },
+      ] },
+      { key: "rule_value", label: "Rule number", type: "number", half: true, help: "Price in Rs., % off, or number of days. e.g. 999, 30, 14" },
       { key: "image", label: "Background image (optional)", type: "image" },
       { key: "starts_at", label: "Starts", type: "datetime", half: true }, { key: "ends_at", label: "Ends", type: "datetime", half: true },
       { key: "show_on_home", label: "Show on home page", type: "bool", half: true }, sort, active,

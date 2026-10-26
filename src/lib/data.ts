@@ -5,6 +5,7 @@ import {
 } from "./demo";
 import type { Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Review, Settings, Testimonial, Vehicle } from "./types";
 import { hasScheme } from "./scheme";
+import { discountPct } from "./format";
 
 async function list<T>(table: string, demo: T[], order = "sort_order"): Promise<T[]> {
   if (!hasSupabase) return demo;
@@ -80,6 +81,48 @@ function sortProducts(rows: Product[], sort?: string) {
   return r;
 }
 
+type Offer = { id: string; rule: string | null; rule_value: number | null };
+
+/** Products sold most in the last `days` days (from real orders; ids + pieces only). */
+async function bestSellerMap(days: number) {
+  const { data } = await serverClient().rpc("best_sellers", { p_days: days, p_limit: 100 });
+  return new Map(((data as { product_id: string; sold: number }[] | null) ?? []).map((r) => [r.product_id, Number(r.sold)]));
+}
+
+/** Smart offer (Admin > Promotions > rule): keep the products that match, plus ones assigned by hand. */
+async function applyRule(rows: Product[], o: Offer) {
+  const v = Number(o.rule_value ?? 0);
+  const mine = (p: Product) => p.promotion_id === o.id;
+  if (o.rule === "best_sellers") {
+    const sold = await bestSellerMap(v || 30);
+    return rows.filter((p) => sold.has(p.id) || mine(p)).sort((a, b) => (sold.get(b.id) ?? 0) - (sold.get(a.id) ?? 0));
+  }
+  const since = Date.now() - (v || 30) * 86400000;
+  const match = (p: Product) =>
+    o.rule === "under_price" ? p.price <= (v || 999)
+    : o.rule === "min_discount" ? discountPct(p.price, p.compare_price) >= (v || 1)
+    : o.rule === "scheme" ? hasScheme(p)
+    : o.rule === "new" ? new Date(p.created_at ?? 0).getTime() >= since
+    : false;
+  return rows.filter((p) => match(p) || mine(p));
+}
+
+/**
+ * Home "Trending now": real best sellers of the last 30 days first, then products marked Trending,
+ * then the newest, so the row is never empty and new products join it by themselves.
+ */
+export async function getTrending(limit = 8): Promise<Product[]> {
+  const all = await getProducts();
+  if (!hasSupabase) return all.filter((p) => p.is_trending).slice(0, limit);
+  const sold = await bestSellerMap(30).catch(() => new Map<string, number>());
+  const ranked = [
+    ...all.filter((p) => sold.has(p.id)).sort((a, b) => (sold.get(b.id) ?? 0) - (sold.get(a.id) ?? 0)),
+    ...all.filter((p) => !sold.has(p.id) && p.is_trending),
+    ...all.filter((p) => !sold.has(p.id) && !p.is_trending),
+  ];
+  return ranked.slice(0, limit);
+}
+
 export async function getProducts(opts: ProductQuery = {}): Promise<Product[]> {
   if (!hasSupabase) return demoFilter(opts);
   try {
@@ -91,11 +134,14 @@ export async function getProducts(opts: ProductQuery = {}): Promise<Product[]> {
       const { data } = await db.from(table).select("id").eq("slug", slug).maybeSingle();
       return (data?.id as string | undefined) ?? null;
     };
-    const [cat, brand, veh, promo] = await Promise.all([
-      resolve("categories", opts.category), resolve("brands", opts.brand),
-      resolve("vehicles", opts.vehicle), resolve("promotions", opts.promotion),
+    const [cat, brand, veh, offer] = await Promise.all([
+      resolve("categories", opts.category), resolve("brands", opts.brand), resolve("vehicles", opts.vehicle),
+      opts.promotion ? db.from("promotions").select("id,rule,rule_value").eq("slug", opts.promotion).maybeSingle().then((r: { data: Offer | null }) => r.data) : Promise.resolve(undefined),
     ]);
-    if (cat === null || brand === null || veh === null || promo === null) return [];
+    if (cat === null || brand === null || veh === null || offer === null) return [];
+    // a smart offer fills itself by its rule (plus products assigned by hand); a manual one uses the assignment only
+    const smart = offer && offer.rule && offer.rule !== "manual" ? offer : null;
+    const promo = offer?.id;
     if (cat) {
       // a main category also shows the products of its sub-categories
       const { data: kids } = await db.from("categories").select("id").eq("parent_id", cat);
@@ -103,7 +149,7 @@ export async function getProducts(opts: ProductQuery = {}): Promise<Product[]> {
     }
     if (brand) query = query.eq("brand_id", brand);
     if (veh) query = query.eq("vehicle_id", veh);
-    if (promo) query = query.eq("promotion_id", promo);
+    if (promo && !smart) query = query.eq("promotion_id", promo);
     if (opts.vehicleType) {
       const { data: vs } = await db.from("vehicles").select("id").eq("type", opts.vehicleType);
       const ids = (vs ?? []).map((v: { id: string }) => v.id);
@@ -120,10 +166,15 @@ export async function getProducts(opts: ProductQuery = {}): Promise<Product[]> {
     else if (opts.sort === "name") query = query.order("name", { ascending: true });
     else query = query.order("created_at", { ascending: false });
 
-    if (opts.limit) query = query.limit(opts.limit);
+    if (opts.limit && !smart) query = query.limit(opts.limit);
     const [{ data, error }, ratings] = await Promise.all([query, ratingMap()]);
     if (error) throw error;
-    return withRatings((data as Product[]) ?? [], ratings);
+    let rows = (data as Product[]) ?? [];
+    if (smart) {
+      rows = await applyRule(rows, smart);
+      if (opts.limit) rows = rows.slice(0, opts.limit);
+    }
+    return withRatings(rows, ratings);
   } catch (e) {
     console.error("[data] products:", e);
     return demoFilter(opts);

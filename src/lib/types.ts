@@ -17,10 +17,13 @@ export type Vehicle = {
 export type Promotion = {
   id: string; title: string; slug: string; subtitle?: string | null; badge?: string | null; image?: string | null;
   show_on_home?: boolean; sort_order?: number; active?: boolean;
+  /** smart offer: manual | under_price | min_discount | scheme | new | best_sellers (see supabase/026_smart_offers.sql) */
+  rule?: string | null; rule_value?: number | null;
 };
 export type Product = {
   /** approved reviews: average stars and count */
   rating?: number; reviews?: number;
+  created_at?: string;
   id: string; name: string; slug: string; sku?: string | null; description?: string | null;
   price: number; compare_price?: number | null; stock?: number; images?: string[];
   category_id?: string | null; brand_id?: string | null; vehicle_id?: string | null; promotion_id?: string | null;
