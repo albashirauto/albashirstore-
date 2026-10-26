@@ -211,6 +211,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/reports", label: "Reports" },
+    { href: "/admin/activity", label: "Activity log" },
   ] },
   { title: "Catalog", items: [
     { href: "/admin/products", label: "Products" },
@@ -235,6 +236,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   ] },
   { title: "Settings", items: [
     { href: "/admin/settings", label: "Store settings" },
+    { href: "/admin/redirects", label: "Redirects & 404s" },
     { href: "/admin/team", label: "Team", ownerOnly: true },
     { href: "/admin/notifications", label: "Notifications", ownerOnly: true },
   ] },
