@@ -163,7 +163,7 @@ export default function Reports() {
           </div>
 
           {/* sales over time: single series, bars from a shared baseline, hover tooltip, table view */}
-          <section className="rounded-2xl border border-line bg-card p-5 md:p-6">
+          <section className="min-w-0 rounded-2xl border border-line bg-card p-5 md:p-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-lg font-bold">Sales per {grain}</h2>
               <button onClick={() => setTable(!table)} className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-bold"><Table2 size={13} />{table ? "Chart" : "Table"}</button>
@@ -177,7 +177,7 @@ export default function Reports() {
               <div className="relative mt-6">
                 {/* recessive grid: 3 lines with values */}
                 {[1, 0.5].map((f) => (
-                  <div key={f} className="pointer-events-none absolute inset-x-0 border-t border-dashed border-line" style={{ bottom: `calc(${f * 100}% * 0.86 + 24px)` }}>
+                  <div key={f} className="pointer-events-none absolute inset-x-0 z-[1] border-t border-dashed border-line" style={{ bottom: `calc(${f * 100}% * 0.86 + 24px)` }}>
                     <span className="absolute -top-2.5 right-0 bg-card pl-1 text-[10px] text-muted">{money(peak * f)}</span>
                   </div>
                 ))}
@@ -200,7 +200,7 @@ export default function Reports() {
           </section>
 
           <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-            <section className="rounded-2xl border border-line bg-card p-5 md:p-6">
+            <section className="min-w-0 rounded-2xl border border-line bg-card p-5 md:p-6">
               <h2 className="text-lg font-bold">Top products</h2>
               {!top.length ? <p className="mt-3 text-sm text-muted">No sales in this period.</p> : (
                 <div className="mt-3 overflow-x-auto">
@@ -242,7 +242,7 @@ export default function Reports() {
 function Breakdown({ title, rows, total, count, empty = "No sales in this period." }: { title: string; rows: { k: string; v: number; n: number }[]; total: number; count?: boolean; empty?: string }) {
   const top = rows[0]?.v || 1;
   return (
-    <section className="rounded-2xl border border-line bg-card p-5">
+    <section className="min-w-0 rounded-2xl border border-line bg-card p-5">
       <h2 className="text-lg font-bold">{title}</h2>
       {!rows.length ? <p className="mt-3 text-sm text-muted">{empty}</p> : (
         <ul className="mt-3 space-y-2.5">
