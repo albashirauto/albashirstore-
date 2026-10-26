@@ -229,6 +229,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   ] },
   { title: "Marketing", items: [
     { href: "/admin/coupons", label: "Coupons" },
+    { href: "/admin/carts", label: "Abandoned carts" },
     { href: "/admin/newsletter", label: "Newsletter" },
   ] },
   { title: "Settings", items: [

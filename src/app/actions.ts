@@ -79,6 +79,14 @@ export async function trackOrder(no: string, phone: string): Promise<{ ok: boole
   return { ok: true, order: data as Tracked };
 }
 
+/** Checkout: keep the cart of someone who typed their phone, so the shop can follow up if they leave (Admin > Abandoned carts). */
+export async function saveCart(input: { phone: string; name?: string; city?: string; items: { id: string; slug?: string; name: string; qty: number; price: number }[] }) {
+  if (!hasSupabase || String(input.phone ?? "").replace(/D/g, "").length < 10 || !input.items?.length) return;
+  const items = input.items.slice(0, 50).map((i) => ({ id: String(i.id).slice(0, 80), slug: String(i.slug ?? "").slice(0, 120), name: String(i.name).slice(0, 160), qty: Math.max(1, Math.min(999, Number(i.qty) || 1)), price: Math.max(0, Number(i.price) || 0) }));
+  const subtotal = items.reduce((n, i) => n + i.price * i.qty, 0);
+  await serverClient().rpc("save_cart", { p_phone: input.phone, p_name: input.name ?? "", p_city: input.city ?? "", p_items: items, p_subtotal: subtotal });
+}
+
 /** Product review from the product page. Checked and saved by the database (submit_review, migration 018); waits for approval. */
 export async function submitReview(input: { productId: string; name: string; phone: string; city?: string; rating: number; title?: string; body: string }) {
   if (!hasSupabase) return { ok: false, message: "Reviews work once the store is connected to the database." };

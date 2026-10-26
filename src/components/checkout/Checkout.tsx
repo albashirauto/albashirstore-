@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { Gift, Lock, MapPin, ShieldCheck, Store, TicketPercent, Truck, Wallet, X } from "lucide-react";
 import { deliveryQuote } from "@/lib/delivery";
-import { checkCoupon, placeOrder, type CouponQuote } from "@/app/actions";
+import { checkCoupon, placeOrder, saveCart, type CouponQuote } from "@/app/actions";
 import { useCart } from "@/components/CartProvider";
 import ProductImage from "@/components/ProductImage";
 import { money } from "@/lib/format";
@@ -66,6 +66,12 @@ export default function Checkout({ s }: { s: Settings }) {
     if (c && subtotal > 0) { setCode(c.toUpperCase()); apply(c); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subtotal > 0]);
+  // phone typed: keep the cart so the shop can follow up if the visitor leaves
+  useEffect(() => {
+    if (f.phone.replace(/D/g, "").length < 10 || !items.length || done) return;
+    const t = setTimeout(() => { saveCart({ phone: f.phone, name: f.name, city: f.city, items: items.map((i) => ({ id: i.id, slug: i.slug, name: i.name, qty: i.qty, price: i.price })) }).catch(() => {}); }, 1500);
+    return () => clearTimeout(t);
+  }, [f.phone, f.name, f.city, items, done]);
   // cart changed: check the applied coupon again (minimum order, % amount)
   useEffect(() => {
     if (!coupon?.ok) return;
