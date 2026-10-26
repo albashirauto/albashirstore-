@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Crown, Download, Phone, Repeat, Search, UserPlus, Users, X } from "lucide-react";
+import { Check, Crown, Download, Phone, Repeat, Search, UserPlus, UserRoundPlus, Users, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { ago } from "@/components/admin/dashboard/types";
+import type { CustomerRow } from "@/components/admin/customers/CustomerForm";
 import { browserClient } from "@/lib/supabase";
 import { money } from "@/lib/format";
 
 type O = { id: string; customer_name: string; phone: string; city: string | null; address: string; email: string | null; total: number; subtotal: number; status: string; created_at: string };
-type Customer = { key: string; name: string; phone: string; city: string; email: string; address: string; orders: number; sales: number; spent: number; cancelled: number; first: string; last: string };
+type Customer = {
+  key: string; name: string; phone: string; city: string; email: string; address: string; orders: number; sales: number; spent: number; cancelled: number; first: string; last: string;
+  /** saved profile (Add customer) */ profileId?: string; tags: string[];
+};
 
 const digits = (p: string) => p.replace(/\D/g, "").replace(/^92/, "0");
 const wa = (p: string) => p.replace(/\D/g, "").replace(/^0/, "92");
@@ -18,19 +22,29 @@ const SEGMENTS = [
   { k: "repeat", l: "Repeat buyers", icon: Repeat },
   { k: "new", l: "One order", icon: UserPlus },
   { k: "top", l: "Top 10 spenders", icon: Crown },
+  { k: "none", l: "No orders yet", icon: UserRoundPlus },
 ] as const;
+const SAVED: Record<string, string> = { added: "Customer added", deleted: "Profile deleted" };
 
-/** Customers, built from orders (same phone number = same customer). Nothing to type in. */
+/** Customers: everyone who ordered (same phone number = same customer) plus saved profiles (Add customer) with tags and notes. */
 export default function Customers() {
   const [orders, setOrders] = useState<O[]>([]);
+  const [profiles, setProfiles] = useState<CustomerRow[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [q, setQ] = useState("");
+  const [tag, setTag] = useState("");
   const [seg, setSeg] = useState<(typeof SEGMENTS)[number]["k"]>("all");
   const [sort, setSort] = useState<"last" | "spent" | "orders">("last");
+  const [flash, setFlash] = useState("");
 
   useEffect(() => {
-    browserClient().from("orders").select("id,customer_name,phone,city,address,email,total,subtotal,status,created_at").order("created_at", { ascending: false }).limit(5000)
-      .then(({ data }: { data: O[] | null }) => { setOrders(data ?? []); setLoaded(true); });
+    const db = browserClient();
+    Promise.all([
+      db.from("orders").select("id,customer_name,phone,city,address,email,total,subtotal,status,created_at").order("created_at", { ascending: false }).limit(5000),
+      db.from("customers").select("*"),
+    ]).then(([o, c]: [{ data: O[] | null }, { data: CustomerRow[] | null }]) => { setOrders(o.data ?? []); setProfiles(c.data ?? []); setLoaded(true); });
+    const saved = new URLSearchParams(window.location.search).get("saved");
+    if (saved && SAVED[saved]) { setFlash(SAVED[saved]); setTimeout(() => setFlash(""), 3000); window.history.replaceState(null, "", window.location.pathname); }
   }, []);
 
   const customers = useMemo(() => {
@@ -38,31 +52,41 @@ export default function Customers() {
     for (const o of orders) { // newest first, so the first order seen holds the latest name / address
       const key = digits(o.phone);
       const sale = o.status !== "cancelled" && o.status !== "returned";
-      const c = m.get(key) ?? { key, name: o.customer_name, phone: o.phone, city: o.city ?? "", email: o.email ?? "", address: o.address, orders: 0, sales: 0, spent: 0, cancelled: 0, first: o.created_at, last: o.created_at };
+      const c = m.get(key) ?? { key, name: o.customer_name, phone: o.phone, city: o.city ?? "", email: o.email ?? "", address: o.address, orders: 0, sales: 0, spent: 0, cancelled: 0, first: o.created_at, last: o.created_at, tags: [] };
       c.orders++; if (sale) { c.sales++; c.spent += Number(o.subtotal ?? o.total); } else c.cancelled++;
       c.first = o.created_at;
       if (!c.email && o.email) c.email = o.email;
       m.set(key, c);
     }
+    // saved profiles: their details win; people with no orders yet are added too
+    for (const p of profiles) {
+      const key = digits(p.phone), at = p.created_at ?? new Date().toISOString();
+      const c = m.get(key) ?? { key, name: p.name, phone: p.phone, city: "", email: "", address: "", orders: 0, sales: 0, spent: 0, cancelled: 0, first: at, last: at, tags: [] };
+      m.set(key, { ...c, name: p.name, phone: p.phone, city: p.city || c.city, email: p.email || c.email, address: p.address || c.address, profileId: p.id, tags: p.tags ?? [] });
+    }
     return [...m.values()];
-  }, [orders]);
+  }, [orders, profiles]);
+  const allTags = useMemo(() => [...new Set(customers.flatMap((c) => c.tags))].sort(), [customers]);
 
   const shown = useMemo(() => {
     const t = q.trim().toLowerCase();
-    let list = customers.filter((c) => !t || `${c.name} ${c.phone} ${digits(c.phone)} ${c.city} ${c.email}`.toLowerCase().includes(t));
+    let list = customers.filter((c) => (!t || `${c.name} ${c.phone} ${digits(c.phone)} ${c.city} ${c.email} ${c.tags.join(" ")}`.toLowerCase().includes(t)) && (!tag || c.tags.includes(tag)));
     if (seg === "repeat") list = list.filter((c) => c.sales >= 2);
     if (seg === "new") list = list.filter((c) => c.orders === 1);
+    if (seg === "none") list = list.filter((c) => c.orders === 0);
     if (seg === "top") list = [...list].sort((a, b) => b.spent - a.spent).slice(0, 10);
     return [...list].sort((a, b) => sort === "spent" ? b.spent - a.spent : sort === "orders" ? b.orders - a.orders : +new Date(b.last) - +new Date(a.last));
-  }, [customers, q, seg, sort]);
+  }, [customers, q, seg, sort, tag]);
 
+  const buyers = customers.filter((c) => c.orders > 0).length;
   const repeat = customers.filter((c) => c.sales >= 2).length;
   const total = customers.reduce((n, c) => n + c.spent, 0);
+  const profileHref = (c: Customer) => (c.profileId ? `/admin/customers/${c.profileId}` : `/admin/customers/new?phone=${encodeURIComponent(c.phone)}`);
 
   const exportCsv = () => {
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const rows = shown.map((c) => [c.name, c.phone, c.city, c.email, c.address, c.orders, c.sales, Math.round(c.spent), new Date(c.first).toLocaleDateString("en-PK"), new Date(c.last).toLocaleDateString("en-PK")].map(esc).join(","));
-    const blob = new Blob(["﻿" + ["Name,Phone,City,Email,Address,Orders,Completed sales,Spent (Rs.),First order,Last order", ...rows].join("\n")], { type: "text/csv;charset=utf-8" });
+    const rows = shown.map((c) => [c.name, c.phone, c.city, c.email, c.address, c.orders, c.sales, Math.round(c.spent), c.orders ? new Date(c.first).toLocaleDateString("en-PK") : "", c.orders ? new Date(c.last).toLocaleDateString("en-PK") : "", c.tags.join(" ")].map(esc).join(","));
+    const blob = new Blob(["﻿" + ["Name,Phone,City,Email,Address,Orders,Completed sales,Spent (Rs.),First order,Last order,Tags", ...rows].join("\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "customers.csv"; a.click(); URL.revokeObjectURL(a.href);
   };
 
@@ -71,17 +95,20 @@ export default function Customers() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Customers</h1>
-          <p className="mt-1.5 text-muted">Everyone who ordered. Same phone number = same customer.</p>
+          <p className="mt-1.5 text-muted">Everyone who ordered, plus customers you saved. Same phone number = same customer.</p>
         </div>
-        <button onClick={exportCsv} disabled={!shown.length} className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-5 py-3 text-sm font-bold transition hover:border-brand-500 disabled:opacity-50"><Download size={16} />Export CSV ({shown.length})</button>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/customers/new" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><UserRoundPlus size={16} />Add customer</Link>
+          <button onClick={exportCsv} disabled={!shown.length} className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-5 py-3 text-sm font-bold transition hover:border-brand-500 disabled:opacity-50"><Download size={16} />Export CSV ({shown.length})</button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           { l: "Customers", v: customers.length.toLocaleString() },
-          { l: "Repeat buyers", v: `${repeat} · ${customers.length ? Math.round((repeat / customers.length) * 100) : 0}%` },
+          { l: "Repeat buyers", v: `${repeat} · ${buyers ? Math.round((repeat / buyers) * 100) : 0}%` },
           { l: "Total spent", v: money(total) },
-          { l: "Avg. per customer", v: money(customers.length ? total / customers.length : 0) },
+          { l: "Avg. per buyer", v: money(buyers ? total / buyers : 0) },
         ].map((x) => (
           <div key={x.l} className="rounded-2xl border border-line bg-card p-4">
             <p className="text-sm font-semibold text-muted">{x.l}</p>
@@ -93,24 +120,30 @@ export default function Customers() {
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex min-w-0 flex-1 basis-72 items-center gap-2 rounded-full border border-line bg-card px-4 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/10">
           <Search size={18} className="shrink-0 text-muted" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, phone, city or email" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-muted" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, phone, city, email or tag" className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-muted" />
           {q && <button onClick={() => setQ("")} aria-label="Clear" className="text-muted hover:text-fg"><X size={16} /></button>}
         </label>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="rounded-full border border-line bg-card px-4 py-3 text-sm font-semibold outline-none focus:border-brand-500" aria-label="Sort">
-          <option value="last">Latest order first</option><option value="spent">Most spent</option><option value="orders">Most orders</option>
+          <option value="last">Latest first</option><option value="spent">Most spent</option><option value="orders">Most orders</option>
         </select>
       </div>
       <div className="flex flex-wrap gap-2">
         {SEGMENTS.map(({ k, l, icon: I }) => (
           <button key={k} onClick={() => setSeg(k)} className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold transition ${seg === k ? "bg-brand-900 text-white dark:bg-white dark:text-brand-900" : "bg-card text-muted ring-1 ring-line hover:text-fg"}`}><I size={14} />{l}</button>
         ))}
+        {allTags.length > 0 && <span className="mx-1 h-6 w-px self-center bg-line" />}
+        {allTags.map((t) => (
+          <button key={t} onClick={() => setTag(tag === t ? "" : t)} className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${tag === t ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-900 dark:text-white"}`}>#{t}</button>
+        ))}
       </div>
 
       {!loaded ? <p className="py-10 text-center text-muted">Loading…</p> : !shown.length ? (
-        <div className="rounded-2xl border border-dashed border-line py-16 text-center text-muted">{customers.length ? "No customers match." : "No customers yet. They appear here after their first order."}</div>
+        <div className="rounded-2xl border border-dashed border-line py-16 text-center text-muted">
+          {customers.length ? "No customers match." : <>No customers yet. They appear after their first order, or <Link href="/admin/customers/new" className="font-bold text-brand-600">add one now</Link>.</>}
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-line bg-card">
-          <table className="w-full min-w-[820px] text-sm">
+          <table className="w-full min-w-[900px] text-sm">
             <thead className="border-b border-line bg-soft/60 text-left text-xs uppercase tracking-wider text-muted">
               <tr><th className="px-4 py-3 font-semibold">Customer</th><th className="px-3 font-semibold">City</th><th className="px-3 text-right font-semibold">Orders</th><th className="px-3 text-right font-semibold">Spent</th><th className="px-3 font-semibold">Last order</th><th /></tr>
             </thead>
@@ -121,18 +154,20 @@ export default function Customers() {
                     <div className="flex items-center gap-3">
                       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 font-display text-lg font-bold text-white">{c.name.charAt(0)}</span>
                       <span className="min-w-0 leading-tight">
-                        <span className="flex items-center gap-1.5 font-bold">{c.name}{c.sales >= 2 && <span className="rounded-full bg-green-100 px-1.5 text-[10px] font-bold text-green-800">REPEAT</span>}</span>
+                        <Link href={profileHref(c)} className="flex items-center gap-1.5 font-bold hover:text-brand-600">{c.name}{c.sales >= 2 && <span className="rounded-full bg-green-100 px-1.5 text-[10px] font-bold text-green-800">REPEAT</span>}</Link>
                         <span className="block text-xs text-muted">{c.phone}{c.email ? ` · ${c.email}` : ""}</span>
+                        {c.tags.length > 0 && <span className="mt-1 flex flex-wrap gap-1">{c.tags.map((t) => <span key={t} className="rounded-full bg-brand-50 px-1.5 text-[10px] font-bold text-brand-700 dark:bg-brand-900 dark:text-white">#{t}</span>)}</span>}
                       </span>
                     </div>
                   </td>
                   <td className="px-3 text-muted">{c.city || "—"}</td>
                   <td className="px-3 text-right"><b>{c.orders}</b>{c.cancelled > 0 && <span className="block text-[11px] text-hot">{c.cancelled} cancelled/returned</span>}</td>
                   <td className="px-3 text-right font-bold">{money(c.spent)}</td>
-                  <td className="px-3 text-muted">{ago(c.last)}<span className="block text-[11px]">since {new Date(c.first).toLocaleDateString("en-PK", { month: "short", year: "numeric" })}</span></td>
+                  <td className="px-3 text-muted">{c.orders ? <>{ago(c.last)}<span className="block text-[11px]">since {new Date(c.first).toLocaleDateString("en-PK", { month: "short", year: "numeric" })}</span></> : <span className="text-xs">No orders yet</span>}</td>
                   <td className="px-4">
                     <div className="flex justify-end gap-1.5">
-                      <Link href={`/admin/orders?q=${encodeURIComponent(c.phone)}`} className="rounded-full border border-line px-3 py-1.5 text-xs font-bold transition hover:border-brand-600 hover:text-brand-600">Orders</Link>
+                      <Link href={profileHref(c)} className="rounded-full border border-line px-3 py-1.5 text-xs font-bold transition hover:border-brand-600 hover:text-brand-600">{c.profileId ? "Profile" : "Add details"}</Link>
+                      <Link href={`/admin/orders/new?phone=${encodeURIComponent(c.phone)}`} className="rounded-full border border-line px-3 py-1.5 text-xs font-bold transition hover:border-brand-600 hover:text-brand-600">+ Order</Link>
                       <a href={`tel:${c.phone}`} aria-label={`Call ${c.name}`} className="grid h-8 w-8 place-items-center rounded-full border border-line transition hover:border-brand-600 hover:text-brand-600"><Phone size={14} /></a>
                       <a href={`https://wa.me/${wa(c.phone)}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${c.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-[#25D366] text-white transition hover:scale-105"><WhatsAppIcon size={15} /></a>
                     </div>
@@ -143,6 +178,7 @@ export default function Customers() {
           </table>
         </div>
       )}
+      {flash && <div role="status" className="fixed bottom-6 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 rounded-full bg-green-600 px-5 py-3 font-bold text-white shadow-xl"><Check size={18} />{flash}</div>}
     </div>
   );
 }

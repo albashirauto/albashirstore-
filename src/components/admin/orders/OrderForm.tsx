@@ -44,19 +44,30 @@ export default function OrderForm({ id }: { id: string }) {
 
   useEffect(() => {
     (async () => {
-      const [p, o, s, e] = await Promise.all([
+      const [p, o, s, e, saved] = await Promise.all([
         db.from("products").select("id,name,sku,price,stock,active,scheme_buy,scheme_free").order("name"),
         db.from("orders").select("customer_name,phone,city,district,province,address").order("created_at", { ascending: false }).limit(3000),
         db.from("settings").select("value").eq("key", "shipping_flat").maybeSingle(),
         isNew ? Promise.resolve({ data: null }) : db.from("orders").select("*").eq("id", id).maybeSingle(),
+        db.from("customers").select("name,phone,city,district,province,address"),
       ]);
       const list = (p.data as PickProduct[]) ?? [];
       setProducts(list);
-      // past customers, newest first, one per phone
+      // saved profiles first (their details win), then past orders, newest first; one per phone
+      const key = (ph: string) => ph.replace(/\D/g, "").replace(/^92/, "0");
       const seen = new Map<string, Customer>();
-      ((o.data as Customer[]) ?? []).forEach((x) => { if (!seen.has(x.phone)) seen.set(x.phone, x); });
+      ((saved.data as (Omit<Customer, "customer_name" | "address"> & { name: string; address: string | null })[]) ?? [])
+        .forEach((x) => seen.set(key(x.phone), { customer_name: x.name, phone: x.phone, city: x.city, district: x.district, province: x.province, address: x.address ?? "" }));
+      ((o.data as Customer[]) ?? []).forEach((x) => { if (!seen.has(key(x.phone))) seen.set(key(x.phone), x); });
       setCustomers([...seen.values()]);
-      if (isNew) { setDelivery(String(Number(s.data?.value ?? 400) || 0)); setState("ok"); return; }
+      if (isNew) {
+        setDelivery(String(Number(s.data?.value ?? 400) || 0));
+        // ?phone= from Customers ("+ Order" / "New order")
+        const ph = new URLSearchParams(window.location.search).get("phone");
+        const who = ph ? seen.get(key(ph)) : undefined;
+        if (ph) setC({ ...EMPTY, phone: who?.phone ?? ph, name: who?.customer_name ?? "", province: who?.province ?? "", district: who?.district ?? "", city: who?.city ?? "", address: who?.address ?? "" });
+        setState("ok"); return;
+      }
       const ord = e.data as Order | null;
       if (!ord) return setState("missing");
       setEditing(ord);
