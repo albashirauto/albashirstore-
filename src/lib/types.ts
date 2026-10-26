@@ -19,6 +19,8 @@ export type Promotion = {
   show_on_home?: boolean; sort_order?: number; active?: boolean;
 };
 export type Product = {
+  /** approved reviews: average stars and count */
+  rating?: number; reviews?: number;
   id: string; name: string; slug: string; sku?: string | null; description?: string | null;
   price: number; compare_price?: number | null; stock?: number; images?: string[];
   category_id?: string | null; brand_id?: string | null; vehicle_id?: string | null; promotion_id?: string | null;
@@ -54,6 +56,7 @@ export type Post = {
   schema_type?: string | null; noindex?: boolean; canonical_url?: string | null;
   og_title?: string | null; og_description?: string | null; og_image?: string | null; updated_at?: string | null; created_at?: string;
 };
+export type Review = { id: string; name: string; city?: string | null; rating: number; title?: string | null; body: string; verified: boolean; reply?: string | null; reply_at?: string | null; created_at: string };
 export type Testimonial = { id: string; name: string; city?: string | null; body: string; rating?: number; sort_order?: number; active?: boolean };
 export type Feature = { id: string; title: string; body?: string | null; icon?: string; sort_order?: number; active?: boolean };
 export type Settings = Record<string, string>;

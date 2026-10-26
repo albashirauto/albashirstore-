@@ -3,7 +3,7 @@ import {
   demoBanners, demoBrands, demoCategories, demoFeatures, demoPages, demoProducts, demoPromotions,
   demoFaqs, demoSettings, demoTestimonials, demoVehicles,
 } from "./demo";
-import type { Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Settings, Testimonial, Vehicle } from "./types";
+import type { Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Review, Settings, Testimonial, Vehicle } from "./types";
 import { hasScheme } from "./scheme";
 
 async function list<T>(table: string, demo: T[], order = "sort_order"): Promise<T[]> {
@@ -121,9 +121,9 @@ export async function getProducts(opts: ProductQuery = {}): Promise<Product[]> {
     else query = query.order("created_at", { ascending: false });
 
     if (opts.limit) query = query.limit(opts.limit);
-    const { data, error } = await query;
+    const [{ data, error }, ratings] = await Promise.all([query, ratingMap()]);
     if (error) throw error;
-    return (data as Product[]) ?? [];
+    return withRatings((data as Product[]) ?? [], ratings);
   } catch (e) {
     console.error("[data] products:", e);
     return demoFilter(opts);
@@ -158,11 +158,27 @@ function demoFilter(o: ProductQuery): Product[] {
 export async function getProduct(slug: string): Promise<Product | null> {
   if (!hasSupabase) return demoProducts.find((p) => p.slug === slug) ?? null;
   try {
-    const { data } = await serverClient().from("products").select(SELECT).eq("slug", slug).eq("active", true).maybeSingle();
-    return (data as Product) ?? null;
+    const [{ data }, ratings] = await Promise.all([serverClient().from("products").select(SELECT).eq("slug", slug).eq("active", true).maybeSingle(), ratingMap()]);
+    return data ? withRatings([data as Product], ratings)[0] : null;
   } catch {
     return demoProducts.find((p) => p.slug === slug) ?? null;
   }
+}
+
+/** Approved star ratings per product (Admin > Product reviews). Empty if the table isn't there yet. */
+async function ratingMap() {
+  const { data } = await serverClient().from("product_ratings").select("product_id,rating,reviews");
+  return new Map(((data as { product_id: string; rating: number; reviews: number }[] | null) ?? []).map((r) => [r.product_id, r]));
+}
+const withRatings = (rows: Product[], m: Map<string, { rating: number; reviews: number }>) =>
+  rows.map((p) => { const r = m.get(p.id); return r ? { ...p, rating: Number(r.rating), reviews: r.reviews } : p; });
+
+/** Approved reviews of one product, newest first (public columns only). */
+export async function getReviews(productId: string): Promise<Review[]> {
+  if (!hasSupabase) return [];
+  const { data } = await serverClient().from("product_reviews").select("id,name,city,rating,title,body,verified,reply,reply_at,created_at")
+    .eq("product_id", productId).eq("status", "approved").order("created_at", { ascending: false }).limit(200);
+  return (data as Review[]) ?? [];
 }
 
 export async function countByCategory(): Promise<Record<string, number>> {

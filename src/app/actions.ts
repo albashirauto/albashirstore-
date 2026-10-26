@@ -62,6 +62,16 @@ export async function trackOrder(no: string, phone: string): Promise<{ ok: boole
   return { ok: true, order: data as Tracked };
 }
 
+/** Product review from the product page. Checked and saved by the database (submit_review, migration 018); waits for approval. */
+export async function submitReview(input: { productId: string; name: string; phone: string; city?: string; rating: number; title?: string; body: string }) {
+  if (!hasSupabase) return { ok: false, message: "Reviews work once the store is connected to the database." };
+  const { data, error } = await serverClient().rpc("submit_review", {
+    p_product: input.productId, p_name: input.name, p_phone: input.phone, p_city: input.city ?? "", p_rating: Math.round(input.rating), p_title: input.title ?? "", p_body: input.body,
+  });
+  if (error) return { ok: false, message: "Could not send your review. Please try again." };
+  return data === "ok" ? { ok: true, message: "Thank you! Your review will appear after we check it." } : { ok: false, message: String(data) };
+}
+
 /** Prices are re-read from the database here, so the browser can never set its own price. */
 export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   const name = input.name?.trim(), phone = input.phone?.trim(), address = input.address?.trim();

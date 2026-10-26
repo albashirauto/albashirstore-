@@ -22,6 +22,17 @@ const STATUS: Record<string, { word: string; tone: string }> = {
 
 /** What to send for one event, or null if the order / product is gone. */
 async function compose(db: ReturnType<typeof adminClient>, kind: Kind, id: string): Promise<Mail | null> {
+  if (kind === "review") {
+    const { data: r } = await db.from("product_reviews").select("*, product:products(name,slug)").eq("id", id).maybeSingle();
+    if (!r) return null;
+    return {
+      subject: `${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)} New review: ${r.product?.name ?? "a product"}`,
+      title: "New review waiting", tone: r.rating >= 4 ? "#16a34a" : r.rating === 3 ? "#d97706" : "#e11d2e",
+      rows: [["Product", r.product?.name ?? "—"], ["Rating", `${r.rating} of 5`], ["From", `${r.name}${r.city ? `, ${r.city}` : ""}`], ["Phone", r.phone ?? "—"], ["Verified buyer", r.verified ? "Yes" : "No"]],
+      lines: [r.title ? `“${r.title}”` : "", r.body].filter(Boolean),
+      link: `${SITE_URL}/admin/reviews`, linkLabel: "Approve or reject",
+    };
+  }
   if (kind === "stock") {
     const { data: p } = await db.from("products").select("id,name,sku,stock,slug").eq("id", id).maybeSingle();
     if (!p) return null;

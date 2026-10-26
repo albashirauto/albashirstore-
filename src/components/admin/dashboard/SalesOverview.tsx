@@ -84,11 +84,14 @@ export default function SalesOverview({ orders, range, costs, firstOrder }: { or
 
       {total === 0 && <p className="mt-2 text-center text-sm text-muted">Nothing in this period yet.</p>}
 
-      <table className="sr-only">
-        <caption>{series.label} per {g}</caption>
-        <thead><tr><th>Period</th><th>Revenue</th><th>Profit</th><th>Orders</th><th>Cancelled</th><th>Returned</th></tr></thead>
-        <tbody>{rows.map((r, i) => <tr key={i}><td>{bucketLabel(r.b, g)}</td><td>{money(r.m.revenue)}</td><td>{money(r.m.profit)}</td><td>{r.m.orders}</td><td>{r.m.cancelled}</td><td>{r.m.returned}</td></tr>)}</tbody>
-      </table>
+      {/* tables ignore sr-only's 1px width, so the wrapper hides it (else the phone page scrolls sideways) */}
+      <div className="sr-only">
+        <table>
+          <caption>{series.label} per {g}</caption>
+          <thead><tr><th>Period</th><th>Revenue</th><th>Profit</th><th>Orders</th><th>Cancelled</th><th>Returned</th></tr></thead>
+          <tbody>{rows.map((r, i) => <tr key={i}><td>{bucketLabel(r.b, g)}</td><td>{money(r.m.revenue)}</td><td>{money(r.m.profit)}</td><td>{r.m.orders}</td><td>{r.m.cancelled}</td><td>{r.m.returned}</td></tr>)}</tbody>
+        </table>
+      </div>
     </div>
   );
 }

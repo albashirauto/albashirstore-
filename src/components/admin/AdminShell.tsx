@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BellRing, Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X, Lock, UserCog } from "lucide-react";
+import { BellRing, MessageSquareText, Bike, Boxes, CircleHelp, ClipboardList, Cog, ExternalLink, FileText, Images, LayoutDashboard, Layers, LogOut, Mail, Megaphone, Menu, Newspaper, Settings, ShieldCheck, Star, Tag, Users, X, Lock, UserCog } from "lucide-react";
 
 const ICONS: Record<string, React.ElementType> = {
   "/admin": LayoutDashboard, "/admin/orders": ClipboardList, "/admin/products": Boxes, "/admin/categories": Layers,
   "/admin/brands": Tag, "/admin/vehicles": Bike, "/admin/promotions": Megaphone, "/admin/banners": Images,
   "/admin/pages": FileText, "/admin/testimonials": Star, "/admin/features": ShieldCheck, "/admin/settings": Settings,
-  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail, "/admin/team": UserCog, "/admin/notifications": BellRing,
+  "/admin/customers": Users, "/admin/posts": Newspaper, "/admin/faqs": CircleHelp, "/admin/newsletter": Mail, "/admin/team": UserCog, "/admin/notifications": BellRing, "/admin/reviews": MessageSquareText,
 };
 import { NAV_GROUPS } from "@/lib/admin-config";
 import { browserClient, hasSupabase } from "@/lib/supabase";
@@ -24,6 +24,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const [state, setState] = useState<State>("loading");
   const [open, setOpen] = useState(false);
   const [newOrders, setNewOrders] = useState(0);
+  const [newReviews, setNewReviews] = useState(0);
   const [access, setAccess] = useState<Access>({ role: "owner", permissions: [], name: null });
 
   const check = async () => {
@@ -39,6 +40,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     if (row && (row.role !== "staff" || (row.permissions ?? []).includes("/admin/orders"))) {
       const { count } = await db.from("orders").select("id", { count: "exact", head: true }).eq("status", "new");
       setNewOrders(count ?? 0);
+    }
+    if (row && (row.role !== "staff" || (row.permissions ?? []).includes("/admin/reviews"))) {
+      const { count } = await db.from("product_reviews").select("id", { count: "exact", head: true }).eq("status", "pending");
+      setNewReviews(count ?? 0);
     }
   };
   useEffect(() => { check(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
@@ -112,6 +117,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                     <Icon size={19} strokeWidth={1.8} className={on ? "text-brand-600 dark:text-white" : "text-muted"} />
                     <span className="flex-1">{n.label}</span>
                     {n.href === "/admin/orders" && newOrders > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-hot px-1.5 text-[11px] font-bold text-white">{newOrders}</span>}
+                    {n.href === "/admin/reviews" && newReviews > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold text-white">{newReviews}</span>}
                   </Link>
                 );
               })}

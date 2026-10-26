@@ -10,7 +10,9 @@ import ProductCard from "@/components/ProductCard";
 import ProductDetails from "@/components/product/ProductDetails";
 import AdminSeoPanel from "@/components/product/AdminSeoPanel";
 import { isOut, lowLeft } from "@/lib/stock";
-import { getCategories, getProduct, getProducts, getSettings } from "@/lib/data";
+import { getCategories, getProduct, getProducts, getReviews, getSettings } from "@/lib/data";
+import ProductReviews from "@/components/reviews/ProductReviews";
+import Stars from "@/components/reviews/Stars";
 import { discountPct, money } from "@/lib/format";
 import { SITE_URL, breadcrumbJsonLd, fillVars, productJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -51,7 +53,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const p = await getProduct(slug);
   if (!p) notFound();
-  const [settings, related, all, cats] = await Promise.all([getSettings(), getProducts({ category: p.category?.slug, limit: 5 }), getProducts(), getCategories()]);
+  const [settings, related, all, cats, reviews] = await Promise.all([getSettings(), getProducts({ category: p.category?.slug, limit: 5 }), getProducts(), getCategories(), getReviews(p.id)]);
+  const avg = reviews.length ? Math.round((reviews.reduce((n, r) => n + r.rating, 0) / reviews.length) * 10) / 10 : 0;
   // category may be a sub-category: show "Main › Sub"
   const cat = cats.find((c) => c.slug === p.category?.slug);
   const parent = cat?.parent_id ? cats.find((c) => c.id === cat.parent_id) : undefined;
@@ -71,7 +74,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   };
 
   const schema = [
-    productJsonLd({ name: p.name, slug: p.slug, description: seoText(p, settings).description, images: p.images, sku: p.sku, price: p.price, brand: p.brand?.name, category: p.category?.name, condition: p.condition, outOfStock: out }),
+    productJsonLd({ name: p.name, slug: p.slug, description: seoText(p, settings).description, images: p.images, sku: p.sku, price: p.price, brand: p.brand?.name, category: p.category?.name, condition: p.condition, outOfStock: out, rating: avg, reviews }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" }, { name: "Shop", path: "/shop" },
       ...(parent ? [{ name: parent.name, path: `/collections/${parent.slug}` }] : []),
@@ -106,6 +109,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {p.vehicle && <Link href={`/vehicles/${p.vehicle.slug}`} className="rounded-full border border-green-600/30 bg-green-600/10 px-3 py-1 text-green-700 transition hover:bg-green-600 hover:text-white">Fits {p.vehicle.name}</Link>}
           </div>
           <h1 className="mt-3 text-4xl font-extrabold leading-tight md:text-5xl">{p.name}</h1>
+          <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-muted transition hover:text-brand-600">
+            <Stars value={avg} size={17} />{reviews.length ? <><b className="text-fg">{avg.toFixed(1)}</b> · {reviews.length} review{reviews.length === 1 ? "" : "s"}</> : "No reviews yet · write one"}
+          </a>
 
           <div className="mt-4 flex items-end gap-3">
             <span className="font-display text-5xl font-extrabold text-brand-700 dark:text-white">{money(p.price)}</span>
@@ -143,6 +149,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </div>
 
       <ProductDetails p={p} bundleItems={bundleItems} />
+      <ProductReviews productId={p.id} productName={p.name} reviews={reviews} />
       <AdminSeoPanel editHref={`/admin/products/${p.id}#seo`} input={seoInput} />
 
       {more.length > 0 && (

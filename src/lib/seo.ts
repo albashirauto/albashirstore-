@@ -109,6 +109,8 @@ export const scoreTone = (s: number) => (s >= 81 ? { label: "Good", ring: "#16a3
 export function productJsonLd(p: {
   name: string; slug: string; description?: string | null; images?: string[] | null; sku?: string | null; price: number;
   brand?: string; category?: string; condition?: string | null; outOfStock: boolean;
+  /** approved reviews (Admin > Product reviews): adds stars to Google results */
+  rating?: number; reviews?: { name: string; rating: number; body: string; created_at: string }[];
 }) {
   const url = `${SITE_URL}/products/${p.slug}`;
   return {
@@ -118,6 +120,8 @@ export function productJsonLd(p: {
     image: p.images?.length ? p.images : undefined,
     brand: p.brand ? { "@type": "Brand", name: p.brand } : undefined,
     category: p.category || undefined,
+    aggregateRating: p.reviews?.length && p.rating ? { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews.length, bestRating: 5, worstRating: 1 } : undefined,
+    review: p.reviews?.length ? p.reviews.slice(0, 5).map((r) => ({ "@type": "Review", author: { "@type": "Person", name: r.name }, datePublished: r.created_at.slice(0, 10), reviewBody: r.body, reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5 } })) : undefined,
     offers: {
       "@type": "Offer", url, priceCurrency: "PKR", price: Math.round(p.price),
       availability: `https://schema.org/${p.outOfStock ? "OutOfStock" : "InStock"}`,
