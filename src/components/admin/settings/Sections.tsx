@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Facebook, Globe, Image as ImageIcon, Instagram, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users, Youtube } from "lucide-react";
 import ImageField from "@/components/admin/ImageField";
 import Logo from "@/components/Logo";
+import { OpenBadge } from "@/components/OpenNow";
+import { parseHours } from "@/lib/hours";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { coords, coordsFromLink, directionsUrl, mapEmbed } from "@/lib/location";
 import SettingsCard, { Field, input, type CardProps } from "./SettingsCard";
@@ -18,7 +20,10 @@ export function StoreSection(p: CardProps) {
     <SettingsCard {...p} title="Store & contact" sub="Your shop name and the main way to reach you." icon={Store} keys={["store_name", "tagline", "phone", "whatsapp", "email", "open_hours"]}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Store name">{T(p, "store_name", "Al Bashir Autos")}</Field>
-        <Field label="Opening hours">{T(p, "open_hours", "Mon – Sat, 9 am to 9 pm")}</Field>
+        <Field label="Opening hours" help={p.v.open_hours && !parseHours(p.v.open_hours) ? "Can't read these hours, so the website won't show Open now / Closed. Use one line per day group, like the example." : "One line per day group. The website shows Open now / Closed automatically (Pakistan time)."}>
+          <textarea rows={3} value={p.v.open_hours ?? ""} onChange={(e) => p.set("open_hours", e.target.value)} placeholder={"Saturday – Thursday: 8:00 am – 8:00 pm\nFriday: 8:00 am – 1:00 pm\nSunday: Closed"} className={`${input} resize-y`} />
+          <OpenBadge hours={p.v.open_hours} className="mt-2" />
+        </Field>
         <Field label="Tagline" wide help="One line under the logo and in Google.">{T(p, "tagline", "Spare parts for motorcycles, cycles, rickshaws & loaders")}</Field>
         <Field label="Main phone" help="Shown in the header and footer.">{T(p, "phone", "+92 300 1234567", "tel")}</Field>
         <Field label="WhatsApp number" help="Digits only with country code, e.g. 923001234567">{T(p, "whatsapp", "923001234567", "tel")}</Field>

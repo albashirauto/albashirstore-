@@ -1,4 +1,5 @@
 import { Clock, Mail, MapPin, Navigation } from "lucide-react";
+import OpeningHours from "@/components/OpenNow";
 import Reveal from "@/components/Reveal";
 import { directionsUrl, mapEmbed } from "@/lib/location";
 import type { Settings } from "@/lib/types";
@@ -23,7 +24,7 @@ export default function FooterMap({ settings }: { settings: Settings }) {
         </div>
         <ul className="flex-1 space-y-3 p-5 text-sm text-white/80">
           <li className="flex gap-3"><MapPin className="mt-0.5 shrink-0 text-hot" size={18} />{settings.address}</li>
-          {settings.open_hours && <li className="flex gap-3"><Clock className="mt-0.5 shrink-0 text-hot" size={18} />{settings.open_hours}</li>}
+          {settings.open_hours && <li className="flex gap-3"><Clock className="mt-0.5 shrink-0 text-hot" size={18} /><OpeningHours hours={settings.open_hours} light /></li>}
           {settings.email && <li className="flex gap-3"><Mail className="mt-0.5 shrink-0 text-hot" size={18} /><a href={`mailto:${settings.email}`} className="transition hover:text-white">{settings.email}</a></li>}
         </ul>
         <a href={directions} target="_blank" rel="noreferrer" className="group mx-5 mb-5 inline-flex items-center justify-center gap-2 rounded-full bg-white py-3 font-bold text-brand-900 transition hover:bg-hot hover:text-white">

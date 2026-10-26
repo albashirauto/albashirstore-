@@ -1,4 +1,5 @@
 import { Mail, MapPin, Phone } from "lucide-react";
+import { OpenBadge } from "@/components/OpenNow";
 import Reveal from "@/components/Reveal";
 import { directionsUrl } from "@/lib/location";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -10,8 +11,8 @@ export default function ContactMethods({ settings }: { settings: Settings }) {
     settings.phone && { icon: <Phone size={22} />, title: "Call us", value: settings.phone, href: `tel:${settings.phone}`, tone: "bg-brand-50 text-brand-600 group-hover:bg-brand-600 dark:bg-brand-900" },
     settings.whatsapp && { icon: <WhatsAppIcon size={22} />, title: "WhatsApp", value: "Chat now, quick reply", href: `https://wa.me/${settings.whatsapp}`, tone: "bg-green-600/10 text-green-700 group-hover:bg-green-600 dark:text-green-400" },
     settings.email && { icon: <Mail size={22} />, title: "Email", value: settings.email, href: `mailto:${settings.email}`, tone: "bg-brand-50 text-brand-600 group-hover:bg-brand-600 dark:bg-brand-900" },
-    settings.address && { icon: <MapPin size={22} />, title: "Visit the shop", value: settings.open_hours || "See map below", href: directionsUrl(settings), tone: "bg-hot/10 text-hot group-hover:bg-hot" },
-  ].filter(Boolean) as { icon: React.ReactNode; title: string; value: string; href: string; tone: string }[];
+    settings.address && { icon: <MapPin size={22} />, title: "Visit the shop", value: settings.open_hours ? <OpenBadge hours={settings.open_hours} /> : "See map below", href: directionsUrl(settings), tone: "bg-hot/10 text-hot group-hover:bg-hot" },
+  ].filter(Boolean) as { icon: React.ReactNode; title: string; value: React.ReactNode; href: string; tone: string }[];
 
   return (
     <section className="relative z-10 mx-auto -mt-12 max-w-7xl px-4">

@@ -1,4 +1,5 @@
 import { Clock, Mail, MapPin, Navigation, Phone } from "lucide-react";
+import OpeningHours from "@/components/OpenNow";
 import Reveal from "@/components/Reveal";
 import SectionTitle from "@/components/SectionTitle";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -34,7 +35,7 @@ export default function AboutVisit({ settings }: { settings: Settings }) {
           <Reveal y={14} delay={0.2}>
             <ul className="grid gap-3 rounded-2xl bg-soft p-5 text-sm">
               {settings.address && <li className="flex gap-3"><MapPin size={18} className="mt-0.5 shrink-0 text-hot" />{settings.address}</li>}
-              {settings.open_hours && <li className="flex gap-3"><Clock size={18} className="mt-0.5 shrink-0 text-hot" />{settings.open_hours}</li>}
+              {settings.open_hours && <li className="flex gap-3"><Clock size={18} className="mt-0.5 shrink-0 text-hot" /><OpeningHours hours={settings.open_hours} /></li>}
               {settings.email && <li className="flex gap-3"><Mail size={18} className="mt-0.5 shrink-0 text-hot" /><a href={`mailto:${settings.email}`} className="hover:text-brand-600">{settings.email}</a></li>}
             </ul>
           </Reveal>

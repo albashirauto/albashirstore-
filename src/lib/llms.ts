@@ -27,7 +27,7 @@ export async function buildLlms(full: boolean) {
     "Key facts:",
     `- Location: ${s.address || "Pakistan"}${s.latitude && s.longitude ? ` (${s.latitude}, ${s.longitude})` : ""}`,
     `- Phone: ${s.phone || "see website"}${s.whatsapp ? ` · WhatsApp: +${s.whatsapp}` : ""}${s.email ? ` · Email: ${s.email}` : ""}`,
-    `- Opening hours: ${s.open_hours || "see website"}`,
+    `- Opening hours (Pakistan time): ${s.open_hours?.split(/\r?\n/).filter((l) => l.trim()).join("; ") || "see website"}`,
     `- Delivery: all over Pakistan, ${money(Number(s.shipping_flat || 400))} per order`,
     "- Payment: JazzCash, Easypaisa or bank transfer; orders are confirmed by phone",
     `- Catalogue: ${live.length} parts in ${categories.length} categories from ${brands.length} brands`,

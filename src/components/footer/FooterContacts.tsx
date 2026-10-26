@@ -7,7 +7,7 @@ import type { Settings } from "@/lib/types";
 /** "03001234567" or "+92 300 1234567" -> "923001234567" for wa.me links */
 const waNumber = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "92");
 
-/** Up to 4 people to call (Admin > Settings > Team & phones). */
+/** Up to 4 people to call: the owners (Admin > Settings > Team & phones). */
 export default function FooterContacts({ settings }: { settings: Settings }) {
   let people = teamOf(settings);
   if (!people.length && settings.phone) people = [{ name: settings.store_name, role: "Shop counter", phone: settings.phone, whatsapp: true }];
@@ -15,8 +15,8 @@ export default function FooterContacts({ settings }: { settings: Settings }) {
 
   return (
     <div>
-      <h3 className="text-2xl font-extrabold uppercase">Call our team</h3>
-      <p className="mt-1 text-sm text-white/60">Talk to a real person about price, stock or fitment.</p>
+      <h3 className="text-2xl font-extrabold uppercase">Talk to the owners</h3>
+      <p className="mt-1 text-sm text-white/60">Call the owners directly about price, stock or fitment.</p>
       <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
         {people.map((p, i) => (
           <Reveal key={i} delay={i * 0.08} y={16}>
