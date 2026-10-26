@@ -35,7 +35,10 @@ export default function OrderDone({ orderNo, total, method, receiptText, whatsap
             <WhatsAppIcon size={22} />Send receipt on WhatsApp
           </a>
         )}
-        <Link href="/shop" className="mt-4 inline-block font-bold text-brand-600 hover:text-hot">Keep shopping</Link>
+        <p className="mt-4 flex justify-center gap-6">
+          <Link href={`/track?no=${orderNo}`} className="inline-flex items-center gap-1.5 font-bold text-brand-600 hover:text-hot"><Truck size={16} />Track this order</Link>
+          <Link href="/shop" className="font-bold text-brand-600 hover:text-hot">Keep shopping</Link>
+        </p>
       </motion.div>
     </div>
   );

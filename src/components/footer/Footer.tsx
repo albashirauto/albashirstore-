@@ -46,6 +46,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
               <li><Link className={link} href="/promotions">{dash}Deal zone</Link></li>
               <li><Link className={link} href="/blog">{dash}Blog: tips & guides</Link></li>
               <li><Link className={link} href="/vehicles">{dash}Shop by bike</Link></li>
+              <li><Link className={link} href="/track">{dash}Track my order</Link></li>
               <li><Link className={link} href="/cart">{dash}My cart</Link></li>
             </ul>
           </Reveal>

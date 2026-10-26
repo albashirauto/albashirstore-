@@ -43,6 +43,25 @@ export type OrderResult = {
   receipt?: { lines: { name: string; qty: number; price: number; free: number }[]; subtotal: number; shipping: number; total: number };
 };
 
+export type Tracked = {
+  no: string; name: string; city: string | null; status: string; reason: string | null;
+  courier: string | null; tracking_no: string | null; payment_method: string | null; payment_status: string;
+  total: number; items: { name: string; qty: number; free: number }[];
+  created_at: string; dispatched_at: string | null; updated_at: string | null;
+};
+
+/** "Track my order": order number + phone must both match (checked in the database by track_order, migration 012). */
+export async function trackOrder(no: string, phone: string): Promise<{ ok: boolean; order?: Tracked; message?: string }> {
+  const n = String(no ?? "").replace(/[^0-9a-z]/gi, ""), p = String(phone ?? "").replace(/\D/g, "");
+  if (n.length !== 8) return { ok: false, message: "Your order number has 8 letters and numbers, e.g. 3A9F1C02. It is on your receipt." };
+  if (p.length < 10) return { ok: false, message: "Enter the phone number you used when ordering." };
+  if (!hasSupabase) return { ok: false, message: "Order tracking works once the store is connected to the database." };
+  const { data, error } = await serverClient().rpc("track_order", { p_no: n, p_phone: p });
+  if (error) return { ok: false, message: "Could not check your order right now. Please try again or call us." };
+  if (!data) return { ok: false, message: "No order found with that number and phone. Check both and try again." };
+  return { ok: true, order: data as Tracked };
+}
+
 /** Prices are re-read from the database here, so the browser can never set its own price. */
 export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   const name = input.name?.trim(), phone = input.phone?.trim(), address = input.address?.trim();

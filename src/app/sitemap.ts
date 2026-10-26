@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...vehicles.map((v) => ({ url: url(`/vehicles/${v.slug}`), lastModified: when(v, now), changeFrequency: "weekly" as const, priority: 0.6 })),
     { url: url("/blog"), lastModified: posts[0] ? new Date(posts[0].published_at) : now, changeFrequency: "weekly", priority: 0.6 },
     ...posts.map((p) => ({ url: url(`/blog/${p.slug}`), lastModified: new Date(p.published_at), changeFrequency: "monthly" as const, priority: 0.7, images: p.cover ? [p.cover] : undefined })),
-    ...["/about", "/contact"].map((p) => ({ url: url(p), lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
+    ...["/about", "/contact", "/track"].map((p) => ({ url: url(p), lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
     ...pages.filter((p) => !["about", "contact"].includes(p.slug)).map((p) => ({ url: url(`/pages/${p.slug}`), lastModified: when(p, now), changeFrequency: "monthly" as const, priority: 0.4 })),
   ];
 }

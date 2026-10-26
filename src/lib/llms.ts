@@ -50,7 +50,7 @@ export async function buildLlms(full: boolean) {
   if (promotions.length) out.push("## Offers", ...promotions.map((p) => link(p.title, `/promotions/${p.slug}`, [p.badge, p.subtitle].filter(Boolean).join(". "))), "");
   if (posts.length) out.push("## Guides and articles", ...posts.map((p) => link(p.title, `/blog/${p.slug}`, one(p.excerpt).slice(0, 160))), "");
 
-  out.push("## Help", link("About us", "/about"), link("Contact, FAQs and location", "/contact"), ...pages.filter((p) => !["about", "contact"].includes(p.slug)).map((p) => link(p.title, `/pages/${p.slug}`)), "");
+  out.push("## Help", link("About us", "/about"), link("Contact, FAQs and location", "/contact"), link("Track my order", "/track"),...pages.filter((p) => !["about", "contact"].includes(p.slug)).map((p) => link(p.title, `/pages/${p.slug}`)), "");
 
   if (full) {
     out.push("## Products", "");

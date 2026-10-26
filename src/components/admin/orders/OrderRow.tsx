@@ -6,6 +6,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { PAYMENT, ago, statusOf } from "@/components/admin/dashboard/types";
 import { money } from "@/lib/format";
 import { payLabel, receiptText } from "@/lib/receipt";
+import { SITE_URL } from "@/lib/seo";
 import { PAYMENTS, STATUSES, methodLabel, orderNo, pieces, type Order } from "./types";
 
 const wa = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "92");
@@ -21,7 +22,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
   const pay = PAYMENT[o.payment_status ?? "unpaid"] ?? PAYMENT.unpaid;
   const showReason = (o.status === "cancelled" || o.status === "returned") && o.status_reason;
   const shipped = ["shipped", "delivered"].includes(o.status) && (o.courier || o.tracking_no);
-  const trackMsg = `Assalam o Alaikum ${o.customer_name}, your order #${orderNo(o)} has been dispatched${o.courier ? ` by ${o.courier}` : ""}.${o.tracking_no ? ` Tracking number: ${o.tracking_no}` : ""}`;
+  const trackMsg = `Assalam o Alaikum ${o.customer_name}, your order #${orderNo(o)} has been dispatched${o.courier ? ` by ${o.courier}` : ""}.${o.tracking_no ? ` Tracking number: ${o.tracking_no}` : ""}\nTrack it here: ${SITE_URL}/track?no=${orderNo(o)}`;
 
   return (
     <li className={`rounded-2xl border bg-card transition ${open ? "border-brand-500/50 shadow-lg shadow-brand-500/10" : "border-line hover:border-brand-500/30"}`}>
