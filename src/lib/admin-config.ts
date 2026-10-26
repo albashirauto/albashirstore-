@@ -210,6 +210,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/customers", label: "Customers" },
+    { href: "/admin/reports", label: "Reports" },
   ] },
   { title: "Catalog", items: [
     { href: "/admin/products", label: "Products" },
