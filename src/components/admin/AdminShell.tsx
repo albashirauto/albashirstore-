@@ -143,7 +143,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <button onClick={() => setOpen(!open)} aria-label="Menu">{open ? <X /> : <Menu />}</button>
           <span className="font-display text-xl font-extrabold uppercase text-brand-700">Store admin</span>
         </div>
-        <main className="mx-auto max-w-6xl p-4 md:p-8">
+        {/* builders (campaigns) use the whole screen so the live preview is big enough to read */}
+        <main className={`mx-auto p-4 md:p-8 ${path.startsWith("/admin/campaigns/") ? "max-w-[1700px]" : "max-w-6xl"}`}>
           {blocked ? (
             <div className="mx-auto max-w-md rounded-3xl border border-line bg-card p-8 text-center">
               <Lock className="mx-auto text-amber-600" size={34} />

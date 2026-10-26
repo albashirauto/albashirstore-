@@ -135,7 +135,7 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
       </div>
       {err && <p role="alert" className="rounded-xl bg-hot/10 px-4 py-2.5 text-sm font-semibold text-hot">{err}</p>}
 
-      <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_1fr]">
+      <div className="grid items-start gap-5 xl:grid-cols-[1.35fr_1fr]">
         {/* ---------------- preview */}
         <div className="min-w-0 rounded-3xl border border-line bg-card p-4 xl:sticky xl:top-4">
           <div className="flex flex-wrap items-center gap-2">
@@ -165,7 +165,7 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
 
         {/* ---------------- settings */}
         <div className="min-w-0 rounded-3xl border border-line bg-card">
-          <div className="flex gap-1 overflow-x-auto border-b border-line p-2 scrollbar-none">
+          <div className="flex flex-wrap gap-1 border-b border-line p-2">
             {TABS.map((x) => <button key={x} type="button" onClick={() => setTab(x)} className={`shrink-0 rounded-xl px-3 py-2 text-sm font-bold transition ${tab === x ? "bg-brand-600 text-white" : "text-muted hover:bg-soft hover:text-fg"}`}>{x}</button>)}
           </div>
           <div className="space-y-5 p-5">
@@ -219,6 +219,16 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
                 {([["bg", "Background"], ["bg2", "Background 2 (gradient)"], ["text", "Text"], ["accent", "Accent / badge"], ["button", "Button"], ["buttonText", "Button text"]] as const).map(([k, l]) => (
                   <label key={k} className="text-xs font-semibold"><span className="mb-1 block">{l}</span><span className="flex items-center gap-2 rounded-xl border border-line p-1.5"><input type="color" value={d[k] as string} onChange={(e) => setD({ [k]: e.target.value })} className="h-8 w-10 cursor-pointer rounded border-0 bg-transparent" /><span className="font-mono text-[11px] text-muted">{d[k]}</span></span></label>
                 ))}
+              </div>
+              <div>
+                <p className="mb-2 text-sm font-semibold">Effects <span className="font-normal text-muted">(mix as you like)</span></p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {([["ring", "Glowing animated border"], ["blobs", "Soft floating lights"], ["stars", "Twinkling sparkles"], ["logo", "Store logo on top"], ["stagger", "Lines appear one by one"], ["shine", "Shine across the button"]] as const).map(([k, l]) => (
+                    <label key={k} className={`flex cursor-pointer items-center gap-2.5 rounded-xl border-2 p-2.5 text-sm font-semibold transition ${d.fx?.[k] ? "border-brand-600 bg-brand-50 dark:bg-brand-900" : "border-line"}`}>
+                      <input type="checkbox" checked={!!d.fx?.[k]} onChange={(e) => { setD({ fx: { ...(c.design.fx ?? {}), [k]: e.target.checked } }); setReplay((n) => n + 1); }} className="h-4 w-4 accent-brand-600" />{l}
+                    </label>
+                  ))}
+                </div>
               </div>
               <Field label="Pattern"><Choice value={d.pattern} set={(v) => setD({ pattern: v })} options={[["none", "None"], ["dots", "Dots"], ["sparkles", "Sparkles"], ["grid", "Grid"], ["stripes", "Stripes"]]} /></Field>
               <Field label={`Corners: ${d.radius}px`}><input type="range" min={0} max={40} value={d.radius} onChange={(e) => setD({ radius: Number(e.target.value) })} className="w-full accent-brand-600" /></Field>

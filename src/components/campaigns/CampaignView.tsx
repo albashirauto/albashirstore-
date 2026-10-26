@@ -22,6 +22,26 @@ const PATTERN: Record<string, string> = {
 };
 const PATTERN_SIZE: Record<string, string> = { dots: "18px 18px", grid: "28px 28px", stripes: "auto", sparkles: "34px 34px, 21px 21px" };
 const WIDTH = { sm: 360, md: 460, lg: 600 };
+// sparkle positions (fixed, so server and browser draw the same)
+const STARS = [[8, 14, 0], [88, 10, 0.6], [16, 78, 1.2], [92, 70, 0.3], [50, 6, 1.8], [72, 88, 0.9], [4, 46, 2.1], [96, 40, 1.5], [30, 92, 0.4], [62, 22, 2.4]];
+
+/** Extras behind the content: rotating glow border, floating blobs, twinkling sparkles. */
+function Fx({ d }: { d: ReturnType<typeof fullDesign> }) {
+  const fx = d.fx ?? {};
+  return (
+    <>
+      {fx.blobs && <><span className="camp-blob -left-10 -top-10 h-40 w-40" style={{ background: d.accent }} /><span className="camp-blob -bottom-12 -right-8 h-44 w-44" style={{ background: d.button, animationDelay: "-3s" }} /></>}
+      {fx.stars && STARS.map(([x, y, delay], i) => <span key={i} aria-hidden className="camp-star text-sm" style={{ left: `${x}%`, top: `${y}%`, color: d.accent, animationDelay: `${delay}s`, fontSize: i % 3 ? 10 : 15 }}>✦</span>)}
+      {fx.ring && <span aria-hidden className="camp-ring" style={{ "--c1": d.accent, "--c2": d.button, "--c3": d.bg2 } as React.CSSProperties} />}
+    </>
+  );
+}
+/** Store logo badge that pops in and turns slowly. */
+const Logo = ({ d }: { d: ReturnType<typeof fullDesign> }) => (
+  <span className="camp-logo mx-auto mb-1 grid h-16 w-16 place-items-center rounded-full bg-white shadow-xl" style={{ boxShadow: `0 10px 30px -8px ${d.accent}` }}>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden><path fill="#1d4fd8" d="M27 4h10l2 7a21 21 0 0 1 5 2l7-4 7 7-4 7a21 21 0 0 1 2 5l7 2v10l-7 2a21 21 0 0 1-2 5l4 7-7 7-7-4a21 21 0 0 1-5 2l-2 7H27l-2-7a21 21 0 0 1-5-2l-7 4-7-7 4-7a21 21 0 0 1-2-5l-7-2V27l7-2a21 21 0 0 1 2-5l-4-7 7-7 7 4a21 21 0 0 1 5-2z" /><circle cx="32" cy="32" r="16" fill="#fff" /><text x="32" y="40" textAnchor="middle" fontSize="23" fontWeight="800" fontFamily="Arial" fill="#e11d2e">B</text></svg>
+  </span>
+);
 
 /** Loads the Google Fonts a campaign uses (once per page). */
 function useFonts(href: string | null) {
@@ -84,7 +104,7 @@ export default function CampaignView({ c, products = [], onClose, onClick, frame
   const anim = d.animation === "none" ? "" : `camp-${d.animation}`;
   const cta = t.button && (
     <Link href={t.code ? `${t.link || "/checkout"}${(t.link || "").includes("?") ? "&" : "?"}coupon=${encodeURIComponent(t.code)}` : t.link || "/shop"} onClick={onClick}
-      className="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-bold shadow-lg transition hover:-translate-y-0.5 hover:brightness-110" style={{ background: d.button, color: d.buttonText }}>
+      className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-bold shadow-lg transition hover:-translate-y-0.5 hover:brightness-110 ${d.fx?.shine ? "camp-shine" : ""}`} style={{ background: d.button, color: d.buttonText }}>
       <span {...text(t.button)}>{t.button}</span>
     </Link>
   );
@@ -108,6 +128,9 @@ export default function CampaignView({ c, products = [], onClose, onClick, frame
   );
   const countdown = c.rules?.countdown_to && <Countdown to={c.rules.countdown_to} color={d.accent} compact={c.kind === "topbar" || c.kind === "badge"} />;
   const pos = frame ? "absolute" : "fixed";
+  /** lines appear one after another when "stagger" is on */
+  let step = 0;
+  const rise = () => (d.fx?.stagger ? { className: "camp-item", style: { animationDelay: `${0.15 + step++ * 0.09}s` } } : {});
 
   // ---------------- top bar
   if (c.kind === "topbar") {
@@ -129,7 +152,7 @@ export default function CampaignView({ c, products = [], onClose, onClick, frame
     return (
       <section className={`relative mx-auto mt-6 max-w-7xl px-4 ${anim}`}>
         <div className="relative overflow-hidden shadow-xl" style={bgStyle}>
-          {pattern}{close}
+          {pattern}<Fx d={d} />{close}
           <div className={`relative grid items-center gap-6 p-6 md:p-10 ${t.image ? "md:grid-cols-2" : ""}`}>
             <div className={d.align === "center" && !t.image ? "text-center" : ""}>
               {badge}
@@ -157,19 +180,20 @@ export default function CampaignView({ c, products = [], onClose, onClick, frame
       onTouchMove={sheet ? (e) => { if (dragY.current !== null) setDrag(Math.max(0, e.touches[0].clientY - dragY.current)); } : undefined}
       onTouchEnd={sheet ? () => { if (drag > 90) onClose?.(); setDrag(0); dragY.current = null; } : undefined}
       onClick={(e) => e.stopPropagation()}>
-      {pattern}{close}
+      {pattern}<Fx d={d} />{close}
       {sheet && <span className="relative mx-auto mt-2 block h-1.5 w-12 rounded-full" style={{ background: `${d.text}40` }} />}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {t.image && <img src={t.image} alt="" className="relative max-h-56 w-full object-cover" />}
       <div className={`relative ${d.size === "sm" ? "p-5" : "p-6 md:p-8"} ${d.align === "left" ? "text-left" : ""}`}>
-        {badge}
-        <h2 className="mt-3 font-extrabold" {...head(t.headline)}>{t.headline}</h2>
-        {t.sub && <p className="mx-auto mt-2 max-w-md text-sm opacity-85 md:text-base" {...text(t.sub)}>{t.sub}</p>}
-        {countdown && <div className="mt-4 flex justify-center">{countdown}</div>}
-        {t.code && <div className="mt-4 flex flex-col items-center gap-1"><span className="text-xs opacity-75">Use code</span><CodeChip code={t.code} d={d} /></div>}
-        {productRow}
-        <div className={`mt-5 flex flex-wrap gap-2 ${d.align === "left" ? "" : "justify-center"}`}>{cta}{cta2}</div>
-        {t.note && <p className="mt-3 text-[11px] opacity-60" {...text(t.note)}>{t.note}</p>}
+        {d.fx?.logo && <div {...rise()}><Logo d={d} /></div>}
+        {badge && <div {...rise()}>{badge}</div>}
+        <div {...rise()}><h2 className="mt-3 font-extrabold" {...head(t.headline)}>{t.headline}</h2></div>
+        {t.sub && <div {...rise()}><p className="mx-auto mt-2 max-w-md text-sm opacity-85 md:text-base" {...text(t.sub)}>{t.sub}</p></div>}
+        {countdown && <div {...rise()}><div className="mt-4 flex justify-center">{countdown}</div></div>}
+        {t.code && <div {...rise()}><div className="mt-4 flex flex-col items-center gap-1"><span className="text-xs opacity-75">Use code</span><CodeChip code={t.code} d={d} /></div></div>}
+        {productRow && <div {...rise()}>{productRow}</div>}
+        <div {...rise()}><div className={`mt-5 flex flex-wrap gap-2 ${d.align === "left" ? "" : "justify-center"}`}>{cta}{cta2}</div></div>
+        {t.note && <div {...rise()}><p className="mt-3 text-[11px] opacity-60" {...text(t.note)}>{t.note}</p></div>}
       </div>
     </div>
   );

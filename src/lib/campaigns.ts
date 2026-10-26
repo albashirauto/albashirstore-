@@ -11,6 +11,8 @@ export type Design = {
   pattern?: "none" | "dots" | "sparkles" | "grid" | "stripes"; radius?: number; size?: "sm" | "md" | "lg"; align?: "center" | "left";
   fonts?: string; headFont?: string; bodyFont?: string; urduFont?: string; headSize?: number; subSize?: number; uppercase?: boolean;
   animation?: "fade" | "zoom" | "slide" | "bounce" | "none"; overlay?: number; imageSide?: "left" | "right" | "top";
+  /** extras: rotating glow border, floating light blobs, twinkling sparkles, store logo, lines appearing one by one, button shine */
+  fx?: { ring?: boolean; blobs?: boolean; stars?: boolean; logo?: boolean; stagger?: boolean; shine?: boolean };
 };
 export type Rules = {
   pages?: "all" | "home" | "products" | "shop" | "custom"; paths?: string; devices?: "all" | "mobile" | "desktop";
@@ -66,25 +68,25 @@ const soon = (h: number) => new Date(Date.now() + h * 3600000).toISOString();
 export const TEMPLATES: T[] = [
   { key: "welcome", label: "Welcome", group: "Welcome", kind: "popup",
     content: { badge: "خوش آمدید", headline: "Welcome to Al Bashir Autos", sub: "Genuine spare parts for motorcycles, rickshaws, loaders and cycles, delivered across Pakistan.", button: "Start shopping", link: "/shop" },
-    design: { preset: "welcome", fonts: "store", animation: "zoom", size: "md" }, rules: { trigger: "delay", delay: 3, frequency: "day" } },
+    design: { preset: "welcome", fonts: "store", animation: "zoom", size: "md", fx: { ring: true, blobs: true, stars: true, logo: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 3, frequency: "day" } },
   { key: "offer", label: "Offer / Discount", group: "Sale", kind: "popup",
     content: { badge: "LIMITED OFFER", headline: "Up to 30% off", sub: "On chain kits, batteries and brake parts. Use the code at checkout.", button: "Shop the sale", link: "/shop?sale=1", code: "" },
     design: { preset: "sale", fonts: "bold", animation: "bounce", size: "md" }, rules: { trigger: "delay", delay: 5, frequency: "day" } },
   { key: "1111", label: "11.11 Sale", group: "Sale", kind: "popup",
     content: { badge: "11.11", headline: "11.11 Mega Sale", sub: "The biggest price drops of the year, one day only.", button: "Grab the deals", link: "/shop?sale=1" },
-    design: { preset: "midnight", fonts: "bold", animation: "zoom", size: "lg" }, rules: { trigger: "delay", delay: 2, frequency: "session", countdown_to: soon(24) } },
+    design: { preset: "midnight", fonts: "bold", animation: "zoom", size: "lg", fx: { ring: true, stars: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 2, frequency: "session", countdown_to: soon(24) } },
   { key: "1212", label: "12.12 Sale", group: "Sale", kind: "popup",
     content: { badge: "12.12", headline: "12.12 Year-End Sale", sub: "Last big sale of the year. Stock up before the new year.", button: "Shop 12.12", link: "/shop?sale=1" },
-    design: { preset: "navy", fonts: "bold", animation: "zoom", size: "lg" }, rules: { trigger: "delay", delay: 2, frequency: "session", countdown_to: soon(24) } },
+    design: { preset: "navy", fonts: "bold", animation: "zoom", size: "lg", fx: { ring: true, blobs: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 2, frequency: "session", countdown_to: soon(24) } },
   { key: "flash", label: "Flash Sale", group: "Sale", kind: "topbar",
     content: { badge: "⚡ FLASH SALE", headline: "Prices drop for 24 hours only", button: "See deals", link: "/shop?sale=1" },
     design: { preset: "flash", fonts: "bold" }, rules: { countdown_to: soon(24), frequency: "always" } },
   { key: "eid", label: "Eid Sale", group: "Festival", kind: "popup",
     content: { badge: "عید مبارک", headline: "Eid Sale", sub: "Get your ride ready for Eid. Special prices on popular parts.", button: "Shop Eid deals", link: "/shop?sale=1" },
-    design: { preset: "eid", fonts: "elegant", animation: "fade", size: "md" }, rules: { trigger: "delay", delay: 3, frequency: "day" } },
+    design: { preset: "eid", fonts: "elegant", animation: "fade", size: "md", fx: { ring: true, stars: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 3, frequency: "day" } },
   { key: "ramadan", label: "Ramadan", group: "Festival", kind: "popup",
     content: { badge: "رمضان کریم", headline: "Ramadan Kareem", sub: "Shop from home this Ramadan. Orders confirmed by phone, delivered to your door.", button: "Browse parts", link: "/shop" },
-    design: { preset: "ramadan", fonts: "nastaliq", animation: "fade", size: "md" }, rules: { trigger: "delay", delay: 4, frequency: "day" } },
+    design: { preset: "ramadan", fonts: "nastaliq", animation: "fade", size: "md", fx: { stars: true, blobs: true, stagger: true } }, rules: { trigger: "delay", delay: 4, frequency: "day" } },
   { key: "delivery", label: "Free delivery", group: "Info", kind: "topbar",
     content: { headline: "Free delivery on orders over Rs. 5,000", button: "Shop now", link: "/shop" },
     design: { preset: "brand", fonts: "store" }, rules: { frequency: "always" } },

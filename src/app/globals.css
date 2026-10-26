@@ -96,6 +96,22 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.
 .camp-slide { animation: camp-slide .5s cubic-bezier(.22,1,.36,1) both; }
 .camp-bounce { animation: camp-bounce .7s cubic-bezier(.34,1.56,.64,1) both; }
 .camp-sheet { animation: camp-sheet .4s cubic-bezier(.22,1,.36,1) both; }
+/* premium extras: each line rises in turn, rotating glow border, floating blobs, twinkling sparkles, button shine */
+@keyframes camp-rise { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.camp-item { animation: camp-rise .55s cubic-bezier(.22,1,.36,1) both; }
+@keyframes camp-spin { to { transform: rotate(360deg); } }
+.camp-ring { position: absolute; inset: 0; border-radius: inherit; padding: 2px; background: conic-gradient(from 0deg, var(--c1), var(--c2), var(--c3), var(--c1)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; overflow: hidden; }
+.camp-ring::before { content: ""; position: absolute; inset: -60%; background: conic-gradient(from 0deg, transparent 0 60%, #fff 75%, transparent 90%); animation: camp-spin 4s linear infinite; opacity: .55; }
+@keyframes camp-float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(14px, -18px) scale(1.12); } }
+.camp-blob { position: absolute; border-radius: 9999px; filter: blur(38px); opacity: .45; animation: camp-float 7s ease-in-out infinite; pointer-events: none; }
+@keyframes camp-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+.camp-star { position: absolute; pointer-events: none; animation: camp-twinkle 2.6s ease-in-out infinite; }
+@keyframes camp-shine { 0%, 70% { transform: translateX(-130%) skewX(-18deg); } 100% { transform: translateX(260%) skewX(-18deg); } }
+.camp-shine { position: relative; overflow: hidden; }
+.camp-shine::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / .55), transparent); animation: camp-shine 3.2s ease-in-out infinite; }
+@keyframes camp-logo { 0% { transform: scale(.4) rotate(-120deg); opacity: 0; } 70% { transform: scale(1.08) rotate(10deg); opacity: 1; } 100% { transform: none; } }
+.camp-logo { animation: camp-logo .9s cubic-bezier(.34,1.56,.64,1) both; }
+.camp-logo svg { animation: camp-spin 14s linear infinite; }
 
 .btn-shine { position: relative; overflow: hidden; }
 .btn-shine::after {
