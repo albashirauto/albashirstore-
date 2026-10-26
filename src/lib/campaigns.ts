@@ -68,7 +68,7 @@ const soon = (h: number) => new Date(Date.now() + h * 3600000).toISOString();
 export const TEMPLATES: T[] = [
   { key: "welcome", label: "Welcome", group: "Welcome", kind: "popup",
     content: { badge: "خوش آمدید", headline: "Welcome to Al Bashir Autos", sub: "Genuine spare parts for motorcycles, rickshaws, loaders and cycles, delivered across Pakistan.", button: "Start shopping", link: "/shop" },
-    design: { preset: "welcome", fonts: "store", animation: "zoom", size: "md", fx: { ring: true, blobs: true, stars: true, logo: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 3, frequency: "day" } },
+    design: { preset: "welcome", fonts: "store", animation: "zoom", size: "md", fx: { ring: true, blobs: true, stars: true, logo: true, stagger: true, shine: true } }, rules: { trigger: "delay", delay: 1, frequency: "day", mobile: "center" } },
   { key: "offer", label: "Offer / Discount", group: "Sale", kind: "popup",
     content: { badge: "LIMITED OFFER", headline: "Up to 30% off", sub: "On chain kits, batteries and brake parts. Use the code at checkout.", button: "Shop the sale", link: "/shop?sale=1", code: "" },
     design: { preset: "sale", fonts: "bold", animation: "bounce", size: "md" }, rules: { trigger: "delay", delay: 5, frequency: "day" } },

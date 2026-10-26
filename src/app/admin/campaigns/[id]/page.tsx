@@ -102,6 +102,21 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
     if (res.error) return setErr(res.error.message);
     router.push(`/admin/campaigns?saved=${status === "active" ? "published" : "saved"}`);
   };
+  /** Save (keeping the status) and open the real store with this campaign showing, even as a draft (only for admins). */
+  const previewOnStore = async () => {
+    setErr("");
+    if (!t.headline?.trim()) { setTab("Content"); return setErr("Add a headline first."); }
+    const win = window.open("about:blank", "_blank"); // opened now, so the browser does not block it
+    setBusy("preview");
+    const row = { name: c.name.trim() || "Untitled", kind: c.kind, template: c.template, status: c.status, priority: c.priority, starts_at: c.starts_at, ends_at: c.ends_at, content: c.content, design: c.design, rules: c.rules, updated_at: new Date().toISOString() };
+    const res = isNew ? await db.from("campaigns").insert(row).select("id").single() : await db.from("campaigns").update(row).eq("id", id).select("id").single();
+    setBusy("");
+    if (res.error) { win?.close(); return setErr(res.error.message); }
+    const cid = (res.data as { id: string }).id;
+    const page = c.kind === "hero" ? "/" : c.rules?.pages === "products" ? "/shop" : "/";
+    if (win) win.location.href = `${page}?campaign_preview=${cid}`;
+    if (isNew) router.replace(`/admin/campaigns/${cid}`);
+  };
   const duplicate = async () => {
     const { id: _i, views: _v, clicks: _c, closes: _x, created_at: _a, updated_at: _u, ...rest } = c;
     void _i; void _v; void _c; void _x; void _a; void _u;
@@ -128,6 +143,7 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button type="button" disabled={!!busy} onClick={previewOnStore} className="rounded-full border-2 border-brand-600 px-4 py-2.5 text-sm font-bold text-brand-600 transition hover:bg-brand-600 hover:text-white disabled:opacity-60">{busy === "preview" ? "Opening…" : "Preview on store ↗"}</button>
           {!isNew && <button type="button" onClick={duplicate} className="rounded-full border border-line px-4 py-2.5 text-sm font-bold transition hover:border-brand-500">Duplicate</button>}
           <button type="button" disabled={!!busy} onClick={() => save(c.status === "active" ? "active" : "draft")} className="rounded-full border border-line px-4 py-2.5 text-sm font-bold transition hover:border-brand-500 disabled:opacity-60">{busy === "save" || busy === "draft" ? "Saving…" : c.status === "active" ? "Save" : "Save draft"}</button>
           <button type="button" disabled={!!busy} onClick={() => save("active")} className="rounded-full bg-gradient-to-r from-brand-600 to-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25 disabled:opacity-60">{busy === "active" ? "Publishing…" : c.status === "active" ? "Update live" : "Publish"}</button>
@@ -160,7 +176,7 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
               {c.kind === "badge" && <CampaignBadge key={`b${replay}`} c={c} products={picked} frame />}
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted">Preview at {device}px{scale < 1 ? ` (shown at ${Math.round(scale * 100)}%)` : ""}, {dark ? "dark" : "light"} page. {c.kind === "popup" && mobile && (r.mobile ?? "sheet") === "sheet" ? "On phones it opens as a bottom sheet you can swipe down to close." : c.kind === "badge" ? "Tap the badge to open the offer." : ""}</p>
+          <p className="mt-2 text-xs text-muted">Preview at {device}px{scale < 1 ? ` (shown at ${Math.round(scale * 100)}%)` : ""}, {dark ? "dark" : "light"} page. {c.kind === "popup" && mobile ? (r.mobile === "sheet" ? "On phones it opens as a bottom sheet you can swipe down to close." : "On phones and tablets it opens in the middle of the screen.") : c.kind === "badge" ? "Tap the badge to open the offer." : ""}</p>
         </div>
 
         {/* ---------------- settings */}
@@ -260,7 +276,7 @@ export default function CampaignEditor({ params }: { params: Promise<{ id: strin
             </div>)}
 
             {tab === "Mobile" && (<div className="grid gap-4">
-              {c.kind === "popup" && <Field label="On phones show the popup as" help="A bottom sheet is easier to read and close with a thumb."><Choice value={r.mobile ?? "sheet"} set={(v) => setR({ mobile: v })} options={[["sheet", "Bottom sheet"], ["center", "Centred card"]]} /></Field>}
+              {c.kind === "popup" && <Field label="On phones show the popup as" help="Middle of the screen = like on a computer. A bottom sheet slides up and can be swiped down."><Choice value={r.mobile ?? "center"} set={(v) => setR({ mobile: v })} options={[["center", "Middle of the screen"], ["sheet", "Bottom sheet"]]} /></Field>}
               <Field label="Show on"><Choice value={r.devices ?? "all"} set={(v) => setR({ devices: v })} options={[["all", "Phones + computers"], ["mobile", "Phones only"], ["desktop", "Computers only"]]} /></Field>
               <button type="button" onClick={() => { setDevice(390); setReplay((n) => n + 1); }} className="w-fit rounded-full border border-line px-4 py-2 text-sm font-bold">Preview on a phone</button>
             </div>)}

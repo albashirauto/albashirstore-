@@ -85,7 +85,7 @@ export default function CampaignView({ c, products = [], onClose, onClick, frame
   const d = fullDesign(c.design ?? {});
   useFonts(fontHref(d));
   const t = c.content ?? {};
-  const sheet = mobile && c.kind === "popup" && (c.rules?.mobile ?? "sheet") === "sheet";
+  const sheet = mobile && c.kind === "popup" && c.rules?.mobile === "sheet";
   const dragY = useRef<number | null>(null);
   const [drag, setDrag] = useState(0);
 
