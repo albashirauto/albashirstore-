@@ -87,13 +87,6 @@ export async function saveCart(input: { phone: string; name?: string; city?: str
   await serverClient().rpc("save_cart", { p_phone: input.phone, p_name: input.name ?? "", p_city: input.city ?? "", p_items: items, p_subtotal: subtotal });
 }
 
-/** 404 page: the new address for an old link (Admin > Redirects), or null after logging the miss. */
-export async function resolveMissing(path: string, referrer?: string): Promise<string | null> {
-  if (!hasSupabase || typeof path !== "string" || !path.startsWith("/")) return null;
-  const { data } = await serverClient().rpc("resolve_path", { p_path: path.slice(0, 300), p_ref: (referrer ?? "").slice(0, 300) });
-  return typeof data === "string" && data ? data : null;
-}
-
 /** Product review from the product page. Checked and saved by the database (submit_review, migration 018); waits for approval. */
 export async function submitReview(input: { productId: string; name: string; phone: string; city?: string; rating: number; title?: string; body: string }) {
   if (!hasSupabase) return { ok: false, message: "Reviews work once the store is connected to the database." };
