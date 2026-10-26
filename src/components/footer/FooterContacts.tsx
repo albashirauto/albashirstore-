@@ -17,14 +17,14 @@ export default function FooterContacts({ settings }: { settings: Settings }) {
     <div>
       <h3 className="text-2xl font-extrabold uppercase">Talk to the owners</h3>
       <p className="mt-1 text-sm text-white/60">Call the owners directly about price, stock or fitment.</p>
-      <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {people.map((p, i) => (
           <Reveal key={i} delay={i * 0.08} y={16}>
             <div className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-4 transition duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-white/10">
               <div className="flex items-center gap-3">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-hot to-hot-dark font-display text-lg font-bold">{(p.name || "?").charAt(0)}</span>
                 <span className="min-w-0 leading-tight">
-                  <span className="block truncate font-bold">{p.name}</span>
+                  <span className="block font-bold">{p.name}</span>
                   {p.role && <span className="block truncate text-xs text-white/60">{p.role}</span>}
                 </span>
               </div>

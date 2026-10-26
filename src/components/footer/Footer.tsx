@@ -53,7 +53,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
         </div>
 
         {/* team phones + location */}
-        <div className="grid gap-8 py-10 lg:grid-cols-[1.6fr_1fr]">
+        <div className="grid gap-8 py-10">
           <FooterContacts settings={settings} />
           <FooterMap settings={settings} />
         </div>
