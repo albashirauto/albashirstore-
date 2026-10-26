@@ -13,7 +13,7 @@ const rs = (n: number) => `Rs. ${Math.round(n).toLocaleString("en-PK")}`;
 
 export function receiptText(o: {
   orderNo: string; name: string; phone: string; city?: string | null; address: string;
-  lines: Line[]; subtotal: number; shipping: number; total: number;
+  lines: Line[]; subtotal: number; shipping: number; total: number; discount?: number; coupon?: string | null;
   method?: string | null; ref?: string | null; paid?: boolean; store: string;
 }) {
   const items = o.lines.map((l, i) => `${i + 1}. ${l.name} × ${l.qty}${l.free ? ` (+${l.free} free)` : ""} = ${rs(l.price * l.qty)}`).join("\n");
@@ -24,7 +24,8 @@ export function receiptText(o: {
     items,
     "",
     `Subtotal: ${rs(o.subtotal)}`,
-    `Delivery: ${rs(o.shipping)}`,
+    ...(o.discount ? [`Discount${o.coupon ? ` (${o.coupon})` : ""}: -${rs(o.discount)}`] : []),
+    `Delivery: ${o.shipping ? rs(o.shipping) : "FREE"}`,
     `*Total: ${rs(o.total)}*`,
     "",
     `Payment: ${payLabel(o.method)}${o.ref ? ` · TID ${o.ref}` : ""}${o.paid ? " · PAID" : ""}`,

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
-import { Gift, Lock, MapPin, ShieldCheck, Truck, Wallet } from "lucide-react";
-import { placeOrder } from "@/app/actions";
+import { Gift, Lock, MapPin, ShieldCheck, TicketPercent, Truck, Wallet, X } from "lucide-react";
+import { checkCoupon, placeOrder, type CouponQuote } from "@/app/actions";
 import { useCart } from "@/components/CartProvider";
 import ProductImage from "@/components/ProductImage";
 import { money } from "@/lib/format";
@@ -33,8 +33,13 @@ function Step({ n, title, icon: Icon, children }: { n: number; title: string; ic
 /** Two steps (delivery details, payment) + sticky summary. Details are remembered on this device. */
 export default function Checkout({ s }: { s: Settings }) {
   const { items, subtotal, clear } = useCart();
-  const shipping = Number(s.shipping_flat || 400);
-  const total = subtotal + shipping;
+  const [code, setCode] = useState("");
+  const [coupon, setCoupon] = useState<CouponQuote | null>(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [checking, setChecking] = useState(false);
+  const discount = coupon?.ok ? Math.min(subtotal, coupon.discount ?? 0) : 0;
+  const shipping = coupon?.ok && coupon.free_shipping ? 0 : Number(s.shipping_flat || 400);
+  const total = subtotal - discount + shipping;
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
   const [f, setF] = useState({ name: "", phone: "", email: "", province: "", district: "", city: "", address: "", note: "" });
@@ -43,6 +48,27 @@ export default function Checkout({ s }: { s: Settings }) {
   const [done, setDone] = useState<{ no: string; total: number; text: string } | null>(null);
 
   useEffect(() => { try { const c = localStorage.getItem("aba-customer"); if (c) setF((x) => ({ ...x, ...JSON.parse(c) })); } catch {} }, []);
+
+  const apply = async (c = code) => {
+    if (!c.trim()) return;
+    setChecking(true); setCouponMsg("");
+    const q = await checkCoupon(c, subtotal, f.phone);
+    setChecking(false);
+    if (q.ok) { setCoupon(q); setCode(q.code ?? c); } else { setCoupon(null); setCouponMsg(q.message ?? "This coupon cannot be used."); }
+  };
+  // ?coupon=EID10 links (WhatsApp / Facebook posts) fill and apply the code
+  useEffect(() => {
+    const c = new URLSearchParams(window.location.search).get("coupon");
+    if (c && subtotal > 0) { setCode(c.toUpperCase()); apply(c); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtotal > 0]);
+  // cart changed: check the applied coupon again (minimum order, % amount)
+  useEffect(() => {
+    if (!coupon?.ok) return;
+    const t = setTimeout(() => apply(coupon.code ?? code), 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtotal]);
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
 
   if (done) return <OrderDone orderNo={done.no} total={done.total} method={method} receiptText={done.text} whatsapp={s.whatsapp} payLink />;
@@ -63,7 +89,7 @@ export default function Checkout({ s }: { s: Settings }) {
     const tItems = items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty }));
     track("begin_checkout", { value: subtotal, items: tItems });
     start(async () => {
-      const r = await placeOrder({ ...f, payment_method: method, payment_ref: ref, items: items.map((i) => ({ id: i.id, qty: i.qty })) });
+      const r = await placeOrder({ ...f, payment_method: method, payment_ref: ref, coupon: coupon?.ok ? coupon.code : "", items: items.map((i) => ({ id: i.id, qty: i.qty })) });
       if (!r.ok || !r.receipt) return setError(r.message ?? "Something went wrong.");
       try { const { name, phone, email, province, district, city, address } = f; localStorage.setItem("aba-customer", JSON.stringify({ name, phone, email, province, district, city, address })); } catch {}
       const no = String(r.orderNo ?? "");
@@ -121,9 +147,29 @@ export default function Checkout({ s }: { s: Settings }) {
                 );
               })}
             </ul>
+            {/* coupon */}
+            <div className="mt-4 border-t border-line pt-4">
+              {coupon?.ok ? (
+                <div className="flex items-center gap-2 rounded-xl border border-green-600/30 bg-green-600/10 px-3 py-2.5 text-sm">
+                  <TicketPercent size={18} className="shrink-0 text-green-700 dark:text-green-400" />
+                  <span className="min-w-0 flex-1"><b className="font-mono">{coupon.code}</b> applied{coupon.free_shipping ? ": free delivery" : discount ? `: you save ${money(discount)}` : ""}{coupon.description && <span className="block truncate text-xs text-muted">{coupon.description}</span>}</span>
+                  <button type="button" onClick={() => { setCoupon(null); setCode(""); }} aria-label="Remove coupon" className="rounded-full p-1 text-muted hover:bg-card hover:text-hot"><X size={15} /></button>
+                </div>
+              ) : (
+                <>
+                  <label htmlFor="coupon" className="flex items-center gap-1.5 text-sm font-semibold"><TicketPercent size={15} className="text-hot" />Have a coupon?</label>
+                  <div className="mt-1.5 flex gap-2">
+                    <input id="coupon" value={code} onChange={(e) => { setCode(e.target.value.toUpperCase()); setCouponMsg(""); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }} placeholder="e.g. EID10" autoCapitalize="characters" spellCheck={false} className="min-w-0 flex-1 rounded-xl border border-line bg-bg px-3.5 py-2.5 font-mono text-sm uppercase outline-none focus:border-brand-500" />
+                    <button type="button" onClick={() => apply()} disabled={checking || !code.trim()} className="rounded-xl bg-brand-900 px-4 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50 dark:bg-brand-600">{checking ? "…" : "Apply"}</button>
+                  </div>
+                  {couponMsg && <p className="mt-1.5 text-xs font-semibold text-hot">{couponMsg}</p>}
+                </>
+              )}
+            </div>
             <dl className="mt-4 space-y-1.5 border-t border-line pt-4 text-sm">
               <div className="flex justify-between"><dt className="text-muted">Subtotal</dt><dd>{money(subtotal)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">Delivery (all Pakistan)</dt><dd>{money(shipping)}</dd></div>
+              {discount > 0 && <div className="flex justify-between font-semibold text-green-700 dark:text-green-400"><dt>Discount ({coupon?.code})</dt><dd>−{money(discount)}</dd></div>}
+              <div className="flex justify-between"><dt className="text-muted">Delivery (all Pakistan)</dt><dd>{shipping ? money(shipping) : <b className="text-green-700 dark:text-green-400">FREE</b>}</dd></div>
               <div className="flex justify-between border-t border-line pt-2 text-xl font-extrabold"><dt>Total</dt><dd>{money(total)}</dd></div>
             </dl>
             {error && <p role="alert" className="mt-4 rounded-xl bg-hot/10 p-3 text-sm font-semibold text-hot">{error}</p>}

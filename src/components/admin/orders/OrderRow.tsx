@@ -18,7 +18,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
   onStatus: (o: Order, s: string) => void; setPayment: (id: string, s: string) => void;
   onEdit: (o: Order) => void; onDelete: (o: Order) => void; store: string;
 }) {
-  const receipt = receiptText({ orderNo: orderNo(o), name: o.customer_name, phone: o.phone, city: placeLine(o), address: o.address, lines: (o.items ?? []).map((i) => ({ ...i, free: i.free ?? 0 })), subtotal: o.subtotal, shipping: o.shipping, total: o.total, method: o.payment_method, ref: o.payment_ref, paid: o.payment_status === "paid", store });
+  const receipt = receiptText({ orderNo: orderNo(o), name: o.customer_name, phone: o.phone, city: placeLine(o), address: o.address, lines: (o.items ?? []).map((i) => ({ ...i, free: i.free ?? 0 })), subtotal: o.subtotal, shipping: o.shipping, total: o.total, discount: Number(o.discount ?? 0), coupon: o.coupon_code, method: o.payment_method, ref: o.payment_ref, paid: o.payment_status === "paid", store });
   const s = statusOf(o.status);
   const pay = PAYMENT[o.payment_status ?? "unpaid"] ?? PAYMENT.unpaid;
   const showReason = (o.status === "cancelled" || o.status === "returned") && o.status_reason;
@@ -102,6 +102,7 @@ export default function OrderRow({ o, open, toggle, skus, onStatus, setPayment, 
                 </tbody>
                 <tfoot>
                   <tr className="border-t border-line"><td className="pt-2 text-muted" colSpan={2}>Subtotal</td><td className="pt-2 text-right">{money(o.subtotal)}</td></tr>
+                  {Number(o.discount) > 0 && <tr className="text-green-700"><td colSpan={2}>Discount{o.coupon_code ? ` (${o.coupon_code})` : ""}</td><td className="text-right">−{money(Number(o.discount))}</td></tr>}
                   <tr><td className="text-muted" colSpan={2}>Delivery</td><td className="text-right">{money(o.shipping)}</td></tr>
                   <tr className="font-extrabold"><td colSpan={2} className="pt-1">Total</td><td className="pt-1 text-right">{money(o.total)}</td></tr>
                 </tfoot>

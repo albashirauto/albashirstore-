@@ -44,6 +44,7 @@ export default function Receipt({ o, s, skus, paper }: { o: Order; s: Record<str
         ))}
         <div className="my-1.5 border-t border-dashed border-black" />
         <p className="flex justify-between"><span>Subtotal</span><span>{Math.round(o.subtotal).toLocaleString()}</span></p>
+        {Number(o.discount) > 0 && <p className="flex justify-between"><span>Discount{o.coupon_code ? ` ${o.coupon_code}` : ""}</span><span>-{Math.round(Number(o.discount)).toLocaleString()}</span></p>}
         <p className="flex justify-between"><span>Delivery</span><span>{Math.round(o.shipping).toLocaleString()}</span></p>
         <p className={`flex justify-between border-t border-black pt-1 font-bold ${small ? "text-xs" : "text-sm"}`}><span>TOTAL Rs.</span><span>{Math.round(o.total).toLocaleString()}</span></p>
         <p className="mt-1">{pcs} pcs · {(o.payment_status ?? "unpaid").toUpperCase()}</p>
@@ -112,6 +113,7 @@ export default function Receipt({ o, s, skus, paper }: { o: Order; s: Record<str
         <table className="min-w-[45%]">
           <tbody>
             <tr><td className="py-0.5 pr-4">Subtotal</td><td className="text-right">{money(o.subtotal)}</td></tr>
+            {Number(o.discount) > 0 && <tr><td className="py-0.5 pr-4">Discount{o.coupon_code ? ` (${o.coupon_code})` : ""}</td><td className="text-right">−{money(Number(o.discount))}</td></tr>}
             <tr><td className="py-0.5 pr-4">Delivery</td><td className="text-right">{money(o.shipping)}</td></tr>
             <tr className="border-t-2 border-black text-[1.15em] font-extrabold"><td className="py-1 pr-4">Total</td><td className="text-right">{money(o.total)}</td></tr>
           </tbody>

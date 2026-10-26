@@ -59,7 +59,7 @@ async function compose(db: ReturnType<typeof adminClient>, kind: Kind, id: strin
       subject: `🛒 New order #${n} · ${money(o.total)} · ${o.customer_name}${o.city ? ` (${o.city})` : ""}`,
       title: `New order #${n}`, tone: "#16a34a", link, linkLabel: "Open orders",
       rows: [...customer, ["Address", o.address], ["Payment", `${payLabel(o.payment_method)}${o.payment_ref ? ` · TID ${o.payment_ref}` : " · not paid yet"}`],
-        ["Subtotal", money(o.subtotal)], ["Delivery", money(o.shipping)], ["Total", money(o.total)], ...(o.note ? [["Note", o.note] as [string, string]] : [])],
+        ["Subtotal", money(o.subtotal)], ...(Number(o.discount) > 0 ? [["Discount", `−${money(Number(o.discount))}${o.coupon_code ? ` (${o.coupon_code})` : ""}`] as [string, string]] : []), ["Delivery", money(o.shipping)], ["Total", money(o.total)], ...(o.note ? [["Note", o.note] as [string, string]] : [])],
       lines: items,
     };
   }

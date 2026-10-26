@@ -35,13 +35,27 @@ export type OrderInput = {
   payment_method?: string;
   /** transaction id the customer got after paying (optional) */
   payment_ref?: string;
+  /** coupon code (checked again here) */
+  coupon?: string;
 };
 
 export type OrderResult = {
   ok: boolean; orderNo?: number | string; message?: string;
   /** what the server actually charged, for the receipt */
-  receipt?: { lines: { name: string; qty: number; price: number; free: number }[]; subtotal: number; shipping: number; total: number };
+  receipt?: { lines: { name: string; qty: number; price: number; free: number }[]; subtotal: number; shipping: number; total: number; discount?: number; coupon?: string | null };
 };
+
+export type CouponQuote = { ok: boolean; message?: string; code?: string; kind?: string; discount?: number; free_shipping?: boolean; description?: string };
+
+/** Checkout "Apply" button. The same check runs again in placeOrder, so the browser can never set its own discount. */
+export async function checkCoupon(code: string, subtotal: number, phone = ""): Promise<CouponQuote> {
+  const c = String(code ?? "").trim();
+  if (!c) return { ok: false, message: "Enter a coupon code." };
+  if (!hasSupabase) return { ok: false, message: "Coupons work once the store is connected to the database." };
+  const { data, error } = await serverClient().rpc("coupon_quote", { p_code: c.slice(0, 40), p_subtotal: Math.max(0, Number(subtotal) || 0), p_phone: phone });
+  if (error) return { ok: false, message: "Could not check the coupon. Please try again." };
+  return data as CouponQuote;
+}
 
 export type Tracked = {
   no: string; name: string; city: string | null; status: string; reason: string | null;
@@ -96,19 +110,26 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   if (!lines.length) return { ok: false, message: "Those products are no longer available." };
 
   const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0);
-  const shipping = flat;
-  const total = subtotal + shipping;
+  // coupon: priced from the database subtotal, never from the browser
+  let coupon: CouponQuote | null = null;
+  if (input.coupon?.trim() && hasSupabase) {
+    coupon = await checkCoupon(input.coupon, subtotal, phone);
+    if (!coupon.ok) return { ok: false, message: coupon.message ?? "This coupon cannot be used." };
+  }
+  const discount = Math.min(subtotal, Math.max(0, Number(coupon?.discount ?? 0)));
+  const shipping = coupon?.free_shipping ? 0 : flat;
+  const total = subtotal - discount + shipping;
 
   const method = PAY_METHODS.some((m) => m.key === input.payment_method) ? input.payment_method! : null;
   if (!method) return { ok: false, message: "Choose how you will pay." };
   const ref = input.payment_ref?.trim().slice(0, 60) || null;
-  const receipt = { lines: lines.map(({ name, qty, price, free }) => ({ name, qty, price, free })), subtotal, shipping, total };
+  const receipt = { lines: lines.map(({ name, qty, price, free }) => ({ name, qty, price, free })), subtotal, shipping, total, discount, coupon: coupon?.code ?? null };
 
   if (!hasSupabase) return { ok: true, orderNo: `DEMO-${Date.now().toString().slice(-5)}`, receipt };
 
   const id = crypto.randomUUID();
   const cut = (s?: string) => s?.trim().slice(0, 80) || null;
-  const row = { id, customer_name: name, phone, email: input.email || null, province: cut(input.province), district: cut(input.district), city: cut(input.city), address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method };
+  const row = { id, customer_name: name, phone, email: input.email || null, province: cut(input.province), district: cut(input.district), city: cut(input.city), address, note: input.note || null, items: lines, subtotal, shipping, total, payment_method: method, ...(coupon?.code ? { coupon_code: coupon.code, discount } : {}) };
   let { error } = await serverClient().from("orders").insert({ ...row, payment_ref: ref });
   // database not upgraded yet (no payment_ref column): still save the order, keep the TID in the note
   if (error?.message.includes("payment_ref")) ({ error } = await serverClient().from("orders").insert({ ...row, note: [row.note, ref && `TID: ${ref}`].filter(Boolean).join(" · ") || null }));
