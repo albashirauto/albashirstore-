@@ -3,6 +3,7 @@ import Categories from "@/components/home/Categories";
 import CtaBand from "@/components/home/CtaBand";
 import DealZone from "@/components/home/DealZone";
 import Hero from "@/components/home/Hero";
+import { CampaignHero } from "@/components/campaigns/CampaignHost";
 import ProductRow from "@/components/home/ProductRow";
 import SpeedBands from "@/components/home/SpeedBands";
 import Testimonials from "@/components/home/Testimonials";
@@ -21,6 +22,7 @@ export default async function Home() {
 
   return (
     <>
+      <CampaignHero />
       <Hero banners={banners} vehicles={vehicles} settings={settings} />
       <TrustBar features={features} />
       <SpeedBands brands={brands.map((b) => ({ label: b.name, href: `/brands/${b.slug}`, logo: b.logo }))} />

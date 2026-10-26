@@ -6,6 +6,7 @@ import {
 import type { Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Review, Settings, Testimonial, Vehicle } from "./types";
 import { hasScheme } from "./scheme";
 import { discountPct } from "./format";
+import type { Campaign } from "./campaigns";
 
 async function list<T>(table: string, demo: T[], order = "sort_order"): Promise<T[]> {
   if (!hasSupabase) return demo;
@@ -223,6 +224,22 @@ async function ratingMap() {
 }
 const withRatings = (rows: Product[], m: Map<string, { rating: number; reviews: number }>) =>
   rows.map((p) => { const r = m.get(p.id); return r ? { ...p, rating: Number(r.rating), reviews: r.reviews } : p; });
+
+/** Live campaigns (active + inside their schedule; the database only returns those) and the products they show. */
+export async function getCampaigns(): Promise<{ campaigns: Campaign[]; products: Product[] }> {
+  if (!hasSupabase) return { campaigns: [], products: [] };
+  try {
+    const db = serverClient();
+    const { data } = await db.from("campaigns").select("id,name,kind,template,status,priority,starts_at,ends_at,content,design,rules").order("priority", { ascending: false });
+    const campaigns = (data as Campaign[] | null) ?? [];
+    const ids = [...new Set(campaigns.flatMap((c) => c.content?.products ?? []))];
+    const { data: ps } = ids.length ? await db.from("products").select(SELECT).in("id", ids).eq("active", true) : { data: [] };
+    return { campaigns, products: (ps as Product[] | null) ?? [] };
+  } catch (e) {
+    console.error("[data] campaigns:", e);
+    return { campaigns: [], products: [] };
+  }
+}
 
 /** Approved reviews of one product, newest first (public columns only). */
 export async function getReviews(productId: string): Promise<Review[]> {

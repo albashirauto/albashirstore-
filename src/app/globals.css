@@ -85,6 +85,18 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.
 .social-btn:hover, .social-btn:focus-visible { transform: translateY(-4px); border-color: transparent; box-shadow: 0 10px 24px -6px var(--brand); }
 .social-btn:hover .social-fill, .social-btn:focus-visible .social-fill { transform: scale(1); }
 
+/* campaigns (popups, bars, banners): entrance animations */
+@keyframes camp-zoom { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+@keyframes camp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes camp-slide { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes camp-bounce { 0% { opacity: 0; transform: scale(.6); } 60% { opacity: 1; transform: scale(1.06); } 80% { transform: scale(.97); } 100% { transform: none; } }
+@keyframes camp-sheet { from { transform: translateY(100%); } to { transform: none; } }
+.camp-zoom { animation: camp-zoom .45s cubic-bezier(.34,1.56,.64,1) both; }
+.camp-fade { animation: camp-fade .35s ease both; }
+.camp-slide { animation: camp-slide .5s cubic-bezier(.22,1,.36,1) both; }
+.camp-bounce { animation: camp-bounce .7s cubic-bezier(.34,1.56,.64,1) both; }
+.camp-sheet { animation: camp-sheet .4s cubic-bezier(.22,1,.36,1) both; }
+
 .btn-shine { position: relative; overflow: hidden; }
 .btn-shine::after {
   content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
