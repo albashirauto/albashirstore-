@@ -12,7 +12,7 @@ import { SOCIAL_KEYS } from "@/lib/social";
 const TABS = [
   { k: "store", l: "Store & contact", icon: Store, C: StoreSection, keys: /^(store_name|tagline|phone|whatsapp|email|open_hours)$/ },
   { k: "brand", l: "Logo & favicon", icon: ImageIcon, C: BrandingSection, keys: /^(logo|logo_dark|favicon)$/ },
-  { k: "team", l: "Team & phones", icon: Users, C: TeamSection, keys: /^contact\d_/ },
+  { k: "team", l: "Owners & phones", icon: Users, C: TeamSection, keys: /^(contact\d_|owners_)/ },
   { k: "social", l: "Social media", icon: Share2, C: SocialSection, keys: new RegExp(`^(${[...SOCIAL_KEYS, "social_custom"].join("|")})$`) },
   { k: "location", l: "Location", icon: MapPin, C: LocationSection, keys: /^(address|map_link|latitude|longitude)$/ },
   { k: "payments", l: "Delivery & payments", icon: Landmark, C: PaymentsSection, keys: /^(shipping_|pickup_|jazzcash_|easypaisa_|bank_)/ },

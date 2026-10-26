@@ -16,7 +16,7 @@ const initials = (name: string) => name.replace(/^(h\.|hafiz|muhammad|m\.)\s+/i,
 const PROMISES = ["Talk directly to an owner", "Every order confirmed by phone", "Delivery all over Pakistan", "Bulk schemes: buy more, get free pieces"];
 
 /** "Meet the owners": one spotlight card per owner (photo, bio, quote, signature, call / WhatsApp). Photo, bio and quote: Admin > Settings > Team. */
-export default function AboutOwners({ owners, store }: { owners: Owner[]; store: string }) {
+export default function AboutOwners({ owners, store, title, sub }: { owners: Owner[]; store: string; title?: string; sub?: string }) {
   const [at, setAt] = useState(0);
   if (!owners.length) return null;
   const o = owners[Math.min(at, owners.length - 1)];
@@ -25,7 +25,7 @@ export default function AboutOwners({ owners, store }: { owners: Owner[]; store:
 
   return (
     <section className="mx-auto mt-24 max-w-7xl px-4">
-      <SectionTitle eyebrow="Meet the owners" title={owners.length > 1 ? `${owners.length} owners, one promise` : "Meet the owner"} sub="No call centre. When you call or message, you talk to the people who run the shop." />
+      <SectionTitle eyebrow="Meet the owners" title={title || `The people behind ${store}`} sub={sub || "No call centre. When you call or message, you speak directly to the people who run the shop."} />
 
       {owners.length > 1 && (
         <Reveal y={12}>
@@ -70,7 +70,7 @@ export default function AboutOwners({ owners, store }: { owners: Owner[]; store:
 
             {/* story */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-600">Meet the owner</p>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-600">{o.role || "Owner"}</p>
               <h3 className="mt-3 text-5xl font-extrabold uppercase leading-[0.95] md:text-6xl">
                 {words.join(" ")}{last && <> <span className="bg-gradient-to-r from-brand-600 via-purple-500 to-hot bg-clip-text text-transparent">{last}</span></>}
               </h3>
@@ -86,7 +86,7 @@ export default function AboutOwners({ owners, store }: { owners: Owner[]; store:
               <p className="mt-4 text-4xl text-brand-600 dark:text-brand-100" style={{ fontFamily: "Caveat, cursive" }}>{o.name}</p>
 
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-                {PROMISES.map((t) => (
+                {(o.points.length ? o.points : PROMISES).slice(0, 6).map((t) => (
                   <li key={t} className="flex items-center gap-3 text-sm font-medium">
                     <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green-600/15 text-green-600"><Check size={14} strokeWidth={3} /></span>{t}
                   </li>

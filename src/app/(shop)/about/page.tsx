@@ -31,7 +31,7 @@ export default async function About() {
         { label: "Bike models", value: vehicles.length },
       ]} />
       <AboutServe />
-      <AboutOwners owners={teamOf(settings)} store={settings.store_name || "Al Bashir Autos"} />
+      <AboutOwners owners={teamOf(settings)} store={settings.store_name || "Al Bashir Autos"} title={settings.owners_title} sub={settings.owners_sub} />
       <AboutTeam />
       <AboutValues features={features} />
       <AboutBrands brands={brands} />

@@ -72,9 +72,13 @@ export function BrandingSection(p: CardProps) {
 
 // ---------------------------------------------------------------- Team phones
 export function TeamSection(p: CardProps) {
-  const keys = [1, 2, 3, 4].flatMap((n) => ["name", "role", "phone", "whatsapp", "photo", "bio", "quote"].map((f) => `contact${n}_${f}`));
+  const keys = [1, 2, 3, 4].flatMap((n) => ["name", "role", "phone", "whatsapp", "photo", "bio", "quote", "points"].map((f) => `contact${n}_${f}`)).concat(["owners_title", "owners_sub"]);
   return (
     <SettingsCard {...p} title="Owners & phone numbers" sub={'Shown in the "Meet the owners" section on the About page.'} icon={Users} keys={keys}>
+      <div className="mb-4 grid gap-3 rounded-xl bg-soft p-4 sm:grid-cols-2">
+        <Field label="Section heading (About page)">{T(p, "owners_title", "The people behind Al Bashir Autos")}</Field>
+        <Field label="Line under the heading">{T(p, "owners_sub", "No call centre. You speak directly to the people who run the shop.")}</Field>
+      </div>
       <div className="grid gap-4 lg:grid-cols-2">
         {[1, 2, 3, 4].map((n) => (
           <div key={n} className="rounded-xl border border-line p-4">
@@ -99,6 +103,7 @@ export function TeamSection(p: CardProps) {
               </div>
               <textarea rows={3} value={p.v[`contact${n}_bio`] ?? ""} onChange={(e) => p.set(`contact${n}_bio`, e.target.value)} placeholder="Short bio, e.g. 20 years in motorcycle parts. Ask me about any Honda or Suzuki part." className={`${input} resize-y sm:col-span-2`} />
               <div className="sm:col-span-2">{T(p, `contact${n}_quote`, "Quote (optional), e.g. The right part at the right price.")}</div>
+              <textarea rows={4} value={p.v[`contact${n}_points`] ?? ""} onChange={(e) => p.set(`contact${n}_points`, e.target.value)} placeholder={"Ticks on the About page, one per line, e.g.\nFair, clear prices\nEvery order confirmed by phone"} className={`${input} resize-y sm:col-span-2`} />
             </div>
           </div>
         ))}
