@@ -33,7 +33,7 @@ export default function FloatingContact({ whatsapp }: { whatsapp: string }) {
             className="relative origin-bottom-right rounded-2xl rounded-br-sm border border-line bg-card py-2.5 pl-3.5 pr-8 text-sm shadow-xl">
             <button onClick={close} aria-label="Close" className="absolute right-1.5 top-1.5 rounded-full p-1 text-muted transition hover:text-fg"><X size={13} /></button>
             {typing ? (
-              <span className="flex h-5 items-center gap-1" aria-label="typing">
+              <span role="status" aria-label="Typing" className="flex h-5 items-center gap-1">
                 {[0, 1, 2].map((d) => <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted" style={{ animationDelay: `${d * 0.15}s` }} />)}
               </span>
             ) : (

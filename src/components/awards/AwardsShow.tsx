@@ -15,7 +15,7 @@ export function AwardCard({ a, onOpen, className = "" }: { a: Award; onOpen?: ()
         <span className="relative block aspect-[4/5] overflow-hidden">
           {a.image
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={a.image} alt={a.title} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover/card:scale-110" />
+            ? <img src={a.image} alt="" loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover/card:scale-110" />
             : <span className="grid h-full place-items-center text-amber-300/60"><AwardIcon size={64} /></span>}
           <span className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/10 to-transparent" />
           {/* light sweep */}

@@ -12,7 +12,7 @@ export default function BrandMark({ name, logo, fit, size = 56, dark = false }: 
       } ${logo ? "bg-white!" : ""}`}
     >
       {logo
-        ? <Image src={logo} alt={name} fill sizes={`${size}px`} className={`${fitClass(fit)} ${isContain(fit) ? (size < 50 ? "p-1" : "p-2") : ""}`} />
+        ? <Image src={logo} alt="" fill sizes={`${size}px`} className={`${fitClass(fit)} ${isContain(fit) ? (size < 50 ? "p-1" : "p-2") : ""}`} />
         : <span style={{ fontSize: size * 0.36 }}>{initials}</span>}
     </span>
   );
