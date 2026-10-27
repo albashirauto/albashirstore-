@@ -25,7 +25,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
 
       <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-14">
         {/* brand + links */}
-        <div className="grid gap-10 border-b border-white/10 pb-10 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr]">
+        <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.25fr_2.75fr]">
           <Reveal y={16}>
             <div className="inline-block rounded-2xl bg-white p-3"><Logo name={settings.store_name} size={42} src={settings.logo} /></div>
             <p className="mt-4 max-w-sm text-white/70">{settings.tagline}</p>
@@ -50,6 +50,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
             )}
           </Reveal>
 
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
           <Reveal y={16} delay={0.08}>
             <h3 className="text-xl font-bold uppercase">Shop</h3>
             <ul className="mt-4 grid gap-2.5">
@@ -58,20 +59,28 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
             </ul>
           </Reveal>
 
-          <Reveal y={16} delay={0.16}>
-            <h3 className="text-xl font-bold uppercase">Help</h3>
+          <Reveal y={16} delay={0.12}>
+            <h3 className="text-xl font-bold uppercase">Explore</h3>
             <ul className="mt-4 grid gap-2.5">
-              {pages.filter((p) => p.show_in_footer !== false).map((p) => <li key={p.id}><Link className={link} href={`/pages/${p.slug}`}>{dash}{p.title}</Link></li>)}
               <li><Link className={link} href="/promotions">{dash}Deal zone</Link></li>
-              <li><Link className={link} href="/blog">{dash}Blog: tips & guides</Link></li>
               <li><Link className={link} href="/vehicles">{dash}Shop by bike</Link></li>
-              <li><Link className={link} href="/awards">{dash}Our awards</Link></li>
-              <li><Link className={link} href="/faq">{dash}FAQ: common questions</Link></li>
               <li><Link className={link} href="/wholesale">{dash}Wholesale & dealers</Link></li>
-              <li><Link className={link} href="/track">{dash}Track my order</Link></li>
-              <li><Link className={link} href="/cart">{dash}My cart</Link></li>
+              <li><Link className={link} href="/blog">{dash}Blog: tips & guides</Link></li>
+              <li><Link className={link} href="/awards">{dash}Our awards</Link></li>
+              <li><Link className={link} href="/about">{dash}About us</Link></li>
             </ul>
           </Reveal>
+
+          <Reveal y={16} delay={0.16}>
+            <h3 className="text-xl font-bold uppercase">Help & policies</h3>
+            <ul className="mt-4 grid gap-2.5">
+              <li><Link className={link} href="/faq">{dash}FAQ</Link></li>
+              <li><Link className={link} href="/track">{dash}Track my order</Link></li>
+              <li><Link className={link} href="/contact">{dash}Contact us</Link></li>
+              {pages.filter((p) => p.show_in_footer !== false && !["about", "contact"].includes(p.slug)).map((p) => <li key={p.id}><Link className={link} href={`/pages/${p.slug}`}>{dash}{p.title}</Link></li>)}
+            </ul>
+          </Reveal>
+          </div>
         </div>
 
         {/* location (owners' phones are on the About page) */}
