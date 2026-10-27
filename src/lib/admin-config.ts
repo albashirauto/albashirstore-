@@ -16,6 +16,8 @@ export type Field = {
   /** for type "slug": which field to build the slug from */
   from?: string;
   half?: boolean;
+  /** for type "image": remove a plain background + trim edges on upload (can be switched off per upload) */
+  cutout?: boolean;
   /** stored in another (admin-only) table keyed by this row id, e.g. private cost prices */
   side?: { table: string; fk: string };
 };
@@ -78,7 +80,7 @@ export const RESOURCES: Record<string, Resource> = {
       { key: "name", label: "Name", type: "text", required: true },
       { key: "slug", label: "Web address (slug)", type: "slug", from: "name", required: true },
       { key: "parent_id", label: "Main category (leave empty for a main category)", type: "select", relation: { table: "categories", label: "name" }, help: "Pick a main category to make this a sub-category." },
-      { key: "image", label: "Picture", type: "image", help: "Square photo. Shown on category tiles, the menu and the category page." },
+      { key: "image", label: "Picture", type: "image", cutout: true, help: "Photo of a typical part. A plain background is removed and the edges trimmed automatically. Shown on category tiles and the category page." },
       { key: "description_html", label: "Description (shown on the category page)", type: "html" },
       { key: "seo_title", label: "SEO title", type: "text", help: "Google title. Empty = automatic." },
       { key: "seo_description", label: "SEO description", type: "textarea", help: "120–160 characters for Google." },
@@ -95,7 +97,7 @@ export const RESOURCES: Record<string, Resource> = {
     fields: [
       { key: "name", label: "Brand name", type: "text", required: true },
       { key: "slug", label: "Web address (slug)", type: "slug", from: "name", required: true },
-      { key: "logo", label: "Logo", type: "image", help: "PNG with transparent or white background. Shown on product cards, product pages, the menu and brand pages." },
+      { key: "logo", label: "Logo", type: "image", cutout: true, help: "PNG with transparent or white background. Shown on product cards, product pages, the menu and brand pages." },
       { key: "country", label: "Country", type: "text", half: true, help: "e.g. Pakistan, Japan, China" },
       { key: "website", label: "Website", type: "text", half: true },
       { key: "description_html", label: "About the brand (shown on the brand page)", type: "html" },

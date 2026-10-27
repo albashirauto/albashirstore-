@@ -20,8 +20,13 @@ export default function Categories({ categories, counts }: { categories: Categor
           <Reveal key={c.id} delay={(i % 6) * 0.06} y={18}>
             <Link href={`/collections/${c.slug}`} className="group flex h-full flex-col items-center rounded-2xl border border-line bg-card px-4 py-6 text-center transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
               {c.image ? (
-                <span className="relative block h-24 w-24 overflow-hidden rounded-2xl bg-gradient-to-b from-white to-brand-50 ring-1 ring-line transition duration-300 group-hover:ring-brand-500/40 dark:from-brand-900 dark:to-brand-950 md:h-28 md:w-28">
-                  <Image src={c.image} alt="" fill sizes="112px" className="object-contain p-1.5 drop-shadow-md transition duration-500 group-hover:-rotate-3 group-hover:scale-110" />
+                <span className="relative block h-28 w-28 md:h-32 md:w-32">
+                  {/* glow behind + shadow on the "floor" */}
+                  <span className="absolute inset-3 rounded-full bg-brand-500/15 blur-2xl transition duration-500 group-hover:scale-125 group-hover:bg-brand-500/30" />
+                  <span className="absolute -bottom-1 left-1/2 h-2.5 w-2/3 -translate-x-1/2 rounded-[50%] bg-black/15 blur-sm transition duration-500 group-hover:w-1/2 group-hover:opacity-60 dark:bg-black/40" />
+                  <span className="absolute inset-0" style={{ animation: `float-y ${3.2 + (i % 4) * 0.4}s ease-in-out ${(i % 6) * 0.25}s infinite` }}>
+                    <Image src={c.image} alt="" fill sizes="128px" className="object-contain drop-shadow-[0_10px_12px_rgba(10,31,102,0.18)] transition duration-500 ease-out group-hover:-translate-y-2 group-hover:-rotate-6 group-hover:scale-115" />
+                  </span>
                 </span>
               ) : (
                 <span className="grid h-20 w-20 place-items-center rounded-full bg-brand-50 text-brand-600 transition duration-300 group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">

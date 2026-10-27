@@ -182,7 +182,7 @@ export default function ResourceForm({ resource: R, slug, id }: { resource: Reso
                     <label className="mb-1 block text-sm font-bold">{f.label}{f.required && <span className="text-hot"> *</span>}</label>
                     {f.type === "textarea" ? <textarea rows={4} value={v ?? ""} onChange={(e) => set(f, e.target.value)} className={input} />
                       : f.type === "html" ? <HtmlEditor value={v ?? ""} onChange={(x) => set(f, x)} />
-                      : f.type === "image" ? <ImageField value={v || null} onChange={(x) => set(f, x ?? "")} folder={R.table} />
+                      : f.type === "image" ? <ImageField value={v || null} onChange={(x) => set(f, x ?? "")} folder={R.table} cutout={f.cutout} />
                       : f.type === "images" ? <ImageField multiple value={v ?? []} onChange={(x) => set(f, x ?? [])} folder={R.table} />
                       : f.type === "select" ? (
                         <select value={v ?? ""} onChange={(e) => set(f, e.target.value)} className={input}>

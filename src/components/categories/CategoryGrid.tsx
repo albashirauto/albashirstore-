@@ -46,9 +46,16 @@ export default function CategoryGrid({ categories, counts }: { categories: Categ
                 <div className="group relative flex h-full flex-col rounded-2xl border border-line bg-card p-5 transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
                   <Link href={`/collections/${c.slug}`} className="absolute inset-0 rounded-2xl" aria-label={c.name} />
                   <div className="flex items-start justify-between">
-                    <span className="relative grid h-14 w-14 place-items-center overflow-hidden rounded-xl bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
-                      {c.image ? <Image src={c.image} alt="" fill sizes="56px" className="object-cover" /> : <CategoryIcon slug={c.slug} size={26} />}
-                    </span>
+                    {c.image ? (
+                      <span className="relative block h-20 w-20">
+                        <span className="absolute inset-2 rounded-full bg-brand-500/15 blur-xl transition duration-500 group-hover:scale-125 group-hover:bg-brand-500/30" />
+                        <Image src={c.image} alt="" fill sizes="80px" className="object-contain drop-shadow-[0_8px_10px_rgba(10,31,102,0.18)] transition duration-500 ease-out group-hover:-translate-y-1 group-hover:-rotate-6 group-hover:scale-110" />
+                      </span>
+                    ) : (
+                      <span className="grid h-14 w-14 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
+                        <CategoryIcon slug={c.slug} size={26} />
+                      </span>
+                    )}
                     <span className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold text-muted">{total(c)} items</span>
                   </div>
 
