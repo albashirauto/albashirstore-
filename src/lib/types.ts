@@ -58,7 +58,7 @@ export type Banner = {
   id: string; eyebrow?: string | null; title: string; subtitle?: string | null; button_text?: string | null;
   link?: string | null; image?: string | null; sort_order?: number; active?: boolean;
 };
-export type Page = { id: string; title: string; slug: string; content?: string | null; show_in_footer?: boolean; active?: boolean };
+export type Page = { id: string; title: string; slug: string; content?: string | null; show_in_footer?: boolean; active?: boolean; updated_at?: string | null };
 export type Faq = { id: string; question: string; answer: string; sort_order?: number; active?: boolean };
 export type Post = {
   id: string; title: string; slug: string; cover?: string | null; excerpt?: string | null; content_html?: string | null;

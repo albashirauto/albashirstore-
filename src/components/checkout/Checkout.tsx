@@ -209,6 +209,7 @@ export default function Checkout({ s }: { s: Settings }) {
             <button disabled={pending} className="mt-5 w-full rounded-full bg-hot py-4 text-lg font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark disabled:opacity-60">
               {pending ? "Placing order…" : `Place order · ${money(total)}`}
             </button>
+            <p className="mt-3 text-center text-xs text-muted">By placing your order you agree to our <Link href="/pages/terms" target="_blank" className="font-semibold text-brand-600 hover:underline">Terms</Link> and <Link href="/pages/privacy-policy" target="_blank" className="font-semibold text-brand-600 hover:underline">Privacy policy</Link>.</p>
           </div>
           <p className="flex items-center justify-center gap-2 text-xs text-muted"><ShieldCheck size={14} className="text-green-600" />Prices checked again on our server. We confirm every order by phone.</p>
         </aside>
