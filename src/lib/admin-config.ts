@@ -203,6 +203,23 @@ export const RESOURCES: Record<string, Resource> = {
       sort, active,
     ],
   },
+  wholesale: {
+    table: "wholesale_enquiries", title: "Wholesale enquiries", singular: "enquiry", searchKey: "name", orderBy: "created_at", ascending: false,
+    description: "Shops, workshops and dealers asking to buy in bulk from the Wholesale page. Call them, then mark the status.",
+    columns: [{ key: "name", label: "Name" }, { key: "business", label: "Business" }, { key: "city", label: "City" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" }],
+    fields: [
+      { key: "status", label: "Status", type: "select", half: true, options: [{ value: "new", label: "New" }, { value: "contacted", label: "Contacted" }, { value: "won", label: "Became a customer" }, { value: "closed", label: "Closed" }] },
+      { key: "business_type", label: "Type of business", type: "select", half: true, options: [{ value: "shop", label: "Parts shop" }, { value: "workshop", label: "Workshop / mechanic" }, { value: "dealer", label: "Dealer / distributor" }, { value: "fleet", label: "Fleet / rickshaw owner" }, { value: "other", label: "Other" }] },
+      { key: "name", label: "Name", type: "text", required: true, half: true },
+      { key: "business", label: "Business name", type: "text", half: true },
+      { key: "phone", label: "Phone", type: "text", required: true, half: true },
+      { key: "city", label: "City", type: "text", half: true },
+      { key: "interests", label: "Wants to buy", type: "text" },
+      { key: "volume", label: "Monthly order size", type: "text" },
+      { key: "message", label: "Their message", type: "textarea" },
+      { key: "notes", label: "Your notes (private)", type: "textarea", help: "Prices quoted, follow-up date… Only admins see this." },
+    ],
+  },
   faqs: {
     table: "faqs", title: "FAQs", singular: "question", searchKey: "question", orderBy: "sort_order",
     description: "Questions and answers on the FAQ page (grouped by topic) and the Contact page.",
@@ -277,6 +294,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin/campaigns", label: "Campaigns (popups)" },
     { href: "/admin/coupons", label: "Coupons" },
     { href: "/admin/carts", label: "Abandoned carts" },
+    { href: "/admin/wholesale", label: "Wholesale enquiries" },
     { href: "/admin/newsletter", label: "Newsletter" },
   ] },
   { title: "Settings", items: [

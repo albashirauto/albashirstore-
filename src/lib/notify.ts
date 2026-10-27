@@ -33,6 +33,17 @@ async function compose(db: ReturnType<typeof adminClient>, kind: Kind, id: strin
       link: `${SITE_URL}/admin/reviews`, linkLabel: "Approve or reject",
     };
   }
+  if (kind === "wholesale") {
+    const { data: w } = await db.from("wholesale_enquiries").select("*").eq("id", id).maybeSingle();
+    if (!w) return null;
+    return {
+      subject: `🤝 Wholesale enquiry: ${w.business || w.name}${w.city ? `, ${w.city}` : ""}`,
+      title: "New wholesale enquiry", tone: "#1d4fd8",
+      rows: [["Name", w.name], ["Business", w.business ?? "—"], ["Type", w.business_type ?? "—"], ["Phone", w.phone], ["City", w.city ?? "—"], ["Wants", w.interests ?? "—"], ["Monthly order", w.volume ?? "—"]],
+      lines: [w.message ?? "", "Call them back soon. Mark it Contacted in admin when you do."].filter(Boolean),
+      link: `${SITE_URL}/admin/wholesale/${w.id}`, linkLabel: "Open the enquiry",
+    };
+  }
   if (kind === "stock") {
     const { data: p } = await db.from("products").select("id,name,sku,stock,slug").eq("id", id).maybeSingle();
     if (!p) return null;

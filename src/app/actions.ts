@@ -97,6 +97,17 @@ export async function submitReview(input: { productId: string; name: string; pho
   return data === "ok" ? { ok: true, message: "Thank you! Your review will appear after we check it." } : { ok: false, message: String(data) };
 }
 
+/** Wholesale / dealer enquiry (/wholesale). Checked and saved by the database (submit_wholesale, migration 035). */
+export async function submitWholesale(input: { name: string; business?: string; phone: string; city?: string; type?: string; interests?: string[]; volume?: string; message?: string }) {
+  if (!hasSupabase) return { ok: false, message: "Enquiries work once the store is connected to the database." };
+  const { data, error } = await serverClient().rpc("submit_wholesale", {
+    p_name: input.name, p_business: input.business ?? "", p_phone: input.phone, p_city: input.city ?? "", p_type: input.type ?? "",
+    p_interests: (input.interests ?? []).join(", "), p_volume: input.volume ?? "", p_message: input.message ?? "",
+  });
+  if (error) return { ok: false, message: "Could not send your enquiry. Please try again or WhatsApp us." };
+  return data === "ok" ? { ok: true, message: "Thank you! We will call you within one working day." } : { ok: false, message: String(data) };
+}
+
 /** Prices are re-read from the database here, so the browser can never set its own price. */
 export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   const settings = await getSettings();
