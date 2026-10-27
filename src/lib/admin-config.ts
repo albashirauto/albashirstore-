@@ -92,7 +92,7 @@ export const RESOURCES: Record<string, Resource> = {
   },
   brands: {
     table: "brands", title: "Brands", singular: "brand", searchKey: "name", orderBy: "sort_order", seo: "brand",
-    description: "Honda, RP Speedo, ISH, TQR… Upload a logo once and it shows across the whole website.",
+    description: "Brands you sell and brands you are the dealer of. Upload a logo once and it shows across the whole website.",
     columns: [{ key: "logo", label: "Logo", kind: "image" }, { key: "name", label: "Name" }, { key: "country", label: "Country" }, { key: "show_as_brand", label: "Brand", kind: "bool" }, { key: "dealer", label: "Dealer", kind: "bool" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "name", label: "Brand name", type: "text", required: true },
