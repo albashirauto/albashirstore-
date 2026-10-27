@@ -27,7 +27,7 @@ export default function Checklist({ checks }: { checks: Check[] }) {
                   {errors > 0 && <span className="whitespace-nowrap rounded-full bg-hot/10 px-2.5 py-1 text-xs leading-none text-hot">{errors} error{errors > 1 ? "s" : ""}</span>}
                   {warns > 0 && <span className="whitespace-nowrap rounded-full bg-amber-100 px-2.5 py-1 text-xs leading-none text-amber-800">{warns} to improve</span>}
                   {!errors && !warns && <span className="whitespace-nowrap rounded-full bg-green-100 px-2.5 py-1 text-xs leading-none text-green-800">All good</span>}
-              </span>
+                </span>
               </span>
               <ChevronDown size={16} className={`shrink-0 text-muted transition ${isOpen ? "rotate-180" : ""}`} />
             </button>
