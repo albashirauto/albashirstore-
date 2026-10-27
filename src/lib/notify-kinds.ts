@@ -7,5 +7,6 @@ export const KINDS = [
   { key: "stock", label: "Stock alerts", hint: "A product falls to its low stock level, or runs out" },
   { key: "review", label: "New reviews", hint: "A customer reviews a product (waiting for your approval)" },
   { key: "wholesale", label: "Wholesale enquiries", hint: "A shop, workshop or dealer asks about buying in bulk" },
+  { key: "part_request", label: "Part requests", hint: "A customer asks for a part that is not on the website" },
 ] as const;
 export type Kind = (typeof KINDS)[number]["key"];

@@ -203,6 +203,21 @@ export const RESOURCES: Record<string, Resource> = {
       sort, active,
     ],
   },
+  requests: {
+    table: "part_requests", title: "Part requests", singular: "request", searchKey: "part", orderBy: "created_at", ascending: false,
+    description: "Parts customers asked for that are not on the website. Call them with stock and price, then mark the status. Popular requests are parts worth adding.",
+    columns: [{ key: "part", label: "Part" }, { key: "vehicle", label: "Bike" }, { key: "name", label: "Name" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" }],
+    fields: [
+      { key: "status", label: "Status", type: "select", half: true, options: [{ value: "new", label: "New" }, { value: "quoted", label: "Called / price given" }, { value: "done", label: "Sold" }, { value: "unavailable", label: "Not available" }] },
+      { key: "part", label: "Part needed", type: "text", required: true, half: true },
+      { key: "vehicle", label: "Bike / vehicle", type: "text", half: true },
+      { key: "city", label: "City", type: "text", half: true },
+      { key: "name", label: "Name", type: "text", required: true, half: true },
+      { key: "phone", label: "Phone", type: "text", required: true, half: true },
+      { key: "details", label: "Their details", type: "textarea" },
+      { key: "notes", label: "Your notes (private)", type: "textarea", help: "Price quoted, supplier, follow-up date… Only admins see this." },
+    ],
+  },
   wholesale: {
     table: "wholesale_enquiries", title: "Wholesale enquiries", singular: "enquiry", searchKey: "name", orderBy: "created_at", ascending: false,
     description: "Shops, workshops and dealers asking to buy in bulk from the Wholesale page. Call them, then mark the status.",
@@ -295,6 +310,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin/coupons", label: "Coupons" },
     { href: "/admin/carts", label: "Abandoned carts" },
     { href: "/admin/wholesale", label: "Wholesale enquiries" },
+    { href: "/admin/requests", label: "Part requests" },
     { href: "/admin/newsletter", label: "Newsletter" },
   ] },
   { title: "Settings", items: [

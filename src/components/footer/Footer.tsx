@@ -76,6 +76,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
             <ul className="mt-4 grid gap-2.5">
               <li><Link className={link} href="/faq">{dash}FAQ</Link></li>
               <li><Link className={link} href="/track">{dash}Track my order</Link></li>
+              <li><Link className={link} href="/request-part">{dash}Request a part</Link></li>
               <li><Link className={link} href="/contact">{dash}Contact us</Link></li>
               {pages.filter((p) => p.show_in_footer !== false && !["about", "contact"].includes(p.slug)).map((p) => <li key={p.id}><Link className={link} href={`/pages/${p.slug}`}>{dash}{p.title}</Link></li>)}
             </ul>

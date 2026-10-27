@@ -33,6 +33,17 @@ async function compose(db: ReturnType<typeof adminClient>, kind: Kind, id: strin
       link: `${SITE_URL}/admin/reviews`, linkLabel: "Approve or reject",
     };
   }
+  if (kind === "part_request") {
+    const { data: r } = await db.from("part_requests").select("*").eq("id", id).maybeSingle();
+    if (!r) return null;
+    return {
+      subject: `🔎 Part request: ${r.part}${r.vehicle ? ` (${r.vehicle})` : ""}`,
+      title: "A customer needs a part", tone: "#d97706",
+      rows: [["Part", r.part], ["Bike / vehicle", r.vehicle ?? "—"], ["Name", r.name], ["Phone", r.phone], ["City", r.city ?? "—"]],
+      lines: [r.details ?? "", "Call them with stock and price, then mark it in admin."].filter(Boolean),
+      link: `${SITE_URL}/admin/requests/${r.id}`, linkLabel: "Open the request",
+    };
+  }
   if (kind === "wholesale") {
     const { data: w } = await db.from("wholesale_enquiries").select("*").eq("id", id).maybeSingle();
     if (!w) return null;
