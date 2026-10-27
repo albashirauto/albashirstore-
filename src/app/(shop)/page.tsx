@@ -1,6 +1,5 @@
 import ByBike from "@/components/home/ByBike";
 import Categories from "@/components/home/Categories";
-import CtaBand from "@/components/home/CtaBand";
 import DealZone from "@/components/home/DealZone";
 import Hero from "@/components/home/Hero";
 import { CampaignHero } from "@/components/campaigns/CampaignHost";
@@ -30,7 +29,6 @@ export default async function Home() {
       <DealZone products={all} />
       <ProductRow eyebrow="Popular" title="Trending now" sub="Best sellers of the last 30 days, updated automatically." href="/shop?sort=newest" products={trending} />
       <ByBike vehicles={vehicles} />
-      <CtaBand settings={settings} />
       <Testimonials testimonials={testimonials} />
     </>
   );
