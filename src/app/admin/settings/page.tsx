@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { BarChart3, HardDrive, Image as ImageIcon, Landmark, Loader2, MapPin, Megaphone, Search, Share2, Store, Users } from "lucide-react";
 import { AnalyticsSection, VerificationSection } from "@/components/admin/settings/Tracking";
 import { BrandingSection, LocationSection, PaymentsSection, SeoSection, SiteTextSection, SocialSection, StorageSection, StoreSection, TeamSection } from "@/components/admin/settings/Sections";
+import Feeds from "@/components/admin/settings/Feeds";
 import type { CardProps, Vals } from "@/components/admin/settings/SettingsCard";
 import { browserClient } from "@/lib/supabase";
 import { SOCIAL_KEYS } from "@/lib/social";
@@ -18,10 +19,14 @@ const TABS = [
   { k: "payments", l: "Delivery & payments", icon: Landmark, C: PaymentsSection, keys: /^(shipping_|pickup_|cod_|jazzcash_|easypaisa_|bank_)/ },
   { k: "text", l: "Site text", icon: Megaphone, C: SiteTextSection, keys: /^announcement$/ },
   { k: "storage", l: "Storage & uploads", icon: HardDrive, C: StorageSection, keys: /^(storage_|upload_max_mb|image_max_px)$/ },
-  { k: "seo", l: "SEO & site files", icon: Search, C: SeoSection, keys: /^(seo_|ai_crawlers)/ },
+  { k: "seo", l: "SEO & site files", icon: Search, C: SeoTab, keys: /^(seo_|ai_crawlers)/ },
   { k: "tracking", l: "Verification & analytics", icon: BarChart3, C: TrackingTab, keys: /^(google_site_verification|bing_|yandex_|pinterest_|facebook_domain|ga4_|gtm_|meta_pixel|tiktok_pixel|clarity_)/ },
 ] as const;
 type TabKey = (typeof TABS)[number]["k"];
+
+function SeoTab(p: CardProps) {
+  return <div className="space-y-6"><SeoSection {...p} /><Feeds /></div>;
+}
 
 function TrackingTab(p: CardProps) {
   return <div className="space-y-6"><VerificationSection {...p} /><AnalyticsSection {...p} /></div>;
