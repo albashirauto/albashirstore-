@@ -78,7 +78,7 @@ export const demoTestimonials: Testimonial[] = [
 ];
 
 export const demoPages: Page[] = [
-  { id: "g1", title: "About us", slug: "about", show_in_footer: true, active: true, content: "<h2>About Al Bashir Autos</h2><p>We are a parts shop on Pakpattan Road, Haveli Lakha, serving riders, rickshaw drivers and workshops with motorcycle, cycle and loader spare parts.</p><p>We deal in Honda, RP Speedo, ISH, TQR and other trusted brands.</p>" },
+  { id: "g1", title: "About us", slug: "about", show_in_footer: true, active: true, content: "<h2>About Al Bashir Autos</h2><p>We are a parts shop on Pakpattan Road, Haveli Lakha, serving riders, rickshaw drivers and workshops with motorcycle, cycle and loader spare parts.</p><p>Authorised dealer of TQR, ISH, RP, DYL Lubricants and Odiking.</p>" },
   { id: "g2", title: "Contact", slug: "contact", show_in_footer: true, active: true, content: "<h2>Contact us</h2><p>Visit the shop or call us during opening hours.</p>" },
   { id: "g3", title: "Refund & exchange policy", slug: "refund-policy", show_in_footer: true, active: true, content: "<h2>Refund and exchange</h2><p>If you received the wrong part, return it within 7 days in its original condition for an exchange.</p>" },
   { id: "g4", title: "Delivery information", slug: "delivery", show_in_footer: true, active: true, content: "<h2>Delivery</h2><p>We deliver across Pakistan. Delivery charges are taken in advance.</p>" },
@@ -87,24 +87,24 @@ export const demoPages: Page[] = [
 type P = [string, number, number | null, string, string, string, string?, boolean?, boolean?];
 // name, price, compare, category slug, brand slug, vehicle slug, promo slug, featured, trending
 const rows: P[] = [
-  ["CD 70 Chain Kit (Chain + Sprockets)", 1650, 1950, "chain-kits", "honda", "honda-cd-70", "30-off-sale", true, true],
+  ["CD 70 Chain Kit (Chain + Sprockets)", 1650, 1950, "chain-kits", "tqr", "honda-cd-70", "30-off-sale", true, true],
   ["CG 125 Heavy Duty Chain Kit", 2450, 2800, "chain-kits", "tqr", "honda-cg-125", "30-off-sale", true, true],
-  ["Dry Battery 12V 5Ah", 2650, null, "batteries", "unique", "honda-cd-70", undefined, true, true],
-  ["Maintenance-Free Battery 12V 9Ah", 4100, 4600, "batteries", "atlas-honda", "honda-cb-150f", "30-off-sale", false, true],
-  ["Genuine Engine Oil 20W-50 (1L)", 1450, null, "engine-oil", "honda", "honda-cg-125", undefined, true, false],
+  ["Dry Battery 12V 5Ah", 2650, null, "batteries", "ish", "honda-cd-70", undefined, true, true],
+  ["Maintenance-Free Battery 12V 9Ah", 4100, 4600, "batteries", "rp", "honda-cb-150f", "30-off-sale", false, true],
+  ["Genuine Engine Oil 20W-50 (1L)", 1450, null, "engine-oil", "dyl-lubricants", "honda-cg-125", undefined, true, false],
   ["Headlight Bulb Set LED", 899, 1299, "lights", "tqr", "honda-cd-70", "under-999", true, true],
   ["Indicator Set (4 pcs)", 750, null, "lights", "ish", "honda-cg-125", "under-999", false, false],
-  ["Front Brake Shoe Set", 650, null, "brakes-clutch", "honda", "honda-cd-70", "under-999", false, false],
-  ["Clutch Plate Kit", 1350, 1600, "brakes-clutch", "atlas-honda", "honda-cg-125", undefined, true, false],
-  ["Tubeless Tyre 2.75-18", 5400, null, "tyres", "unique", "honda-cd-70", undefined, false, false],
-  ["Spark Plug (Standard)", 350, null, "spark-plugs", "honda", "honda-cg-125", "under-999", false, true],
-  ["Digital Speedometer", 3200, 3800, "speedometers", "rp-speedo", "honda-cb-150f", "half-price-sale", true, true],
-  ["Analog Speedometer CD 70", 1900, 2400, "speedometers", "rp-speedo", "honda-cd-70", "half-price-sale", false, false],
+  ["Front Brake Shoe Set", 650, null, "brakes-clutch", "tqr", "honda-cd-70", "under-999", false, false],
+  ["Clutch Plate Kit", 1350, 1600, "brakes-clutch", "rp", "honda-cg-125", undefined, true, false],
+  ["Tubeless Tyre 2.75-18", 5400, null, "tyres", "ish", "honda-cd-70", undefined, false, false],
+  ["Spark Plug (Standard)", 350, null, "spark-plugs", "tqr", "honda-cg-125", "under-999", false, true],
+  ["Digital Speedometer", 3200, 3800, "speedometers", "rp", "honda-cb-150f", "half-price-sale", true, true],
+  ["Analog Speedometer CD 70", 1900, 2400, "speedometers", "rp", "honda-cd-70", "half-price-sale", false, false],
   ["CG 125 Fuel Tank Outfit", 8000, null, "fuel-tanks", "ish", "honda-cg-125", undefined, true, true],
   ["Racing Silencer", 3500, 4200, "silencers", "tqr", "honda-cg-125", "half-price-sale", false, true],
-  ["Rickshaw Clutch Cable", 480, null, "rickshaw-parts", "unique", "auto-rickshaw", "under-999", false, false],
-  ["Loader Rickshaw Brake Pad Set", 1250, null, "rickshaw-parts", "unique", "loader-rickshaw", undefined, false, false],
-  ["Bicycle Chain (Heavy)", 420, null, "cycle-parts", "unique", "bicycle", "under-999", false, false],
+  ["Rickshaw Clutch Cable", 480, null, "rickshaw-parts", "ish", "auto-rickshaw", "under-999", false, false],
+  ["Loader Rickshaw Brake Pad Set", 1250, null, "rickshaw-parts", "ish", "loader-rickshaw", undefined, false, false],
+  ["Bicycle Chain (Heavy)", 420, null, "cycle-parts", "ish", "bicycle", "under-999", false, false],
 ];
 
 // bulk schemes on a few demo parts: [buy, free]
