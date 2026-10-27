@@ -1,4 +1,5 @@
-import { Plus } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Plus } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import type { Faq } from "@/lib/types";
 
@@ -12,7 +13,7 @@ export default function ContactFaq({ items }: { items: Faq[] }) {
         <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-hot"><span className="h-px w-6 bg-hot" />Quick answers</p>
         <h2 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white">Common questions</h2>
         <div className="mt-5 divide-y divide-line">
-          {items.map((f, i) => (
+          {items.slice(0, 6).map((f, i) => (
             // same `name` = only one answer open at a time (browser closes the previous one)
             <details key={f.id} name="contact-faq" open={i === 0} className="group py-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold [&::-webkit-details-marker]:hidden">
@@ -23,6 +24,7 @@ export default function ContactFaq({ items }: { items: Faq[] }) {
             </details>
           ))}
         </div>
+        <Link href="/faq" className="group mt-4 inline-flex items-center gap-1.5 font-bold text-brand-600 transition hover:text-hot">See all {items.length} questions<ArrowRight size={16} className="transition group-hover:translate-x-1" /></Link>
       </div>
     </Reveal>
   );

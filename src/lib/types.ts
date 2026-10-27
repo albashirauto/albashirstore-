@@ -59,7 +59,7 @@ export type Banner = {
   link?: string | null; image?: string | null; sort_order?: number; active?: boolean;
 };
 export type Page = { id: string; title: string; slug: string; content?: string | null; show_in_footer?: boolean; active?: boolean; updated_at?: string | null };
-export type Faq = { id: string; question: string; answer: string; sort_order?: number; active?: boolean };
+export type Faq = { id: string; question: string; answer: string; topic?: string | null; sort_order?: number; active?: boolean };
 export type Post = {
   id: string; title: string; slug: string; cover?: string | null; excerpt?: string | null; content_html?: string | null;
   author?: string | null; published_at: string; seo_title?: string | null; seo_description?: string | null; focus_keywords?: string | null; active?: boolean;

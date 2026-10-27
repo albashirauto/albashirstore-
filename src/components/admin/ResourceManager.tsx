@@ -87,6 +87,8 @@ export default function ResourceManager({ resource: R, slug }: { resource: Resou
   };
 
   const label = (table: string, id: string) => opts[table]?.find((o) => o.value === id)?.label ?? "";
+  // dropdown fields show their label, not the stored code
+  const shown = (key: string, v: unknown) => R.fields.find((f) => f.key === key)?.options?.find((o) => o.value === v)?.label ?? String(v);
   const input = "w-full rounded-xl border-2 border-line bg-card px-4 py-2.5 outline-none transition focus:border-brand-500";
 
   const cols = R.columns.length + (R.seo ? 2 : 1);
@@ -97,7 +99,7 @@ export default function ResourceManager({ resource: R, slug }: { resource: Resou
   const imgCol = R.columns.find((c) => c.kind === "image");
   const firstImg = (r: Row) => (imgCol ? (Array.isArray(r[imgCol.key]) ? r[imgCol.key][0] : r[imgCol.key]) : null);
   const text = (r: Row, c: Resource["columns"][number]) =>
-    c.kind === "money" ? `Rs. ${Number(r[c.key] ?? 0).toLocaleString("en-PK")}` : c.kind === "relation" ? label(c.relation!.table, r[c.key]) : r[c.key] == null ? "" : String(r[c.key]);
+    c.kind === "money" ? `Rs. ${Number(r[c.key] ?? 0).toLocaleString("en-PK")}` : c.kind === "relation" ? label(c.relation!.table, r[c.key]) : r[c.key] == null ? "" : shown(c.key, r[c.key]);
   const Switch = ({ r, c }: { r: Row; c: Resource["columns"][number] }) => (
     <button onClick={(e) => { e.stopPropagation(); toggle(r, c.key); }} aria-label={`Toggle ${c.label}`} title={r[c.key] ? "On: click to turn off" : "Off: click to turn on"} className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 align-middle transition ${r[c.key] ? "bg-green-500 shadow-inner shadow-green-700/30" : "bg-line"}`}><span className={`block h-5 w-5 rounded-full bg-white shadow transition ${r[c.key] ? "translate-x-5" : ""}`} /></button>
   );
@@ -197,7 +199,7 @@ export default function ResourceManager({ resource: R, slug }: { resource: Resou
                     ) : c.kind === "money" ? <span className="font-semibold tabular-nums">Rs. {Number(r[c.key] ?? 0).toLocaleString("en-PK")}</span>
                       : c.kind === "relation" ? label(c.relation!.table, r[c.key]) || <span className="text-muted">—</span>
                       : r[c.key] === null || r[c.key] === undefined || r[c.key] === "" ? <span className="text-muted">—</span>
-                      : <span className={c.key === R.searchKey ? "font-bold text-fg transition group-hover:text-brand-700 dark:group-hover:text-white" : ""}>{String(r[c.key])}</span>}
+                      : <span className={c.key === R.searchKey ? "font-bold text-fg transition group-hover:text-brand-700 dark:group-hover:text-white" : ""}>{shown(c.key, r[c.key])}</span>}
                   </td>
                 ))}
                 {R.seo && (() => { const sc = seoScore(r), t = scoreTone(sc); return <td className="px-5 py-3 text-center align-middle"><span title={`SEO: ${t.label}`} className={`rounded-full px-2.5 py-1 text-xs font-bold ${t.bg} ${t.text}`}>{sc}</span></td>; })()}

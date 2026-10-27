@@ -1,5 +1,6 @@
 // One entry per editable table. The admin panel builds its list + form from this.
 // To add a new field later: add it to the SQL table, then add a line here.
+import { FAQ_TOPICS } from "@/lib/faq";
 
 export type FieldType = "text" | "textarea" | "html" | "number" | "bool" | "select" | "image" | "images" | "slug" | "datetime";
 
@@ -204,11 +205,12 @@ export const RESOURCES: Record<string, Resource> = {
   },
   faqs: {
     table: "faqs", title: "FAQs", singular: "question", searchKey: "question", orderBy: "sort_order",
-    description: "Questions and answers on the Contact page. Only one answer opens at a time.",
-    columns: [{ key: "question", label: "Question" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
+    description: "Questions and answers on the FAQ page (grouped by topic) and the Contact page.",
+    columns: [{ key: "question", label: "Question" }, { key: "topic", label: "Topic" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "question", label: "Question", type: "text", required: true },
       { key: "answer", label: "Answer", type: "textarea", required: true },
+      { key: "topic", label: "Topic", type: "select", options: FAQ_TOPICS.map((t) => ({ value: t.key, label: t.label })), help: "The group it shows under on the FAQ page." },
       sort, active,
     ],
   },
