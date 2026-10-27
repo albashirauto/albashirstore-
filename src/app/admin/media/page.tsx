@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy, FolderOpen, ImagePlus, Loader2, Search, Trash2, X } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
 import { upload } from "@/components/admin/ImageField";
+import StorageMeter from "@/components/admin/StorageMeter";
 
 type F = { path: string; folder: string; name: string; url: string; size: number; at: string; type: string };
 const BUCKET = "media";
@@ -23,6 +24,7 @@ export default function Media() {
   const [busy, setBusy] = useState(false);
   const [drag, setDrag] = useState(false);
   const [msg, setMsg] = useState("");
+  const [tick, setTick] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const flash = (t: string) => { setMsg(t); setTimeout(() => setMsg(""), 2500); };
 
@@ -46,13 +48,14 @@ export default function Media() {
       for (const { t, rows: rs } of rows) for (const r of rs) if (JSON.stringify(r).includes(f.path)) hits.push(`${t}: ${String(r.name ?? r.title ?? r.key ?? r.id ?? "")}`.slice(0, 60));
       m.set(f.path, hits);
     }
-    setUsed(m); setLoaded(true);
+    setUsed(m); setLoaded(true); setTick((t) => t + 1);
   }, [db]);
   useEffect(() => { load(); }, [load]);
 
   const folders = useMemo(() => [...new Set(files.map((f) => f.folder))].sort(), [files]);
   const shown = files.filter((f) => (!folder || f.folder === folder) && (!q || f.name.toLowerCase().includes(q.toLowerCase())) && (only === "all" || !(used.get(f.path)?.length)));
-  const total = files.reduce((n, f) => n + f.size, 0), unused = files.filter((f) => !(used.get(f.path)?.length)).length;
+  const total = files.reduce((n, f) => n + f.size, 0), unusedFiles = files.filter((f) => !(used.get(f.path)?.length)), unused = unusedFiles.length;
+  const unusedBytes = unusedFiles.reduce((n, f) => n + f.size, 0);
 
   const add = async (list: FileList | File[] | null) => {
     const imgs = Array.from(list ?? []).filter((f) => f.type.startsWith("image/"));
@@ -81,6 +84,14 @@ export default function Media() {
         <button onClick={() => input.current?.click()} disabled={busy} className="inline-flex items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark disabled:opacity-60">{busy ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}Upload</button>
         <input ref={input} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = ""; }} />
       </div>
+
+      <StorageMeter refresh={tick}>
+        {loaded && unused > 0 && (
+          <button onClick={() => { setOnly("unused"); setFolder(""); }} className="mt-3 text-sm font-bold text-brand-600 hover:underline">
+            Free up {kb(unusedBytes)}: show the {unused} picture{unused === 1 ? "" : "s"} not used anywhere
+          </button>
+        )}
+      </StorageMeter>
 
       <div className="flex flex-wrap items-center gap-2">
         <button onClick={() => setFolder("")} className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold transition ${!folder ? "bg-brand-900 text-white dark:bg-white dark:text-brand-900" : "bg-card text-muted ring-1 ring-line"}`}><FolderOpen size={14} />All</button>

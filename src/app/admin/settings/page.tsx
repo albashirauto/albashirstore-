@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { BarChart3, Image as ImageIcon, Landmark, Loader2, MapPin, Megaphone, Search, Share2, Store, Users } from "lucide-react";
+import { BarChart3, HardDrive, Image as ImageIcon, Landmark, Loader2, MapPin, Megaphone, Search, Share2, Store, Users } from "lucide-react";
 import { AnalyticsSection, VerificationSection } from "@/components/admin/settings/Tracking";
-import { BrandingSection, LocationSection, PaymentsSection, SeoSection, SiteTextSection, SocialSection, StoreSection, TeamSection } from "@/components/admin/settings/Sections";
+import { BrandingSection, LocationSection, PaymentsSection, SeoSection, SiteTextSection, SocialSection, StorageSection, StoreSection, TeamSection } from "@/components/admin/settings/Sections";
 import type { CardProps, Vals } from "@/components/admin/settings/SettingsCard";
 import { browserClient } from "@/lib/supabase";
 import { SOCIAL_KEYS } from "@/lib/social";
@@ -17,6 +17,7 @@ const TABS = [
   { k: "location", l: "Location", icon: MapPin, C: LocationSection, keys: /^(address|map_link|latitude|longitude)$/ },
   { k: "payments", l: "Delivery & payments", icon: Landmark, C: PaymentsSection, keys: /^(shipping_|pickup_|jazzcash_|easypaisa_|bank_)/ },
   { k: "text", l: "Site text", icon: Megaphone, C: SiteTextSection, keys: /^announcement$/ },
+  { k: "storage", l: "Storage & uploads", icon: HardDrive, C: StorageSection, keys: /^(storage_|upload_max_mb|image_max_px)$/ },
   { k: "seo", l: "SEO & site files", icon: Search, C: SeoSection, keys: /^(seo_|ai_crawlers)/ },
   { k: "tracking", l: "Verification & analytics", icon: BarChart3, C: TrackingTab, keys: /^(google_site_verification|bing_|yandex_|pinterest_|facebook_domain|ga4_|gtm_|meta_pixel|tiktok_pixel|clarity_)/ },
 ] as const;
@@ -27,7 +28,7 @@ function TrackingTab(p: CardProps) {
 }
 
 /**
- * Store settings. Desktop: tabs in a sticky column on the left (all 9 always visible).
+ * Store settings. Desktop: tabs in a sticky column on the left (all always visible).
  * Phone: one scrolling row that keeps the chosen tab in view. Every card saves its own fields.
  */
 export default function Settings() {
@@ -64,7 +65,7 @@ export default function Settings() {
     <div className="space-y-6">
       <div>
         <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Settings</h1>
-        <p className="mt-1.5 text-muted">Store details, logo, team, location, payments, SEO and analytics. Each card has its own Save button.</p>
+        <p className="mt-1.5 text-muted">Store details, logo, team, location, payments, storage, SEO and analytics. Each card has its own Save button.</p>
       </div>
 
       {/* phone / tablet: one scrolling row */}

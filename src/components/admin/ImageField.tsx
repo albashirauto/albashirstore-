@@ -4,9 +4,14 @@ import { useRef, useState } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
 import { cutout as clean } from "@/lib/cutout";
+import { compress, size, storageInfo } from "@/lib/storage";
 
-export async function upload(file: File, folder: string): Promise<string> {
+/** Compresses the picture to the Settings limits, refuses it when storage is full, then uploads. */
+export async function upload(original: File, folder: string): Promise<string> {
   const db = browserClient();
+  const info = await storageInfo();
+  const file = await compress(original, info.maxPx, info.maxUpload).catch(() => original);
+  if (info.bytes + file.size > info.limit) throw new Error(`Storage is full: ${size(info.bytes)} of ${size(info.limit)} used. Delete unused pictures in Media, or raise the limit in Settings > Storage.`);
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await db.storage.from("media").upload(path, file, { cacheControl: "31536000", upsert: false });

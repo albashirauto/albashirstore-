@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
+import { HardDrive, Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
 import SocialIcon from "@/components/SocialIcon";
 import { parseZones, type Zone } from "@/lib/delivery";
 import { PROVINCES, districtsOf, townsOf } from "@/lib/pk-places";
@@ -12,6 +12,7 @@ import { OpenBadge } from "@/components/OpenNow";
 import { parseHours } from "@/lib/hours";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { coords, coordsFromLink, directionsUrl, mapEmbed } from "@/lib/location";
+import StorageMeter from "@/components/admin/StorageMeter";
 import SettingsCard, { Field, input, type CardProps } from "./SettingsCard";
 
 const T = (p: CardProps, k: string, ph = "", type = "text") => (
@@ -328,5 +329,23 @@ export function SeoSection(p: CardProps) {
         </label>
       </div>
     </SettingsCard>
+  );
+}
+
+// ---------------------------------------------------------------- Storage & uploads
+export function StorageSection(p: CardProps) {
+  const keys = ["storage_limit_mb", "storage_warn_pct", "upload_max_mb", "image_max_px"];
+  return (
+    <div className="space-y-6">
+      <StorageMeter refresh={keys.map((k) => p.saved[k] ?? "").join("|")} />
+      <SettingsCard {...p} title="Storage & uploads" sub="How much space pictures may use, and how big each upload can be." icon={HardDrive} keys={keys}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Storage limit (MB)" help="Uploads are blocked once this is used. Supabase free plan: 1024 MB (1 GB). Pro plan: 102400 MB (100 GB).">{T(p, "storage_limit_mb", "1024", "number")}</Field>
+          <Field label="Warn at (% used)" help="The Media page turns amber from this point.">{T(p, "storage_warn_pct", "80", "number")}</Field>
+          <Field label="Max size per picture (MB)" help="Every upload is compressed automatically to fit, so 1 MB keeps photos sharp and saves space.">{T(p, "upload_max_mb", "1", "number")}</Field>
+          <Field label="Max picture width / height (px)" help="Bigger pictures are scaled down. 1600 is plenty for product zoom.">{T(p, "image_max_px", "1600", "number")}</Field>
+        </div>
+      </SettingsCard>
+    </div>
   );
 }
