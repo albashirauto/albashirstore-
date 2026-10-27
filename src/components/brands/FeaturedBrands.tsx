@@ -20,7 +20,7 @@ export default function FeaturedBrands({ brands }: { brands: BrandInfo[] }) {
               <span className="pointer-events-none absolute -right-3 -top-6 font-display text-[7rem] font-extrabold uppercase leading-none text-white/[0.04]">{b.name}</span>
 
               <div className="relative flex items-center justify-between">
-                <BrandMark name={b.name} logo={b.logo} size={60} dark />
+                <BrandMark name={b.name} logo={b.logo} fit={b.logo_fit} size={60} dark />
                 <span className="rounded-full bg-hot px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider">#{i + 1} in store</span>
               </div>
 

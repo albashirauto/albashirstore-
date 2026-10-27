@@ -23,10 +23,10 @@ const countBy = (rows: Product[], pick: (p: Product) => string | undefined) =>
  * Shared product listing for /shop, categories, brands, bikes and deals.
  * `fixed` locks a filter for that page (e.g. the brand on a brand page); `sp` is the URL query.
  */
-export default async function ShopListing({ title, subtitle, eyebrow = "Shop", basePath, fixed = {}, sp, parents = [{ label: "Shop", href: "/shop" }], image, logo, aboutHtml, tiles }: {
+export default async function ShopListing({ title, subtitle, eyebrow = "Shop", basePath, fixed = {}, sp, parents = [{ label: "Shop", href: "/shop" }], image, logo, logoFit, aboutHtml, tiles }: {
   title: string; subtitle?: string; eyebrow?: string; basePath: string; fixed?: ProductQuery; sp: SP; parents?: { label: string; href: string }[];
   /** category picture or brand logo in the banner */
-  image?: string | null; logo?: string | null;
+  image?: string | null; logo?: string | null; logoFit?: string | null;
   /** owner-written description shown under the products (also good for SEO) */
   aboutHtml?: string | null;
   /** quick links shown above the products, e.g. sub-categories or bike models */
@@ -77,7 +77,7 @@ export default async function ShopListing({ title, subtitle, eyebrow = "Shop", b
         crumb={title} parents={parents} eyebrow={eyebrow} title={title}
         sub={subtitle ?? "Filter by category, brand or the bike you ride."}
         stats={[{ label: "Parts", value: base.length }, ...(lowest ? [{ label: "From", value: money(lowest) }] : [])]}
-        image={image} logo={logo}
+        image={image} logo={logo} logoFit={logoFit}
       />
 
       <div className="relative z-10 mx-auto -mt-10 max-w-7xl px-4">

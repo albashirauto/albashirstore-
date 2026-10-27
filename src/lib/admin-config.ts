@@ -98,6 +98,7 @@ export const RESOURCES: Record<string, Resource> = {
       { key: "name", label: "Brand name", type: "text", required: true },
       { key: "slug", label: "Web address (slug)", type: "slug", from: "name", required: true },
       { key: "logo", label: "Logo", type: "image", cutout: true, help: "PNG with transparent or white background. Shown on product cards, product pages, the menu and brand pages." },
+      { key: "logo_fit", label: "Logo display", type: "select", options: [{ value: "stretch", label: "Stretch to fill the box" }, { value: "cover", label: "Fill the box (trim edges, no stretching)" }, { value: "contain", label: "Original shape (whole logo, may leave space)" }], help: "How the logo fills its box on cards, the menu and brand pages." },
       { key: "country", label: "Country", type: "text", half: true, help: "e.g. Pakistan, Japan, China" },
       { key: "website", label: "Website", type: "text", half: true },
       { key: "description_html", label: "About the brand (shown on the brand page)", type: "html" },

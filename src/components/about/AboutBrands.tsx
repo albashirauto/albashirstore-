@@ -2,6 +2,7 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import SectionTitle from "@/components/SectionTitle";
 import type { Brand } from "@/lib/types";
+import { fitClass, isContain } from "@/lib/logoFit";
 
 export default function AboutBrands({ brands }: { brands: Brand[] }) {
   if (!brands.length) return null;
@@ -17,7 +18,7 @@ export default function AboutBrands({ brands }: { brands: Brand[] }) {
                 <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-brand-100),transparent_70%)] opacity-0 transition duration-500 group-hover:opacity-100" />
                 {b.logo
                   // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={b.logo} alt={b.name} loading="lazy" className="absolute inset-0 m-auto h-full w-full object-contain p-1.5 transition duration-500 group-hover:scale-[1.04]" />
+                  ? <img src={b.logo} alt={b.name} loading="lazy" className={`absolute inset-0 m-auto h-full w-full ${fitClass(b.logo_fit)} ${isContain(b.logo_fit) ? "p-1.5" : ""} transition duration-500 group-hover:scale-[1.04]`} />
                   : <span className="relative bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-display text-5xl font-extrabold text-transparent transition duration-500 group-hover:scale-110">{b.name.split(/s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase()}</span>}
               </span>
               <span className="flex flex-1 items-center justify-center border-t border-line px-3 py-3 font-display text-lg font-bold uppercase tracking-wide transition group-hover:bg-brand-600 group-hover:text-white">{b.name}</span>

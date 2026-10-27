@@ -1,7 +1,8 @@
 import Image from "next/image";
+import { fitClass, isContain } from "@/lib/logoFit";
 
 /** Brand logo if uploaded, otherwise a clean monogram (first letters of the name). */
-export default function BrandMark({ name, logo, size = 56, dark = false }: { name: string; logo?: string | null; size?: number; dark?: boolean }) {
+export default function BrandMark({ name, logo, fit, size = 56, dark = false }: { name: string; logo?: string | null; fit?: string | null; size?: number; dark?: boolean }) {
   const initials = name.split(/\s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase();
   return (
     <span
@@ -11,7 +12,7 @@ export default function BrandMark({ name, logo, size = 56, dark = false }: { nam
       } ${logo ? "bg-white!" : ""}`}
     >
       {logo
-        ? <Image src={logo} alt={name} fill sizes={`${size}px`} className={`object-contain ${size < 50 ? "p-1" : "p-2"}`} />
+        ? <Image src={logo} alt={name} fill sizes={`${size}px`} className={`${fitClass(fit)} ${isContain(fit) ? (size < 50 ? "p-1" : "p-2") : ""}`} />
         : <span style={{ fontSize: size * 0.36 }}>{initials}</span>}
     </span>
   );

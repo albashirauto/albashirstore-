@@ -31,7 +31,7 @@ export default async function BrandPage({ params, searchParams }: { params: Prom
   const facts = [brand.country && `Made in ${brand.country}`, "Genuine parts", "Delivery all over Pakistan"].filter(Boolean).join(" · ");
   return (
     <>
-    <ShopListing title={brand.name} eyebrow="Brand" logo={brand.logo} subtitle={facts}
+    <ShopListing title={brand.name} eyebrow="Brand" logo={brand.logo} logoFit={brand.logo_fit} subtitle={facts}
       parents={[{ label: "Brands", href: "/brands" }]} basePath={`/brands/${slug}`} fixed={{ brand: slug }} sp={sp} aboutHtml={brand.description_html} />
     <AdminSeoPanel editHref={`/admin/brands/${brand.id}`} label="brand" input={entityInput("brand", brand, brands, settings.store_name)} />
     </>

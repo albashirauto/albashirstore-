@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { fitClass, isContain } from "@/lib/logoFit";
 
 type Stat = { label: string; value: number | string; plus?: boolean };
 
 /** Slim branded banner for listing pages: breadcrumb, eyebrow, title, intro and a few stats. */
-export default function PageHero({ crumb, parents = [], eyebrow, title, sub, stats = [], image, logo }: { crumb: string; parents?: { label: string; href: string }[]; eyebrow: string; title: string; sub?: string; stats?: Stat[]; image?: string | null; logo?: string | null }) {
+export default function PageHero({ crumb, parents = [], eyebrow, title, sub, stats = [], image, logo, logoFit }: { crumb: string; parents?: { label: string; href: string }[]; eyebrow: string; title: string; sub?: string; stats?: Stat[]; image?: string | null; logo?: string | null; logoFit?: string | null }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-900 text-white">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,var(--color-brand-600),transparent_60%)]" />
@@ -26,9 +27,9 @@ export default function PageHero({ crumb, parents = [], eyebrow, title, sub, sta
         <div className="mt-6 flex flex-wrap items-end justify-between gap-8">
           <div className="flex items-center gap-5">
             {(logo || image) && (
-              <span className={`relative grid shrink-0 place-items-center overflow-hidden ${logo ? "h-24 w-24 rounded-2xl bg-white p-3 shadow-xl" : "h-24 w-24 rounded-2xl ring-4 ring-white/15 md:h-28 md:w-28"}`}>
+              <span className={`relative grid shrink-0 place-items-center overflow-hidden ${logo ? `h-24 w-24 rounded-2xl bg-white shadow-xl ${isContain(logoFit) ? "p-3" : ""}` : "h-24 w-24 rounded-2xl ring-4 ring-white/15 md:h-28 md:w-28"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={(logo || image)!} alt="" className={logo ? "max-h-full max-w-full object-contain" : "h-full w-full object-cover"} />
+                <img src={(logo || image)!} alt="" className={logo ? (isContain(logoFit) ? "max-h-full max-w-full object-contain" : `h-full w-full ${fitClass(logoFit)}`) : "h-full w-full object-cover"} />
               </span>
             )}
           <div>

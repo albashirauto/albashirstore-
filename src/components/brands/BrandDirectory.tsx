@@ -37,7 +37,7 @@ export default function BrandDirectory({ brands }: { brands: BrandInfo[] }) {
           {shown.map((b, i) => (
             <motion.div key={b.id} layout initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.45, delay: Math.min(i, 11) * 0.03, ease }}>
               <Link href={`/brands/${b.slug}`} className="group relative flex h-full items-center gap-4 rounded-2xl border border-line bg-card p-4 transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
-                <BrandMark name={b.name} logo={b.logo} size={56} />
+                <BrandMark name={b.name} logo={b.logo} fit={b.logo_fit} size={56} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-display text-xl font-bold uppercase leading-tight tracking-wide transition group-hover:text-brand-600">{b.name}</span>
                   <span className="block text-xs text-muted">{b.count} parts{b.cats.length > 0 && ` · ${b.cats.slice(0, 2).join(", ")}`}</span>

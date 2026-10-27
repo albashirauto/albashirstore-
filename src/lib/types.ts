@@ -7,6 +7,7 @@ export type Variant = { name: string; sku?: string | null; price?: number | null
 
 export type Brand = {
   id: string; name: string; slug: string; logo?: string | null; sort_order?: number; active?: boolean;
+  logo_fit?: "stretch" | "cover" | "contain" | null;
   description_html?: string | null; country?: string | null; website?: string | null;
   seo_title?: string | null; seo_description?: string | null; focus_keywords?: string | null;
 };

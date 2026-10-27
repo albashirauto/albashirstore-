@@ -134,7 +134,7 @@ export default function DesktopNav({ settings, categories, vehicles, brands }: {
                     {brands.map((b, i) => (
                       <motion.div key={b.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3, ease }}>
                         <Link href={`/brands/${b.slug}`} onClick={close} title={b.name} className="group flex h-16 items-center gap-3 rounded-xl border border-line bg-white px-3 font-display text-lg font-bold uppercase tracking-wide text-fg/70 transition hover:-translate-y-0.5 hover:border-brand-500/50 hover:text-brand-600 hover:shadow-md dark:bg-card">
-                          <BrandMark name={b.name} logo={b.logo} size={44} />
+                          <BrandMark name={b.name} logo={b.logo} fit={b.logo_fit} size={44} />
                           <span className="min-w-0 truncate leading-tight">{b.name}</span>
                         </Link>
                       </motion.div>
