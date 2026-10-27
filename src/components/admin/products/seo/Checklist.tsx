@@ -21,11 +21,13 @@ export default function Checklist({ checks }: { checks: Check[] }) {
         return (
           <div key={g}>
             <button type="button" onClick={() => setOpen(isOpen ? null : g)} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold transition hover:bg-soft/60">
-              <span className="flex-1">{g}</span>
-              {errors > 0 && <span className="rounded-full bg-hot/10 px-2 py-0.5 text-xs text-hot">{errors} error{errors > 1 ? "s" : ""}</span>}
-              {warns > 0 && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{warns} to improve</span>}
-              {!errors && !warns && <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">All good</span>}
-              <ChevronDown size={16} className={`text-muted transition ${isOpen ? "rotate-180" : ""}`} />
+              <span className="min-w-0 flex-1 leading-snug">{g}</span>
+              <span className="flex flex-wrap items-center justify-end gap-1.5">
+                {errors > 0 && <span className="whitespace-nowrap rounded-full bg-hot/10 px-2.5 py-1 text-xs leading-none text-hot">{errors} error{errors > 1 ? "s" : ""}</span>}
+                {warns > 0 && <span className="whitespace-nowrap rounded-full bg-amber-100 px-2.5 py-1 text-xs leading-none text-amber-800">{warns} to improve</span>}
+                {!errors && !warns && <span className="whitespace-nowrap rounded-full bg-green-100 px-2.5 py-1 text-xs leading-none text-green-800">All good</span>}
+              </span>
+              <ChevronDown size={16} className={`shrink-0 text-muted transition ${isOpen ? "rotate-180" : ""}`} />
             </button>
             <AnimatePresence initial={false}>
               {isOpen && (
