@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Bike, Caravan, ChevronDown, LayoutGrid, Motorbike, Truck } from "lucide-react";
 import CategoryIcon from "@/components/CategoryIcon";
+import BrandMark from "@/components/brands/BrandMark";
 import type { Brand, Category, Settings, Vehicle } from "@/lib/types";
 
 type Mega = "cats" | "bikes" | "brands";
@@ -133,9 +134,9 @@ export default function DesktopNav({ settings, categories, vehicles, brands }: {
                   <div className="grid grid-cols-4 gap-3 xl:grid-cols-6">
                     {brands.map((b, i) => (
                       <motion.div key={b.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3, ease }}>
-                        <Link href={`/brands/${b.slug}`} onClick={close} title={b.name} className="grid h-16 place-items-center rounded-xl border border-line bg-white px-3 text-center font-display text-lg font-bold uppercase tracking-wide text-fg/70 transition hover:-translate-y-0.5 hover:border-brand-500/50 hover:text-brand-600 hover:shadow-md dark:bg-card">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          {b.logo ? <img src={b.logo} alt={b.name} className="max-h-10 max-w-full object-contain" /> : b.name}
+                        <Link href={`/brands/${b.slug}`} onClick={close} title={b.name} className="group flex h-16 items-center gap-3 rounded-xl border border-line bg-white px-3 font-display text-lg font-bold uppercase tracking-wide text-fg/70 transition hover:-translate-y-0.5 hover:border-brand-500/50 hover:text-brand-600 hover:shadow-md dark:bg-card">
+                          <BrandMark name={b.name} logo={b.logo} size={44} />
+                          <span className="min-w-0 truncate leading-tight">{b.name}</span>
                         </Link>
                       </motion.div>
                     ))}
