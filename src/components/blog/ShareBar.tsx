@@ -13,7 +13,7 @@ export default function ShareBar({ url, title }: { url: string; title: string })
   return (
     <div className="mt-10 flex flex-wrap items-center gap-2 border-t border-line pt-6">
       <span className="mr-1 text-sm font-bold text-muted">Share:</span>
-      <a href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`} target="_blank" rel="noreferrer" className={`${btn} bg-[#25D366] text-white`}><Mark path={siWhatsapp.path} />WhatsApp</a>
+      <a href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`} target="_blank" rel="noreferrer" className={`${btn} bg-[#118043] text-white`}><Mark path={siWhatsapp.path} />WhatsApp</a>
       <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`} target="_blank" rel="noreferrer" className={`${btn} bg-[#1877F2] text-white`}><Mark path={siFacebook.path} />Facebook</a>
       <a href={`https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noreferrer" className={`${btn} bg-black text-white`}><Mark path={siX.path} />Post</a>
       <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }} className={`${btn} border border-line`}>

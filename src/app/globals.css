@@ -63,6 +63,8 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.
 }
 @keyframes shine { to { transform: translateX(260%) skewX(-18deg); } }
 @keyframes float-y { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+/* slide up without fading, so the element still counts as painted for LCP */
+@keyframes rise { from { transform: translateY(20px); } to { transform: translateY(0); } }
 @keyframes streak { from { transform: translateX(-120%); } to { transform: translateX(220%); } }
 
 .animate-spin-slow { animation: spin-slow 24s linear infinite; }

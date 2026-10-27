@@ -15,7 +15,7 @@ export default function TrustBar({ features }: { features: Feature[] }) {
                 <FeatureIcon name={f.icon} size={22} />
               </span>
               <div>
-                <h3 className="text-lg font-bold leading-tight">{f.title}</h3>
+                <p className="text-lg font-bold leading-tight">{f.title}</p>
                 {f.body && <p className="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>}
               </div>
             </div>

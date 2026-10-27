@@ -106,7 +106,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             )}
             {parent && <Link href={`/collections/${parent.slug}`} className="rounded-full bg-soft px-3 py-1 text-fg/80 transition hover:bg-brand-50 hover:text-brand-600">{parent.name}</Link>}
             {p.category && <Link href={`/collections/${p.category.slug}`} className="rounded-full bg-soft px-3 py-1 text-fg/80 transition hover:bg-brand-50 hover:text-brand-600">{parent ? "↳ " : ""}{p.category.name}</Link>}
-            {p.vehicle && <Link href={`/vehicles/${p.vehicle.slug}`} className="rounded-full border border-green-600/30 bg-green-600/10 px-3 py-1 text-green-700 transition hover:bg-green-600 hover:text-white">Fits {p.vehicle.name}</Link>}
+            {p.vehicle && <Link href={`/vehicles/${p.vehicle.slug}`} className="rounded-full border border-green-600/30 bg-green-600/10 px-3 py-1 text-green-800 transition hover:bg-green-700 dark:text-green-300 hover:text-white">Fits {p.vehicle.name}</Link>}
           </div>
           <h1 className="mt-3 text-4xl font-extrabold leading-tight md:text-5xl">{p.name}</h1>
           <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-muted transition hover:text-brand-600">
@@ -118,7 +118,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {off > 0 && <><span className="pb-1.5 text-lg text-muted line-through">{money(p.compare_price!)}</span><span className="mb-1.5 rounded-full bg-hot px-3 py-1 text-sm font-bold text-white">Save {off}%</span></>}
           </div>
 
-          <p className={`mt-3 inline-flex items-center gap-2 text-sm font-bold ${!out ? "text-green-600" : "text-hot"}`}>
+          <p className={`mt-3 inline-flex items-center gap-2 text-sm font-bold ${!out ? "text-green-700" : "text-hot"}`}>
             <span className={`h-2.5 w-2.5 rounded-full ${!out ? "bg-green-500" : "bg-hot"}`} />
             {out ? "Sold out" : low ? `Only ${low} left` : "In stock"}
           </p>
@@ -130,7 +130,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <AddToCart product={p} />
           <div className="mt-3 flex flex-wrap gap-3">
           <WishButton product={p} variant="full" />
-          <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(`Hello, I want to order: ${p.name}`)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border-2 border-[#25D366] px-6 py-3 font-bold text-[#128C4A] transition hover:bg-[#25D366] hover:text-white">
+          <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(`Hello, I want to order: ${p.name}`)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border-2 border-[#25D366] px-6 py-3 font-bold text-[#0f7a3f] transition hover:bg-[#118043] hover:text-white">
             <WhatsAppIcon size={19} />Order on WhatsApp
           </a>
           </div>

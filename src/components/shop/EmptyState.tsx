@@ -14,7 +14,7 @@ export default function EmptyState({ clearHref, q, whatsapp, popular }: { clearH
         <Link href={`/request-part${q ? `?part=${encodeURIComponent(q)}` : ""}`} className="inline-flex items-center gap-2 rounded-full bg-hot px-6 py-2.5 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark"><Send size={16} />Request {q ? "this part" : "a part"}</Link>
         <Link href={clearHref} className="rounded-full border-2 border-line px-6 py-2 font-bold transition hover:border-brand-500 hover:text-brand-600">Clear filters</Link>
         {whatsapp && (
-          <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hello, do you have ${q || "this part"}?`)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-2.5 font-bold text-white transition hover:bg-[#1ebe5b]">
+          <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hello, do you have ${q || "this part"}?`)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#118043] px-6 py-2.5 font-bold text-white transition hover:bg-[#0c6b37]">
             <WhatsAppIcon size={17} />Ask on WhatsApp
           </a>
         )}

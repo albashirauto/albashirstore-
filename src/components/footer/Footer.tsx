@@ -42,7 +42,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
                   </a>
                 )}
                 {settings.whatsapp && (
-                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[#25D366] py-2.5 text-sm font-bold transition hover:bg-[#1ebe5b]">
+                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[#118043] py-2.5 text-sm font-bold transition hover:bg-[#0c6b37]">
                     <WhatsAppIcon size={18} />Chat on WhatsApp
                   </a>
                 )}
@@ -52,7 +52,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
           <Reveal y={16} delay={0.08}>
-            <h3 className="text-xl font-bold uppercase">Shop</h3>
+            <h2 className="text-xl font-bold uppercase">Shop</h2>
             <ul className="mt-4 grid gap-2.5">
               {categories.slice(0, 7).map((c) => <li key={c.id}><Link className={link} href={`/collections/${c.slug}`}>{dash}{c.name}</Link></li>)}
               <li><Link className={`${link} font-bold text-hot hover:text-white`} href="/categories">{dash}All categories →</Link></li>
@@ -60,7 +60,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
           </Reveal>
 
           <Reveal y={16} delay={0.12}>
-            <h3 className="text-xl font-bold uppercase">Explore</h3>
+            <h2 className="text-xl font-bold uppercase">Explore</h2>
             <ul className="mt-4 grid gap-2.5">
               <li><Link className={link} href="/promotions">{dash}Deal zone</Link></li>
               <li><Link className={link} href="/vehicles">{dash}Shop by bike</Link></li>
@@ -72,7 +72,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
           </Reveal>
 
           <Reveal y={16} delay={0.16}>
-            <h3 className="text-xl font-bold uppercase">Help & policies</h3>
+            <h2 className="text-xl font-bold uppercase">Help & policies</h2>
             <ul className="mt-4 grid gap-2.5">
               <li><Link className={link} href="/faq">{dash}FAQ</Link></li>
               <li><Link className={link} href="/track">{dash}Track my order</Link></li>

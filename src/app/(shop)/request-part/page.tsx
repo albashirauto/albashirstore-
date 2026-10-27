@@ -43,7 +43,7 @@ export default async function RequestPart({ searchParams }: { searchParams: Prom
             <div className="rounded-2xl bg-brand-900 p-5 text-white">
               <p className="flex items-center gap-2 font-display text-2xl font-bold uppercase leading-tight"><Camera size={22} />Have a photo?</p>
               <p className="mt-1 text-sm text-white/70">A photo of the old part is the fastest way to find the right one.</p>
-              <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Assalam o Alaikum, I need this part:")}`} target="_blank" rel="noreferrer" className="mt-4 flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />Send it on WhatsApp</a>
+              <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Assalam o Alaikum, I need this part:")}`} target="_blank" rel="noreferrer" className="mt-4 flex items-center justify-center gap-2 rounded-full bg-[#118043] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />Send it on WhatsApp</a>
             </div>
           )}
         </aside>

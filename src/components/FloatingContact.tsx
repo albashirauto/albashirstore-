@@ -46,7 +46,7 @@ export default function FloatingContact({ whatsapp }: { whatsapp: string }) {
       </AnimatePresence>
 
       <a href={href} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp" onClick={close}
-        className="group flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:bg-[#1ebe5b] hover:shadow-xl hover:shadow-[#25D366]/40">
+        className="group flex h-14 items-center overflow-hidden rounded-full bg-[#118043] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:bg-[#0c6b37] hover:shadow-xl hover:shadow-[#25D366]/40">
         <span className="grid h-14 w-14 shrink-0 place-items-center">
           <WhatsAppIcon size={28} className="animate-wiggle" />
         </span>

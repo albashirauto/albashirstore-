@@ -96,7 +96,7 @@ export default function AboutOwners({ owners, store, title, sub }: { owners: Own
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {o.whatsapp && (
                   <a href={`https://wa.me/${waNumber(o.phone)}`} target="_blank" rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 font-bold text-white shadow-lg shadow-[#25D366]/30 transition hover:-translate-y-0.5 hover:bg-[#1ebe5b]">
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#118043] px-6 py-4 font-bold text-white shadow-lg shadow-[#25D366]/30 transition hover:-translate-y-0.5 hover:bg-[#0c6b37]">
                     <WhatsAppIcon size={20} />Chat on WhatsApp
                   </a>
                 )}

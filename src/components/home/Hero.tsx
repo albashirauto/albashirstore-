@@ -44,9 +44,10 @@ export default function Hero({ banners, vehicles, settings }: { banners: Banner[
             <span className="h-px w-6 bg-hot" />{settings.tagline || "Spare parts for every ride"}
           </motion.p>
 
-          <motion.h1 variants={up} className="max-w-2xl text-5xl font-extrabold uppercase leading-[0.95] sm:text-6xl lg:text-[5rem]">
+          {/* plain CSS slide-in, never hidden: the headline is the page's LCP, so it must paint before the JS loads */}
+          <h1 className="max-w-2xl animate-[rise_0.7s_cubic-bezier(0.22,1,0.36,1)_both] text-5xl font-extrabold uppercase leading-[0.95] sm:text-6xl lg:text-[5rem]">
             The right part.<br /><span className="text-hot">Right away.</span>
-          </motion.h1>
+          </h1>
 
           <motion.p variants={up} className="mt-6 max-w-lg text-lg leading-relaxed text-white/75">
             Genuine and imported parts for motorcycles, rickshaws, loaders and cycles, delivered across Pakistan.
@@ -59,7 +60,7 @@ export default function Hero({ banners, vehicles, settings }: { banners: Banner[
               placeholder="Search by part name or number"
               className="min-w-0 flex-1 bg-transparent px-2 py-3 text-base text-[#0b1330] outline-none placeholder:text-[#5b6482]"
             />
-            <button className="inline-flex shrink-0 items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold transition hover:bg-hot-dark">
+            <button aria-label="Search" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold transition hover:bg-hot-dark">
               <span className="hidden sm:inline">Search</span><ArrowRight size={18} />
             </button>
           </motion.form>

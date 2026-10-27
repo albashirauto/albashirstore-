@@ -31,7 +31,7 @@ export default async function FaqPage() {
             <p className="font-display text-2xl font-bold uppercase leading-tight">Still need help?</p>
             <p className="mt-1 text-sm text-white/70">Send a photo of the part or your bike model. We tell you what fits.</p>
             <div className="mt-4 space-y-2">
-              {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp us</a>}
+              {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#118043] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp us</a>}
               {settings.phone && <a href={`tel:${settings.phone}`} className="flex items-center justify-center gap-2 rounded-full bg-white/10 py-2.5 text-sm font-bold transition hover:bg-white/20"><Phone size={16} />{settings.phone}</a>}
             </div>
           </div>

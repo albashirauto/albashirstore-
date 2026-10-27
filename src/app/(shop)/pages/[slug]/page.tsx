@@ -75,7 +75,7 @@ export default async function CmsPage({ params }: { params: Promise<{ slug: stri
             <p className="font-display text-2xl font-bold uppercase leading-tight">Questions?</p>
             <p className="mt-1 text-sm text-white/70">Ask us before you order. We reply fast.</p>
             <div className="mt-4 space-y-2">
-              {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp us</a>}
+              {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-full bg-[#118043] py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp us</a>}
               {settings.phone && <a href={`tel:${settings.phone}`} className="flex items-center justify-center gap-2 rounded-full bg-white/10 py-2.5 text-sm font-bold transition hover:bg-white/20"><Phone size={16} />{settings.phone}</a>}
               {settings.email && <a href={`mailto:${settings.email}`} className="flex items-center justify-center gap-2 break-all rounded-full py-2 text-sm font-semibold text-white/80 transition hover:text-white"><Mail size={15} />{settings.email}</a>}
             </div>

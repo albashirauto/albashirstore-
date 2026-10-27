@@ -34,7 +34,7 @@ export default function PartRequestForm({ initialPart = "", bikes, whatsapp }: {
             <h2 className="mt-4 text-3xl font-extrabold uppercase text-brand-900 dark:text-white">Request sent</h2>
             <p className="mx-auto mt-2 max-w-md text-muted">{done}</p>
             {whatsapp && (
-              <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(waText)}`} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-6 py-3 font-bold text-white shadow-lg shadow-[#25d366]/25 transition hover:-translate-y-0.5">
+              <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(waText)}`} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#118043] px-6 py-3 font-bold text-white shadow-lg shadow-[#25d366]/25 transition hover:-translate-y-0.5">
                 <WhatsAppIcon size={19} />Send a photo on WhatsApp
               </a>
             )}

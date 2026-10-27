@@ -117,7 +117,7 @@ export default function Carts() {
                 {c.items.length > 5 && <li className="text-xs text-muted">+ {c.items.length - 5} more</li>}
               </ul>
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                {c.status !== "recovered" && <button onClick={() => remind(c)} className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#1ebe5b]"><WhatsAppIcon size={16} />{c.status === "contacted" ? "Remind again" : "Send reminder"}</button>}
+                {c.status !== "recovered" && <button onClick={() => remind(c)} className="inline-flex items-center gap-1.5 rounded-full bg-[#118043] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#0c6b37]"><WhatsAppIcon size={16} />{c.status === "contacted" ? "Remind again" : "Send reminder"}</button>}
                 <a href={`tel:${c.phone}`} className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-sm font-bold transition hover:border-brand-600"><Phone size={14} />Call</a>
                 {c.status === "recovered" && c.recovered_order && <Link href={`/admin/orders?open=${c.recovered_order}`} className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-sm font-bold transition hover:border-brand-600"><Check size={14} />View order</Link>}
                 <span className="ml-auto" />

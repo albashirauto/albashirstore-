@@ -10,7 +10,8 @@ export default function Gallery({ images, alt }: { images: string[]; alt: string
   return (
     <div>
       <div className="group relative aspect-square overflow-hidden rounded-3xl border border-line bg-soft">
-        <AnimatePresence mode="wait">
+        {/* initial={false}: the first photo is visible straight from the server HTML (fast LCP); later swaps fade */}
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div key={i} className="absolute inset-0" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
             <ProductImage src={images[i]} alt={alt} sizes="(max-width:1024px) 100vw, 50vw" priority />
           </motion.div>

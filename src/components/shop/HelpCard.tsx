@@ -13,7 +13,7 @@ export default function HelpCard({ settings }: { settings: Settings }) {
         <p className="mt-2 text-sm text-white/70">Send a photo or your bike model. We will find the right part for you.</p>
         <div className="mt-4 grid gap-2">
           {settings.whatsapp && (
-            <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Hello, I need help finding a part.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] py-2.5 text-sm font-bold transition hover:bg-[#1ebe5b]">
+            <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Hello, I need help finding a part.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#118043] py-2.5 text-sm font-bold transition hover:bg-[#0c6b37]">
               <WhatsAppIcon size={17} />Ask on WhatsApp
             </a>
           )}

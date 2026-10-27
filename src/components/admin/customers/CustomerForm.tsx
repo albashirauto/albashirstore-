@@ -132,7 +132,7 @@ export default function CustomerForm({ id }: { id: string }) {
         {!isNew && phoneKey(f.phone).length >= 10 && (
           <div className="flex flex-wrap gap-2">
             <a href={`tel:${f.phone}`} className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2.5 text-sm font-bold transition hover:border-brand-600"><Phone size={15} />Call</a>
-            <a href={`https://wa.me/${wa(f.phone)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white"><WhatsAppIcon size={16} />WhatsApp</a>
+            <a href={`https://wa.me/${wa(f.phone)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-[#118043] px-4 py-2.5 text-sm font-bold text-white"><WhatsAppIcon size={16} />WhatsApp</a>
             <Link href={`/admin/orders/new?phone=${encodeURIComponent(f.phone)}`} className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25"><Plus size={15} />New order</Link>
           </div>
         )}

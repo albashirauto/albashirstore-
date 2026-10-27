@@ -93,7 +93,7 @@ export default async function Wholesale() {
                 ))}
               </ol>
               <div className="mt-6 flex flex-wrap gap-3">
-                {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Assalam o Alaikum, I want to buy parts wholesale.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp your list</a>}
+                {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent("Assalam o Alaikum, I want to buy parts wholesale.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#118043] px-5 py-2.5 text-sm font-bold text-white transition hover:brightness-110"><WhatsAppIcon size={17} />WhatsApp your list</a>}
                 {settings.phone && <a href={`tel:${settings.phone}`} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm font-bold transition hover:bg-white/20"><Phone size={16} />{settings.phone}</a>}
               </div>
             </section>

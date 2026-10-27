@@ -49,7 +49,7 @@ export default function EnquiryForm({ whatsapp, bikes }: { whatsapp?: string; bi
           </label>
         </div>
 
-        <button className="group mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-[#25D366]/25 transition hover:-translate-y-0.5 hover:bg-[#1ebe5b] sm:w-auto">
+        <button className="group mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#118043] px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-[#25D366]/25 transition hover:-translate-y-0.5 hover:bg-[#0c6b37] sm:w-auto">
           <WhatsAppIcon size={20} />Send on WhatsApp<Send size={16} className="transition group-hover:translate-x-1" />
         </button>
       </form>

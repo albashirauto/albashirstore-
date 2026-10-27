@@ -111,6 +111,17 @@ function Popup() {
   const { list, mobile } = useEligible(campaigns, "popup", preview);
   const [open, setOpen] = useState<Campaign | null>(null);
   const done = useRef(false);
+  const born = useRef(0);
+  // popups wait for the visitor's first scroll / tap / key: the page content paints first (fast LCP),
+  // and Google does not count it as an intrusive pop-up on landing
+  const [engaged, setEngaged] = useState(false);
+  useEffect(() => {
+    born.current = Date.now();
+    const on = () => setEngaged(true), opts = { once: true, passive: true } as const;
+    const events = ["scroll", "pointerdown", "keydown", "touchstart"] as const;
+    events.forEach((e) => window.addEventListener(e, on, opts));
+    return () => events.forEach((e) => window.removeEventListener(e, on));
+  }, []);
   // only one popup ever: the highest priority one this visitor has not had too often
   const c = list.find((x) => x.id === preview || !seenEnough(x));
   useEffect(() => {
@@ -119,8 +130,10 @@ function Popup() {
     // preview: open straight away, whatever the trigger
     if (c.id === preview) { const t = setTimeout(show, 600); return () => clearTimeout(t); }
     const trigger = r.trigger ?? "delay";
+    if ((trigger === "load" || trigger === "delay") && !engaged) return;
     if (trigger === "load") { show(); return; }
-    if (trigger === "delay") { const t = setTimeout(show, Math.max(0, r.delay ?? 3) * 1000); return () => clearTimeout(t); }
+    // the delay counts from page load; if it has already passed, open on the first scroll / tap
+    if (trigger === "delay") { const t = setTimeout(show, Math.max(0, (r.delay ?? 3) * 1000 - (Date.now() - born.current))); return () => clearTimeout(t); }
     if (trigger === "scroll") {
       const on = () => { const h = document.documentElement; if ((h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) * 100 >= (r.scroll ?? 40)) show(); };
       window.addEventListener("scroll", on, { passive: true }); return () => window.removeEventListener("scroll", on);
@@ -129,7 +142,7 @@ function Popup() {
     if (mobile) { const t = setTimeout(show, 12000); return () => clearTimeout(t); }
     const on = (e: MouseEvent) => { if (e.clientY <= 0) show(); };
     document.addEventListener("mouseout", on); return () => document.removeEventListener("mouseout", on);
-  }, [c, mobile, track, preview]);
+  }, [c, mobile, track, preview, engaged]);
   useEffect(() => {
     if (!open) return;
     const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(null); track(open.id, "close"); } };

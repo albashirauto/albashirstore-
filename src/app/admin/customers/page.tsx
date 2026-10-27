@@ -169,7 +169,7 @@ export default function Customers() {
                       <Link href={profileHref(c)} className="rounded-full border border-line px-3 py-1.5 text-xs font-bold transition hover:border-brand-600 hover:text-brand-600">{c.profileId ? "Profile" : "Add details"}</Link>
                       <Link href={`/admin/orders/new?phone=${encodeURIComponent(c.phone)}`} className="rounded-full border border-line px-3 py-1.5 text-xs font-bold transition hover:border-brand-600 hover:text-brand-600">+ Order</Link>
                       <a href={`tel:${c.phone}`} aria-label={`Call ${c.name}`} className="grid h-8 w-8 place-items-center rounded-full border border-line transition hover:border-brand-600 hover:text-brand-600"><Phone size={14} /></a>
-                      <a href={`https://wa.me/${wa(c.phone)}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${c.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-[#25D366] text-white transition hover:scale-105"><WhatsAppIcon size={15} /></a>
+                      <a href={`https://wa.me/${wa(c.phone)}`} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${c.name}`} className="grid h-8 w-8 place-items-center rounded-full bg-[#118043] text-white transition hover:scale-105"><WhatsAppIcon size={15} /></a>
                     </div>
                   </td>
                 </tr>

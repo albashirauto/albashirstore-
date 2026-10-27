@@ -24,7 +24,7 @@ export default function AboutVisit({ settings }: { settings: Settings }) {
                   <a href={`tel:${settings.phone}`} className="font-display text-2xl font-bold tracking-wide hover:text-brand-600">{settings.phone}</a>
                 </span>
                 {settings.whatsapp && (
-                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#1ebe5b]">
+                  <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#118043] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0c6b37]">
                     <WhatsAppIcon size={18} />WhatsApp
                   </a>
                 )}

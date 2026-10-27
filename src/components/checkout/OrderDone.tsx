@@ -23,7 +23,7 @@ export default function OrderDone({ orderNo, total, method, receiptText, whatsap
         <div className="mt-8 rounded-2xl border border-line bg-card p-5 text-left">
           <p className="font-bold">What happens next</p>
           <ol className="mt-3 space-y-2.5 text-sm text-muted">
-            <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#25D366] text-xs font-bold text-white">1</span>Send your receipt on WhatsApp{payLink ? " with your payment screenshot" : ""}.</li>
+            <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#118043] text-xs font-bold text-white">1</span>Send your receipt on WhatsApp{payLink ? " with your payment screenshot" : ""}.</li>
             <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white">2</span>{payLink ? "We confirm your payment and order." : "We call you to confirm your order. You pay the rider in cash on delivery."}</li>
             <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white"><Truck size={12} /></span>We dispatch and send you the tracking number.</li>
           </ol>
@@ -31,7 +31,7 @@ export default function OrderDone({ orderNo, total, method, receiptText, whatsap
 
         {whatsapp && (
           <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(receiptText)}`} target="_blank" rel="noreferrer"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-4 text-lg font-bold text-white shadow-lg shadow-[#25D366]/30 transition hover:-translate-y-0.5 hover:bg-[#1ebe5b]">
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#118043] py-4 text-lg font-bold text-white shadow-lg shadow-[#25D366]/30 transition hover:-translate-y-0.5 hover:bg-[#0c6b37]">
             <WhatsAppIcon size={22} />Send receipt on WhatsApp
           </a>
         )}
