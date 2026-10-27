@@ -162,7 +162,7 @@ export const RESOURCES: Record<string, Resource> = {
   },
   pages: {
     table: "pages", title: "Pages", singular: "page", searchKey: "title", orderBy: "title",
-    description: "About, Contact, policies and any other page. Shows at /pages/your-slug.",
+    description: "About, Contact, policies and any other page. Shows at /pages/your-slug. Write {{payment_methods}} for the payment methods that are on now; a list item with only {{cod_terms}} shows cash on delivery terms when it is on.",
     columns: [{ key: "title", label: "Title" }, { key: "slug", label: "Address" }, { key: "show_in_footer", label: "In footer", kind: "bool" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "title", label: "Page title", type: "text", required: true },
@@ -222,7 +222,7 @@ export const RESOURCES: Record<string, Resource> = {
   },
   faqs: {
     table: "faqs", title: "FAQs", singular: "question", searchKey: "question", orderBy: "sort_order",
-    description: "Questions and answers on the FAQ page (grouped by topic) and the Contact page.",
+    description: "Questions and answers on the FAQ page (grouped by topic) and the Contact page. Write {{payment_methods}} to show the payment methods that are on now.",
     columns: [{ key: "question", label: "Question" }, { key: "topic", label: "Topic" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "question", label: "Question", type: "text", required: true },

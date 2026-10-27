@@ -6,7 +6,7 @@ import { demoProducts } from "@/lib/demo";
 import { freeQty } from "@/lib/scheme";
 import { parseKey } from "@/lib/stock";
 import type { Product } from "@/lib/types";
-import { PAY_METHODS } from "@/lib/receipt";
+import { codBlocked, codFee, isMethod } from "@/lib/payments";
 import { deliveryQuote } from "@/lib/delivery";
 
 /** Cart key (product id, optionally ~variant index) -> order line with the real database price. */
@@ -32,7 +32,7 @@ export async function subscribe(_prev: unknown, form: FormData) {
 export type OrderInput = {
   name: string; phone: string; email?: string; province?: string; district?: string; city?: string; address: string; note?: string;
   items: { id: string; qty: number }[];
-  /** jazzcash | easypaisa | bank */
+  /** cod (when on in Settings) | jazzcash | easypaisa | bank */
   payment_method?: string;
   /** transaction id the customer got after paying (optional) */
   payment_ref?: string;
@@ -81,7 +81,7 @@ export async function trackOrder(no: string, phone: string): Promise<{ ok: boole
 
 /** Checkout: keep the cart of someone who typed their phone, so the shop can follow up if they leave (Admin > Abandoned carts). */
 export async function saveCart(input: { phone: string; name?: string; city?: string; items: { id: string; slug?: string; name: string; qty: number; price: number }[] }) {
-  if (!hasSupabase || String(input.phone ?? "").replace(/D/g, "").length < 10 || !input.items?.length) return;
+  if (!hasSupabase || String(input.phone ?? "").replace(/\D/g, "").length < 10 || !input.items?.length) return;
   const items = input.items.slice(0, 50).map((i) => ({ id: String(i.id).slice(0, 80), slug: String(i.slug ?? "").slice(0, 120), name: String(i.name).slice(0, 160), qty: Math.max(1, Math.min(999, Number(i.qty) || 1)), price: Math.max(0, Number(i.price) || 0) }));
   const subtotal = items.reduce((n, i) => n + i.price * i.qty, 0);
   await serverClient().rpc("save_cart", { p_phone: input.phone, p_name: input.name ?? "", p_city: input.city ?? "", p_items: items, p_subtotal: subtotal });
@@ -140,11 +140,12 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
   }
   const discount = Math.min(subtotal, Math.max(0, Number(coupon?.discount ?? 0)));
   // delivery by area / free over / pickup: same rules as the checkout page (src/lib/delivery.ts)
-  const shipping = coupon?.free_shipping ? 0 : deliveryQuote(settings, input, subtotal, pickup).fee;
-  const total = subtotal - discount + shipping;
-
-  const method = PAY_METHODS.some((m) => m.key === input.payment_method) ? input.payment_method! : null;
+  const method = isMethod(settings, input.payment_method) ? input.payment_method : null;
   if (!method) return { ok: false, message: "Choose how you will pay." };
+  // cash on delivery charge is kept with the delivery charge on the order
+  const shipping = (coupon?.free_shipping ? 0 : deliveryQuote(settings, input, subtotal, pickup).fee) + (method === "cod" ? codFee(settings) : 0);
+  const total = subtotal - discount + shipping;
+  if (method === "cod" && codBlocked(settings, total)) return { ok: false, message: codBlocked(settings, total) };
   const ref = input.payment_ref?.trim().slice(0, 60) || null;
   const receipt = { lines: lines.map(({ name, qty, price, free }) => ({ name, qty, price, free })), subtotal, shipping, total, discount, coupon: coupon?.code ?? null };
 

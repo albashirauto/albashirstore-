@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Copy, Landmark, Smartphone } from "lucide-react";
-import { PAY_METHODS, type PayMethod } from "@/lib/receipt";
+import { Banknote, Check, Copy, Landmark, Smartphone } from "lucide-react";
+import { money } from "@/lib/format";
+import { codFee, methodsFor } from "@/lib/payments";
+import type { PayMethod } from "@/lib/receipt";
 import type { Settings } from "@/lib/types";
 
 const BRAND: Record<PayMethod, { dot: string; ring: string; icon: React.ElementType }> = {
+  cod: { dot: "bg-emerald-600", ring: "border-emerald-600", icon: Banknote },
   jazzcash: { dot: "bg-[#d71f26]", ring: "border-[#d71f26]", icon: Smartphone },
   easypaisa: { dot: "bg-[#3bb54a]", ring: "border-[#3bb54a]", icon: Smartphone },
   bank: { dot: "bg-brand-600", ring: "border-brand-600", icon: Landmark },
@@ -27,11 +30,13 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** JazzCash / Easypaisa / Bank transfer: account details to send money to + optional transaction id. */
-export default function PaymentPicker({ s, method, setMethod, ref_, setRef, total }: {
-  s: Settings; method: PayMethod | ""; setMethod: (m: PayMethod) => void; ref_: string; setRef: (v: string) => void; total: string;
+/** Cash on delivery (when on in Settings) / JazzCash / Easypaisa / Bank transfer: account details to send money to + optional transaction id. */
+export default function PaymentPicker({ s, method, setMethod, ref_, setRef, total, codBlocked = "" }: {
+  s: Settings; method: PayMethod | ""; setMethod: (m: PayMethod) => void; ref_: string; setRef: (v: string) => void; total: string; codBlocked?: string;
 }) {
+  const methods = methodsFor(s);
   const details: Record<PayMethod, { label: string; value?: string }[]> = {
+    cod: [],
     jazzcash: [{ label: "JazzCash number", value: s.jazzcash_number }, { label: "Account name", value: s.jazzcash_name }],
     easypaisa: [{ label: "Easypaisa number", value: s.easypaisa_number }, { label: "Account name", value: s.easypaisa_name }],
     bank: [{ label: "Bank", value: s.bank_name }, { label: "Account title", value: s.bank_title }, { label: "IBAN / account", value: s.bank_iban }],
@@ -39,22 +44,29 @@ export default function PaymentPicker({ s, method, setMethod, ref_, setRef, tota
 
   return (
     <div>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {PAY_METHODS.map((m) => {
-          const on = method === m.key, b = BRAND[m.key];
+      <div className={`grid gap-2 ${methods.length === 4 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
+        {methods.map((m) => {
+          const on = method === m.key, b = BRAND[m.key], off = m.key === "cod" && !!codBlocked;
           return (
-            <button key={m.key} type="button" onClick={() => setMethod(m.key)} aria-pressed={on}
-              className={`flex items-center gap-3 rounded-xl border-2 p-3.5 text-left font-bold transition ${on ? `${b.ring} bg-card shadow-md` : "border-line hover:border-brand-500/50"}`}>
+            <button key={m.key} type="button" disabled={off} onClick={() => setMethod(m.key)} aria-pressed={on} title={off ? codBlocked : undefined}
+              className={`flex items-center gap-3 rounded-xl border-2 p-3.5 text-left font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${on ? `${b.ring} bg-card shadow-md` : "border-line hover:border-brand-500/50"}`}>
               <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white ${b.dot}`}><b.icon size={17} /></span>
-              <span className="flex-1">{m.label}</span>
+              <span className="flex-1">{m.label}{m.key === "cod" && codFee(s) > 0 && <span className="block text-xs font-semibold text-muted">+ {money(codFee(s))} charge</span>}</span>
               <span className={`grid h-5 w-5 place-items-center rounded-full border-2 ${on ? `${b.ring} ${b.dot}` : "border-line"}`}>{on && <Check size={11} strokeWidth={4} className="text-white" />}</span>
             </button>
           );
         })}
       </div>
 
+      {codBlocked && methods.some((m) => m.key === "cod") && <p className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400">{codBlocked}</p>}
       <AnimatePresence mode="wait">
-        {method && (
+        {method === "cod" && (
+          <motion.div key="cod" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-emerald-600/30 bg-emerald-500/5 p-4 text-sm">
+            <p>Pay <b>{total}</b> in cash to the rider when your parcel arrives.</p>
+            <p className="mt-1 text-muted">{s.cod_note || "We call you to confirm the order before we send it. Please keep the exact amount ready."}</p>
+          </motion.div>
+        )}
+        {method && method !== "cod" && (
           <motion.div key={method} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 rounded-xl border border-line bg-soft p-4">
             <p className="text-sm">Send <b>{total}</b> to:</p>
             <div className="mt-2 space-y-1.5">

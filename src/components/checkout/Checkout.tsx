@@ -16,6 +16,7 @@ import { track } from "@/lib/analytics";
 import type { Settings } from "@/lib/types";
 import OrderDone from "./OrderDone";
 import PaymentPicker from "./PaymentPicker";
+import { codBlocked, codFee, payWords } from "@/lib/payments";
 
 const input = "mt-1 w-full rounded-xl border border-line bg-card px-4 py-3 font-normal outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10";
 
@@ -46,8 +47,12 @@ export default function Checkout({ s }: { s: Settings }) {
   const [f, setF] = useState({ name: "", phone: "", email: "", province: "", district: "", city: "", address: "", note: "" });
   const dq = deliveryQuote(s, f, subtotal, pickup && canPickup);
   const shipping = coupon?.ok && coupon.free_shipping ? 0 : dq.fee;
-  const total = subtotal - discount + shipping;
   const [method, setMethod] = useState<PayMethod | "">("");
+  const codCharge = method === "cod" ? codFee(s) : 0;
+  const total = subtotal - discount + shipping + codCharge;
+  const codStop = codBlocked(s, subtotal - discount + shipping + codFee(s));
+  // cash on delivery chosen, then the cart grew past the limit
+  useEffect(() => { if (method === "cod" && codStop) setMethod(""); }, [method, codStop]);
   const [ref, setRef] = useState("");
   const [done, setDone] = useState<{ no: string; total: number; text: string } | null>(null);
 
@@ -68,7 +73,7 @@ export default function Checkout({ s }: { s: Settings }) {
   }, [subtotal > 0]);
   // phone typed: keep the cart so the shop can follow up if the visitor leaves
   useEffect(() => {
-    if (f.phone.replace(/D/g, "").length < 10 || !items.length || done) return;
+    if (f.phone.replace(/\D/g, "").length < 10 || !items.length || done) return;
     const t = setTimeout(() => { saveCart({ phone: f.phone, name: f.name, city: f.city, items: items.map((i) => ({ id: i.id, slug: i.slug, name: i.name, qty: i.qty, price: i.price })) }).catch(() => {}); }, 1500);
     return () => clearTimeout(t);
   }, [f.phone, f.name, f.city, items, done]);
@@ -81,7 +86,7 @@ export default function Checkout({ s }: { s: Settings }) {
   }, [subtotal]);
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
 
-  if (done) return <OrderDone orderNo={done.no} total={done.total} method={method} receiptText={done.text} whatsapp={s.whatsapp} payLink />;
+  if (done) return <OrderDone orderNo={done.no} total={done.total} method={method} receiptText={done.text} whatsapp={s.whatsapp} payLink={method !== "cod"} />;
 
   if (!items.length)
     return (
@@ -95,7 +100,7 @@ export default function Checkout({ s }: { s: Settings }) {
     e.preventDefault();
     setError("");
     if (!pickup && (!f.province || !f.district || !f.city)) return setError("Choose your province, district and city / town.");
-    if (!method) return setError("Choose how you will pay: JazzCash, Easypaisa or bank transfer.");
+    if (!method) return setError(`Choose how you will pay: ${payWords(s)}.`);
     const tItems = items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty }));
     track("begin_checkout", { value: subtotal, items: tItems });
     start(async () => {
@@ -149,7 +154,7 @@ export default function Checkout({ s }: { s: Settings }) {
           </Step>
 
           <Step n={2} title="Payment" icon={Wallet}>
-            <PaymentPicker s={s} method={method} setMethod={setMethod} ref_={ref} setRef={setRef} total={money(total)} />
+            <PaymentPicker s={s} method={method} setMethod={setMethod} ref_={ref} setRef={setRef} total={money(total)} codBlocked={codStop} />
           </Step>
         </div>
 
@@ -203,6 +208,7 @@ export default function Checkout({ s }: { s: Settings }) {
                   <p className="mt-1 text-xs font-semibold text-green-700 dark:text-green-400">{dq.missing ? `Add ${money(dq.missing)} more for FREE delivery` : "You get FREE delivery!"}</p>
                 </div>
               )}
+              {codCharge > 0 && <div className="flex justify-between"><dt className="text-muted">Cash on delivery charge</dt><dd>{money(codCharge)}</dd></div>}
               <div className="flex justify-between border-t border-line pt-2 text-xl font-extrabold"><dt>Total</dt><dd>{money(total)}</dd></div>
             </dl>
             {error && <p role="alert" className="mt-4 rounded-xl bg-hot/10 p-3 text-sm font-semibold text-hot">{error}</p>}

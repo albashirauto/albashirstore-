@@ -4,6 +4,7 @@ import { ChevronDown, FileText, Mail, Phone } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { getPage, getPages, getSettings } from "@/lib/data";
+import { fillPayment } from "@/lib/payments";
 
 export const revalidate = 60;
 
@@ -36,7 +37,7 @@ export default async function CmsPage({ params }: { params: Promise<{ slug: stri
   if (!p) notFound();
 
   // Content is written by the shop owner in the admin panel
-  const { html, toc } = withAnchors(p.content ?? "");
+  const { html, toc } = withAnchors(fillPayment(p.content ?? "", settings));
   const policy = POLICY.test(slug);
   const updated = p.updated_at ? new Date(p.updated_at).toLocaleDateString("en-PK", { day: "numeric", month: "long", year: "numeric" }) : null;
   const others = pages.filter((x) => x.slug !== slug && x.show_in_footer !== false && !["about", "contact"].includes(x.slug));

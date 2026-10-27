@@ -4,13 +4,15 @@ import FaqBrowser from "@/components/faq/FaqBrowser";
 import PageHero from "@/components/PageHero";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { getFaqs, getSettings } from "@/lib/data";
+import { faqsFor } from "@/lib/payments";
 
 export const metadata = { title: "FAQ: common questions", description: "Answers about ordering, payment, delivery, fitment, returns and warranty at Al Bashir Autos.", alternates: { canonical: "/faq" } };
 export const revalidate = 60;
 
 /** All questions (Admin > FAQs), searchable and grouped by topic. */
 export default async function FaqPage() {
-  const [faqs, settings] = await Promise.all([getFaqs(), getSettings()]);
+  const [all, settings] = await Promise.all([getFaqs(), getSettings()]);
+  const faqs = faqsFor(all, settings);
   const schema = {
     "@context": "https://schema.org", "@type": "FAQPage",
     mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),

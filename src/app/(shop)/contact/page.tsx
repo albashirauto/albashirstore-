@@ -4,6 +4,7 @@ import ContactMethods from "@/components/contact/ContactMethods";
 import EnquiryForm from "@/components/contact/EnquiryForm";
 import PageHero from "@/components/PageHero";
 import { getFaqs, getSettings, getVehicles } from "@/lib/data";
+import { faqsFor } from "@/lib/payments";
 import { coords, teamOf } from "@/lib/location";
 import { SITE_URL } from "@/lib/seo";
 import { NETWORKS, parseCustom } from "@/lib/social";
@@ -33,7 +34,7 @@ export default async function Contact() {
       <ContactMethods settings={settings} />
       <section className="mx-auto mt-16 grid max-w-7xl gap-6 px-4 lg:grid-cols-[1.2fr_1fr]">
         <EnquiryForm whatsapp={settings.whatsapp} bikes={vehicles.map((v) => v.name)} />
-        <ContactFaq items={faqs} />
+        <ContactFaq items={faqsFor(faqs, settings)} />
       </section>
       <AboutVisit settings={settings} />
     </>

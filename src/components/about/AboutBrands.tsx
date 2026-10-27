@@ -19,7 +19,7 @@ export default function AboutBrands({ brands }: { brands: Brand[] }) {
                 {b.logo
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={b.logo} alt={b.name} loading="lazy" className={`absolute inset-0 m-auto h-full w-full ${fitClass(b.logo_fit)} ${isContain(b.logo_fit) ? "p-1.5" : ""} transition duration-500 group-hover:scale-[1.04]`} />
-                  : <span className="relative bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-display text-5xl font-extrabold text-transparent transition duration-500 group-hover:scale-110">{b.name.split(/s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase()}</span>}
+                  : <span className="relative bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-display text-5xl font-extrabold text-transparent transition duration-500 group-hover:scale-110">{b.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase()}</span>}
               </span>
               <span className="flex flex-1 flex-col items-center justify-center border-t border-line px-3 py-3 transition group-hover:bg-brand-600 group-hover:text-white">
                 <span className="font-display text-lg font-bold uppercase tracking-wide">{b.name}</span>

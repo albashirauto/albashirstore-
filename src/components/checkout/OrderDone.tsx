@@ -24,7 +24,7 @@ export default function OrderDone({ orderNo, total, method, receiptText, whatsap
           <p className="font-bold">What happens next</p>
           <ol className="mt-3 space-y-2.5 text-sm text-muted">
             <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#25D366] text-xs font-bold text-white">1</span>Send your receipt on WhatsApp{payLink ? " with your payment screenshot" : ""}.</li>
-            <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white">2</span>We confirm your payment and order.</li>
+            <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white">2</span>{payLink ? "We confirm your payment and order." : "We call you to confirm your order. You pay the rider in cash on delivery."}</li>
             <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-bold text-white"><Truck size={12} /></span>We dispatch and send you the tracking number.</li>
           </ol>
         </div>

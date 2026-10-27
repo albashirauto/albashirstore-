@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HardDrive, Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
+import { Banknote, HardDrive, Image as ImageIcon, Landmark, LocateFixed, MapPin, Megaphone, Phone, Search, Share2, Store, Truck, Users } from "lucide-react";
 import SocialIcon from "@/components/SocialIcon";
 import { parseZones, type Zone } from "@/lib/delivery";
 import { PROVINCES, districtsOf, townsOf } from "@/lib/pk-places";
@@ -223,14 +223,35 @@ export function LocationSection(p: CardProps) {
 export function PaymentsSection(p: CardProps) {
   return (
     <SettingsCard {...p} title="Delivery & payments" sub="Delivery charge and the accounts customers pay into at checkout." icon={Landmark}
-      keys={["shipping_flat", "shipping_free_over", "shipping_zones", "pickup_enabled", "pickup_note", "jazzcash_number", "jazzcash_name", "easypaisa_number", "easypaisa_name", "bank_name", "bank_title", "bank_iban"]}>
+      keys={["shipping_flat", "shipping_free_over", "shipping_zones", "pickup_enabled", "pickup_note", "cod_enabled", "cod_fee", "cod_max", "cod_note", "jazzcash_number", "jazzcash_name", "easypaisa_number", "easypaisa_name", "bank_name", "bank_title", "bank_iban"]}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Normal delivery charge (Rs.)" help="For every area without its own charge below."><div className="relative"><Truck size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" /><input inputMode="numeric" value={p.v.shipping_flat ?? ""} onChange={(e) => p.set("shipping_flat", e.target.value.replace(/[^\d]/g, ""))} placeholder="400" className={`${input} pl-10`} /></div></Field>
-        <Field label="Free delivery over (Rs.)" help="Parts total that gets free delivery. Empty = never free."><input inputMode="numeric" value={p.v.shipping_free_over ?? ""} onChange={(e) => p.set("shipping_free_over", e.target.value.replace(/[^d]/g, ""))} placeholder="e.g. 5000" className={input} /></Field>
+        <Field label="Free delivery over (Rs.)" help="Parts total that gets free delivery. Empty = never free."><input inputMode="numeric" value={p.v.shipping_free_over ?? ""} onChange={(e) => p.set("shipping_free_over", e.target.value.replace(/\D/g, ""))} placeholder="e.g. 5000" className={input} /></Field>
         <div className="sm:col-span-2"><ZoneEditor p={p} /></div>
         <div className="rounded-xl border border-line p-4 sm:col-span-2">
           <label className="flex items-center gap-2.5 text-sm font-bold"><input type="checkbox" checked={p.v.pickup_enabled === "yes"} onChange={(e) => p.set("pickup_enabled", e.target.checked ? "yes" : "")} className="h-4 w-4 accent-brand-600" /><Store size={16} className="text-brand-600" />Customers can collect from the shop (free)</label>
           {p.v.pickup_enabled === "yes" && <div className="mt-3">{T(p, "pickup_note", "e.g. Ready in 2 hours. Open Sat–Thu 8 am – 8 pm.")}</div>}
+        </div>
+        <div className={`rounded-xl border p-4 transition sm:col-span-2 ${p.v.cod_enabled === "yes" ? "border-emerald-600/40 bg-emerald-500/5" : "border-line"}`}>
+          <label className="flex cursor-pointer items-center justify-between gap-4">
+            <span>
+              <span className="flex items-center gap-2 font-bold"><Banknote size={17} className="text-emerald-600" />Cash on delivery</span>
+              <span className="mt-0.5 block text-xs text-muted">{p.v.cod_enabled === "yes" ? "On: shown at checkout, and mentioned in your Terms and FAQ." : "Off: not offered, and not mentioned anywhere on the store."}</span>
+            </span>
+            <input type="checkbox" className="peer sr-only" checked={p.v.cod_enabled === "yes"} onChange={(e) => p.set("cod_enabled", e.target.checked ? "yes" : "")} />
+            <span className="relative h-7 w-12 shrink-0 rounded-full bg-line transition peer-checked:bg-emerald-600 peer-focus-visible:ring-4 peer-focus-visible:ring-emerald-500/20 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+          </label>
+          {p.v.cod_enabled === "yes" && (
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <Field label="Cash on delivery charge (Rs.)" help="Added to the order when the customer picks cash on delivery. Empty = no charge.">
+                <input inputMode="numeric" value={p.v.cod_fee ?? ""} onChange={(e) => p.set("cod_fee", e.target.value.replace(/\D/g, ""))} placeholder="e.g. 100" className={input} />
+              </Field>
+              <Field label="Only for orders up to (Rs.)" help="Bigger orders must pay online. Empty = any amount.">
+                <input inputMode="numeric" value={p.v.cod_max ?? ""} onChange={(e) => p.set("cod_max", e.target.value.replace(/\D/g, ""))} placeholder="e.g. 20000" className={input} />
+              </Field>
+              <Field label="Note at checkout" wide help="Shown when the customer picks cash on delivery.">{T(p, "cod_note", "We call you to confirm the order before we send it. Please keep the exact amount ready.")}</Field>
+            </div>
+          )}
         </div>
         <div className="rounded-xl border border-[#d71f26]/30 p-4 sm:col-span-1">
           <p className="mb-3 text-sm font-bold text-[#d71f26]">JazzCash</p>
@@ -272,7 +293,7 @@ function ZoneEditor({ p }: { p: CardProps }) {
             <select value={z.province} onChange={(e) => edit(i, { province: e.target.value, district: undefined, city: undefined })} className={input} aria-label="Province">{PROVINCES.map((x) => <option key={x}>{x}</option>)}</select>
             <select value={z.district ?? ""} onChange={(e) => edit(i, { district: e.target.value || undefined, city: undefined })} className={input} aria-label="District"><option value="">Whole province</option>{districtsOf(z.province).map((x) => <option key={x}>{x}</option>)}</select>
             <select value={z.city ?? ""} disabled={!z.district} onChange={(e) => edit(i, { city: e.target.value || undefined })} className={`${input} disabled:opacity-50`} aria-label="City"><option value="">{z.district ? "Whole district" : "—"}</option>{z.district && townsOf(z.province, z.district).map((x) => <option key={x}>{x}</option>)}</select>
-            <input inputMode="numeric" value={String(z.fee)} onChange={(e) => edit(i, { fee: Number(e.target.value.replace(/D/g, "")) || 0 })} className={input} aria-label="Charge (Rs.)" title="Charge (Rs.)" />
+            <input inputMode="numeric" value={String(z.fee)} onChange={(e) => edit(i, { fee: Number(e.target.value.replace(/\D/g, "")) || 0 })} className={input} aria-label="Charge (Rs.)" title="Charge (Rs.)" />
             <input value={z.days ?? ""} onChange={(e) => edit(i, { days: e.target.value || undefined })} placeholder="e.g. 1–2 days" className={input} aria-label="Delivery time" />
             <span className="flex items-center justify-between gap-2 sm:justify-end"><span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-bold text-muted">{scope(z)}</span><button type="button" onClick={() => save(zones.filter((_, j) => j !== i))} aria-label="Remove area" className="rounded-lg px-2 py-1.5 text-hot hover:bg-hot/10">✕</button></span>
           </li>

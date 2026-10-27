@@ -1,6 +1,7 @@
 // Plain-text receipt for WhatsApp (customer -> shop after checkout, shop -> customer from admin).
 
 export const PAY_METHODS = [
+  { key: "cod", label: "Cash on delivery" },
   { key: "jazzcash", label: "JazzCash" },
   { key: "easypaisa", label: "Easypaisa" },
   { key: "bank", label: "Bank transfer" },
