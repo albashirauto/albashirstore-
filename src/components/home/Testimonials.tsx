@@ -69,7 +69,7 @@ export default function Testimonials({ testimonials }: { testimonials: Testimoni
   const avg = testimonials.reduce((s, t) => s + (t.rating ?? 5), 0) / testimonials.length;
 
   return (
-    <section className="mx-auto mt-24 max-w-7xl px-4">
+    <section className="mx-auto mt-12 max-w-7xl px-4 md:mt-16">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <SectionTitle eyebrow="Reviews" title="What customers say" sub="Real riders, real orders. Here is what they tell us after delivery." />
         <Reveal y={12} className="mb-8 flex items-center gap-4">

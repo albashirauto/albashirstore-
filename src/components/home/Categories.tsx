@@ -12,7 +12,7 @@ export default function Categories({ categories, counts }: { categories: Categor
   if (!list.length) return null;
 
   return (
-    <section className="mx-auto mt-20 max-w-7xl px-4">
+    <section className="mx-auto mt-12 max-w-7xl px-4 md:mt-14">
       <SectionTitle eyebrow="Catalogue" title="Shop by category" sub="Everything a bike, rickshaw or cycle needs, sorted so you find it fast." href="/categories" cta="All categories" />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">

@@ -30,7 +30,7 @@ export default function DealZone({ products }: { products: Product[] }) {
   if (!hero && !tiles.length) return null;
 
   return (
-    <section aria-labelledby="deal-zone" className="relative mt-20 overflow-hidden bg-brand-900 py-12 text-white md:py-14">
+    <section aria-labelledby="deal-zone" className="relative mt-12 overflow-hidden md:mt-14 bg-brand-900 py-12 text-white md:py-14">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,var(--color-brand-600),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgb(225_29_46/0.35),transparent_50%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
 

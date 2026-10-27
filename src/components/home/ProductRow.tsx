@@ -6,7 +6,7 @@ import type { Product } from "@/lib/types";
 export default function ProductRow({ title, sub, href, eyebrow, products }: { title: string; sub?: string; href?: string; eyebrow?: string; products: Product[] }) {
   if (!products.length) return null;
   return (
-    <section className="mx-auto mt-24 max-w-7xl px-4">
+    <section className="mx-auto mt-12 max-w-7xl px-4 md:mt-16">
       <SectionTitle eyebrow={eyebrow} title={title} sub={sub} href={href} />
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {products.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}

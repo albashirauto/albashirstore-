@@ -22,7 +22,7 @@ export default function ByBike({ vehicles }: { vehicles: Vehicle[] }) {
   const shown = type === "all" ? vehicles : vehicles.filter((v) => v.type === type);
 
   return (
-    <section className="mx-auto mt-24 max-w-7xl px-4">
+    <section className="mx-auto mt-12 max-w-7xl px-4 md:mt-16">
       <SectionTitle eyebrow="Fitment" title="Find parts for your bike" sub="Choose your model and see only what fits." href="/vehicles" cta="All models" />
 
       {types.length > 2 && (

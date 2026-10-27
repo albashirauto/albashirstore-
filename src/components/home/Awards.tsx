@@ -16,7 +16,7 @@ export default function Awards({ awards }: { awards: Award[] }) {
   const half = Math.ceil(awards.length / 2);
 
   return (
-    <section aria-label="Our awards" className="relative isolate mt-24 overflow-hidden bg-brand-950 py-16 text-white md:py-20">
+    <section aria-label="Our awards" className="relative isolate mt-12 overflow-hidden bg-brand-950 py-10 text-white md:mt-16 md:py-14">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.22),transparent_60%)]" />
       <div className="absolute -left-24 top-1/3 -z-10 h-72 w-72 rounded-full bg-brand-600/40 blur-3xl [animation:camp-float_9s_ease-in-out_infinite]" />
       <div className="absolute -right-24 bottom-0 -z-10 h-72 w-72 rounded-full bg-amber-500/20 blur-3xl [animation:camp-float_11s_ease-in-out_infinite_reverse]" />
@@ -38,14 +38,14 @@ export default function Awards({ awards }: { awards: Award[] }) {
         </Reveal>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-6">
         {twoRows ? <>
           <AwardMarquee awards={awards.slice(0, half)} onOpen={(i) => setOpen(i)} />
           <AwardMarquee awards={awards.slice(half)} reverse onOpen={(i) => setOpen(half + i)} />
         </> : <AwardMarquee awards={awards} onOpen={setOpen} />}
       </div>
 
-      <Reveal y={12} className="mt-8 text-center">
+      <Reveal y={12} className="mt-6 text-center">
         <Link href="/awards" className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 px-7 py-3.5 font-bold text-brand-950 shadow-lg shadow-amber-500/30 transition hover:-translate-y-0.5 hover:shadow-amber-500/50">
           See all awards <ArrowRight size={18} className="transition group-hover:translate-x-1" />
         </Link>

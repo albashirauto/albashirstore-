@@ -15,7 +15,7 @@ const dash = <span className="h-px w-0 bg-hot transition-all duration-300 group-
 
 export default function Footer({ settings, categories, pages }: { settings: Settings; categories: Category[]; pages: Page[] }) {
   return (
-    <footer className="relative mt-24 bg-brand-900 text-white">
+    <footer className="relative mt-16 bg-brand-900 text-white">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -right-32 top-24 text-white/[0.03]"><Sprocket size={520} /></div>
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
