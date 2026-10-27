@@ -8,7 +8,7 @@ export type DOrder = {
 };
 
 export type DProduct = {
-  id: string; name: string; slug: string; price: number; stock: number | null; images: string[] | null; active: boolean;
+  id: string; name: string; slug: string; sku?: string | null; price: number; stock: number | null; images: string[] | null; active: boolean;
   vehicle_id: string | null; fitment_verified?: boolean | null; scheme_buy: number | null; scheme_free: number | null;
 };
 
