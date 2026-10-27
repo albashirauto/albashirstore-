@@ -8,6 +8,8 @@ export type Variant = { name: string; sku?: string | null; price?: number | null
 export type Brand = {
   id: string; name: string; slug: string; logo?: string | null; sort_order?: number; active?: boolean;
   logo_fit?: "stretch" | "cover" | "contain" | null;
+  /** other names sold under this dealership, e.g. "RP Speedo · RP Loader" */
+  sub_brands?: string | null;
   description_html?: string | null; country?: string | null; website?: string | null;
   seo_title?: string | null; seo_description?: string | null; focus_keywords?: string | null;
 };
@@ -61,6 +63,7 @@ export type Post = {
   og_title?: string | null; og_description?: string | null; og_image?: string | null; updated_at?: string | null; created_at?: string;
 };
 export type Review = { id: string; name: string; city?: string | null; rating: number; title?: string | null; body: string; verified: boolean; reply?: string | null; reply_at?: string | null; created_at: string; images?: string[] | null };
+export type Offering = { id: string; title: string; body?: string | null; image?: string | null; link?: string | null; icon?: string | null; sort_order?: number; active?: boolean };
 export type Award = { id: string; title: string; image?: string | null; given_by?: string | null; year?: string | null; caption?: string | null; sort_order?: number; active?: boolean };
 export type Testimonial = { id: string; name: string; city?: string | null; body: string; rating?: number; sort_order?: number; active?: boolean };
 export type Feature = { id: string; title: string; body?: string | null; icon?: string; sort_order?: number; active?: boolean };

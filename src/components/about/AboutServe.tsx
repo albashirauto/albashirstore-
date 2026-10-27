@@ -5,7 +5,7 @@ import SectionTitle from "@/components/SectionTitle";
 const Mdi = ({ d }: { d: string }) => <svg width={28} height={28} viewBox="0 0 24 24" aria-hidden><path fill="currentColor" d={d} /></svg>;
 
 const WHO = [
-  { icon: mdiMotorbike, title: "Riders", body: "Daily commuters and families keeping their CD 70, CG 125 or YBR on the road." },
+  { icon: mdiMotorbike, title: "Riders", body: "Daily commuters and families keeping their CD 70, CG 125 or CB 150F on the road." },
   { icon: mdiRickshaw, title: "Rickshaw & loader drivers", body: "Parts for working vehicles that cannot afford a day off." },
   { icon: mdiTools, title: "Workshops & mechanics", body: "Reliable stock and quick answers for the people who fix bikes every day." },
 ];

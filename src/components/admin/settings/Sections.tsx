@@ -101,7 +101,7 @@ export function TeamSection(p: CardProps) {
                 <p className="mb-1.5 text-xs font-semibold text-muted">Photo (square, face in the middle)</p>
                 <ImageField value={p.v[`contact${n}_photo`] || null} onChange={(x) => p.set(`contact${n}_photo`, (x as string) ?? "")} folder="owners" />
               </div>
-              <textarea rows={3} value={p.v[`contact${n}_bio`] ?? ""} onChange={(e) => p.set(`contact${n}_bio`, e.target.value)} placeholder="Short bio, e.g. 20 years in motorcycle parts. Ask me about any Honda or Suzuki part." className={`${input} resize-y sm:col-span-2`} />
+              <textarea rows={3} value={p.v[`contact${n}_bio`] ?? ""} onChange={(e) => p.set(`contact${n}_bio`, e.target.value)} placeholder="Short bio, e.g. 20 years in motorcycle parts. Ask me about any TQR or RP part." className={`${input} resize-y sm:col-span-2`} />
               <div className="sm:col-span-2">{T(p, `contact${n}_quote`, "Quote (optional), e.g. The right part at the right price.")}</div>
               <textarea rows={4} value={p.v[`contact${n}_points`] ?? ""} onChange={(e) => p.set(`contact${n}_points`, e.target.value)} placeholder={"Ticks on the About page, one per line, e.g.\nFair, clear prices\nEvery order confirmed by phone"} className={`${input} resize-y sm:col-span-2`} />
             </div>

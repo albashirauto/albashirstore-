@@ -31,13 +31,13 @@ const slugFix: Record<string, string> = {
 };
 demoCategories.forEach((c) => { if (slugFix[c.name]) c.slug = slugFix[c.name]; });
 
-export const demoBrands: Brand[] = ["Honda", "RP Speedo", "ISH", "TQR", "Yamaha", "Suzuki", "Atlas Honda", "Unique"].map((name, i) => ({
+export const demoBrands: Brand[] = ["TQR", "ISH", "RP", "DYL Lubricants", "Odiking"].map((name, i) => ({
   id: `b${i + 1}`, name, slug: slugify(name), sort_order: i, active: true,
 }));
 
 export const demoVehicles: Vehicle[] = [
   ["Honda CD 70", "motorcycle", "Honda"], ["Honda CG 125", "motorcycle", "Honda"], ["Honda CB 150F", "motorcycle", "Honda"],
-  ["Yamaha YBR 125", "motorcycle", "Yamaha"], ["Suzuki GS 150", "motorcycle", "Suzuki"], ["Auto Rickshaw", "rickshaw", "Various"],
+  ["Auto Rickshaw", "rickshaw", "Various"],
   ["Loader Rickshaw", "loader", "Various"], ["Bicycle", "cycle", "Various"],
 ].map(([name, type, company], i) => ({ id: `v${i + 1}`, name, slug: slugify(name), type, company, sort_order: i, active: true }));
 
@@ -51,7 +51,7 @@ export const demoPromotions: Promotion[] = [
 export const demoBanners: Banner[] = [
   { id: "n1", eyebrow: "Genuine & imported parts", title: "Keep every ride running strong", subtitle: "Chain kits, batteries, lights and engine parts for motorcycles, rickshaws and cycles, delivered across Pakistan.", button_text: "Shop all parts", link: "/shop", sort_order: 1, active: true },
   { id: "n2", eyebrow: "Deal Zone", title: "Up to 50% off this week", subtitle: "Half-price sale on selected parts. Limited stock, fast delivery.", button_text: "See deals", link: "/promotions/half-price-sale", sort_order: 2, active: true },
-  { id: "n3", eyebrow: "Find parts by bike", title: "Pick your model, see what fits", subtitle: "Honda CD 70, CG 125, CB 150F, YBR, Suzuki and rickshaws.", button_text: "Browse by bike", link: "/vehicles", sort_order: 3, active: true },
+  { id: "n3", eyebrow: "Find parts by bike", title: "Pick your model, see what fits", subtitle: "Honda CD 70, CG 125, CB 150F, rickshaws, loaders and cycles.", button_text: "Browse by bike", link: "/vehicles", sort_order: 3, active: true },
 ];
 
 // Contact page questions, used until the faqs table exists (supabase/010_content.sql)

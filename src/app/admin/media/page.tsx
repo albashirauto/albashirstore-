@@ -7,7 +7,7 @@ import { upload } from "@/components/admin/ImageField";
 
 type F = { path: string; folder: string; name: string; url: string; size: number; at: string; type: string };
 const BUCKET = "media";
-const TABLES = ["products", "posts", "categories", "brands", "vehicles", "promotions", "banners", "pages", "testimonials", "awards", "settings", "admins"];
+const TABLES = ["products", "posts", "categories", "brands", "vehicles", "promotions", "banners", "pages", "testimonials", "awards", "offerings", "settings", "admins"];
 const kb = (n: number) => (n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
 
 /** Media library: every uploaded picture, by folder, with where it is used; upload, copy link, safe delete. */

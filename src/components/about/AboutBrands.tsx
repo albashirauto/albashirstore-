@@ -8,8 +8,8 @@ export default function AboutBrands({ brands }: { brands: Brand[] }) {
   if (!brands.length) return null;
   return (
     <section className="mx-auto mt-24 max-w-7xl px-4">
-      <SectionTitle eyebrow="Brands we deal in" title="Trusted names" href="/brands" cta="All brands" />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <SectionTitle eyebrow="Dealership of" title="Authorised dealer" sub="We are the dealer for these brands. Genuine stock, dealer prices." href="/brands" cta="All brands" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {brands.slice(0, 12).map((b, i) => (
           <Reveal key={b.id} delay={(i % 6) * 0.04} y={14}>
             <Link href={`/brands/${b.slug}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card text-center transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-500/15">
@@ -21,7 +21,10 @@ export default function AboutBrands({ brands }: { brands: Brand[] }) {
                   ? <img src={b.logo} alt={b.name} loading="lazy" className={`absolute inset-0 m-auto h-full w-full ${fitClass(b.logo_fit)} ${isContain(b.logo_fit) ? "p-1.5" : ""} transition duration-500 group-hover:scale-[1.04]`} />
                   : <span className="relative bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-display text-5xl font-extrabold text-transparent transition duration-500 group-hover:scale-110">{b.name.split(/s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase()}</span>}
               </span>
-              <span className="flex flex-1 items-center justify-center border-t border-line px-3 py-3 font-display text-lg font-bold uppercase tracking-wide transition group-hover:bg-brand-600 group-hover:text-white">{b.name}</span>
+              <span className="flex flex-1 flex-col items-center justify-center border-t border-line px-3 py-3 transition group-hover:bg-brand-600 group-hover:text-white">
+                <span className="font-display text-lg font-bold uppercase tracking-wide">{b.name}</span>
+                {b.sub_brands && <span className="mt-0.5 text-xs leading-snug text-muted transition group-hover:text-white/80">{b.sub_brands}</span>}
+              </span>
             </Link>
           </Reveal>
         ))}
