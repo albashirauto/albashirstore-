@@ -13,11 +13,11 @@ export default function AboutBrands({ brands }: { brands: Brand[] }) {
           <Reveal key={b.id} delay={(i % 6) * 0.04} y={14}>
             <Link href={`/brands/${b.slug}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card text-center transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-500/15">
               {/* logo fills the top of the card; initials until a logo is uploaded */}
-              <span className="relative grid h-28 place-items-center overflow-hidden bg-white px-5 py-4 dark:bg-white/95">
+              <span className="relative grid h-32 place-items-center overflow-hidden bg-white dark:bg-white/95">
                 <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-brand-100),transparent_70%)] opacity-0 transition duration-500 group-hover:opacity-100" />
                 {b.logo
                   // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={b.logo} alt={b.name} loading="lazy" className="relative h-full w-full object-contain transition duration-500 group-hover:scale-110" />
+                  ? <img src={b.logo} alt={b.name} loading="lazy" className="absolute inset-0 m-auto h-full w-full object-contain p-4 transition duration-500 group-hover:scale-105" />
                   : <span className="relative bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-display text-5xl font-extrabold text-transparent transition duration-500 group-hover:scale-110">{b.name.split(/s+/).map((w) => w[0]).join("").slice(0, 3).toUpperCase()}</span>}
               </span>
               <span className="flex flex-1 items-center justify-center border-t border-line px-3 py-3 font-display text-lg font-bold uppercase tracking-wide transition group-hover:bg-brand-600 group-hover:text-white">{b.name}</span>
