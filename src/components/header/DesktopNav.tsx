@@ -90,8 +90,8 @@ export default function DesktopNav({ settings, categories, vehicles, brands }: {
                       {nav.map((c, i) => (
                         <motion.div key={c.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.02, duration: 0.3, ease }}>
                           <Link href={`/collections/${c.slug}`} onClick={close} className="group flex items-center gap-3 rounded-xl p-2.5 transition hover:bg-soft">
-                            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
-                              <CategoryIcon slug={c.slug} size={19} />
+                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600 shadow-sm ring-1 ring-brand-100 transition duration-300 group-hover:from-brand-500 group-hover:to-brand-700 group-hover:text-white group-hover:shadow-md group-hover:shadow-brand-500/30 group-hover:ring-transparent dark:from-brand-900 dark:to-brand-900 dark:ring-brand-900 [&>svg]:transition [&>svg]:duration-300 group-hover:[&>svg]:-rotate-6 group-hover:[&>svg]:scale-110">
+                              <CategoryIcon slug={c.slug} name={c.name} size={24} />
                             </span>
                             <span className="text-sm font-semibold transition group-hover:text-brand-600">{c.name}</span>
                           </Link>

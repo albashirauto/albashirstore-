@@ -53,7 +53,7 @@ export default function CategoryGrid({ categories, counts }: { categories: Categ
                       </span>
                     ) : (
                       <span className="grid h-14 w-14 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
-                        <CategoryIcon slug={c.slug} size={26} />
+                        <CategoryIcon slug={c.slug} name={c.name} size={26} />
                       </span>
                     )}
                     <span className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold text-muted">{total(c)} items</span>

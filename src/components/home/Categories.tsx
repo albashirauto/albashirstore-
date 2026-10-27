@@ -30,7 +30,7 @@ export default function Categories({ categories, counts }: { categories: Categor
                 </span>
               ) : (
                 <span className="grid h-20 w-20 place-items-center rounded-full bg-brand-50 text-brand-600 transition duration-300 group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
-                  <CategoryIcon slug={c.slug} size={34} />
+                  <CategoryIcon slug={c.slug} name={c.name} size={34} />
                 </span>
               )}
               <span className="mt-4 font-display text-xl font-bold leading-tight">{c.name}</span>
