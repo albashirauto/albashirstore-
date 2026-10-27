@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Check, Inbox, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
 import type { Resource } from "@/lib/admin-config";
 import { analyze, entityInput, scoreTone, type SeoEntity } from "@/lib/seo";
@@ -87,48 +87,78 @@ export default function ResourceManager({ resource: R, slug }: { resource: Resou
   const label = (table: string, id: string) => opts[table]?.find((o) => o.value === id)?.label ?? "";
   const input = "w-full rounded-xl border-2 border-line bg-card px-4 py-2.5 outline-none transition focus:border-brand-500";
 
+  const cols = R.columns.length + (R.seo ? 2 : 1);
+  const live = rows.filter((r) => r.active !== false).length;
+  const iconBtn = "grid h-9 w-9 place-items-center rounded-xl border transition active:scale-90";
+
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase text-brand-700 dark:text-white">{R.title}</h1>
+          <h1 className="flex flex-wrap items-center gap-3 text-4xl font-extrabold uppercase text-brand-700 dark:text-white">
+            {R.title}
+            {!loading && <span className="rounded-full bg-brand-50 px-3 py-1 font-sans text-sm font-bold normal-case text-brand-700 dark:bg-brand-900 dark:text-brand-100">{rows.length} total{"active" in (rows[0] ?? {}) ? ` · ${live} live` : ""}</span>}
+          </h1>
           <p className="mt-1 max-w-xl text-muted">{R.description}</p>
         </div>
-        <Link href={href("new")} className="flex items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold text-white shadow transition hover:bg-hot-dark"><Plus size={18} />Add {R.singular}</Link>
+        <Link href={href("new")} className="group flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-hot to-hot-dark px-6 py-3 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:shadow-hot/40 active:translate-y-0">
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-white/20 transition group-hover:rotate-90"><Plus size={16} /></span>Add {R.singular}
+        </Link>
       </div>
 
-      <div className="relative mt-6 max-w-sm">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${R.title.toLowerCase()}…`} className={`${input} pl-10`} />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <div className="relative w-full max-w-sm">
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${R.title.toLowerCase()}…`} className={`${input} pl-10 pr-10`} />
+          {q && <button onClick={() => setQ("")} aria-label="Clear search" className="absolute right-3 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-soft text-muted transition hover:bg-line hover:text-fg"><X size={14} /></button>}
+        </div>
+        {q && !loading && <span className="text-sm text-muted">{filtered.length} of {rows.length}</span>}
       </div>
 
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-line bg-card">
+      <div className="mt-5 overflow-x-auto rounded-2xl border border-line bg-card shadow-sm">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-soft text-xs font-bold text-muted">
-            <tr>{R.columns.map((c) => <th key={c.key} className="px-4 py-3">{c.label}</th>)}{R.seo && <th className="px-4 py-3">SEO</th>}<th className="px-4 py-3 text-right">Actions</th></tr>
+          <thead className="bg-soft text-xs font-bold uppercase tracking-wider text-muted">
+            <tr>{R.columns.map((c) => <th key={c.key} className={`px-5 py-3.5 align-middle ${c.kind === "bool" ? "text-center" : ""}`}>{c.label}</th>)}{R.seo && <th className="px-5 py-3.5 text-center">SEO</th>}<th className="w-32 px-5 py-3.5 text-right">Actions</th></tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan={R.columns.length + 2} className="p-8 text-center text-muted">Loading…</td></tr>}
-            {!loading && filtered.length === 0 && <tr><td colSpan={R.columns.length + 2} className="p-10 text-center text-muted">Nothing here yet. Click “Add {R.singular}”.</td></tr>}
-            {filtered.map((r) => (
-              <tr key={r.id} onClick={() => router.push(href(r.id))} className="cursor-pointer border-t border-line transition hover:bg-brand-50/60 dark:hover:bg-brand-900/40">
+            {loading && Array.from({ length: 3 }).map((_, i) => (
+              <tr key={i} className="border-t border-line">
+                {Array.from({ length: cols }).map((__, j) => <td key={j} className="px-5 py-4"><span className="block h-4 animate-pulse rounded bg-soft" style={{ width: j === 0 ? 48 : "70%" }} /></td>)}
+              </tr>
+            ))}
+            {!loading && filtered.length === 0 && (
+              <tr><td colSpan={cols} className="p-12 text-center">
+                <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-900 dark:text-brand-100"><Inbox size={26} /></span>
+                <p className="mt-3 font-bold">{q ? `No ${R.title.toLowerCase()} match “${q}”` : "Nothing here yet"}</p>
+                {!q && <Link href={href("new")} className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"><Plus size={16} />Add the first {R.singular}</Link>}
+              </td></tr>
+            )}
+            {!loading && filtered.map((r, i) => (
+              <motion.tr
+                key={r.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: Math.min(i, 12) * 0.03 }}
+                onClick={() => router.push(href(r.id))}
+                className="group cursor-pointer border-t border-line transition hover:bg-brand-50/60 dark:hover:bg-brand-900/40"
+              >
                 {R.columns.map((c) => (
-                  <td key={c.key} className="px-4 py-2.5">
+                  <td key={c.key} className={`px-5 py-3 align-middle ${c.kind === "bool" ? "text-center" : ""}`}>
                     {c.kind === "image" ? (
-                      (Array.isArray(r[c.key]) ? r[c.key][0] : r[c.key]) ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={Array.isArray(r[c.key]) ? r[c.key][0] : r[c.key]} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="grid h-10 w-10 place-items-center rounded-lg bg-soft text-xs text-muted">—</span>
+                      (Array.isArray(r[c.key]) ? r[c.key][0] : r[c.key]) ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={Array.isArray(r[c.key]) ? r[c.key][0] : r[c.key]} alt="" className="h-12 w-12 rounded-xl border border-line bg-white object-cover shadow-sm transition group-hover:scale-105" /> : <span className="grid h-12 w-12 place-items-center rounded-xl bg-soft text-xs text-muted">—</span>
                     ) : c.kind === "bool" ? (
-                      <button onClick={(e) => { e.stopPropagation(); toggle(r, c.key); }} aria-label={`Toggle ${c.label}`} className={`h-6 w-11 rounded-full p-0.5 transition ${r[c.key] ? "bg-brand-600" : "bg-line"}`}><span className={`block h-5 w-5 rounded-full bg-white shadow transition ${r[c.key] ? "translate-x-5" : ""}`} /></button>
-                    ) : c.kind === "money" ? `Rs. ${Number(r[c.key] ?? 0).toLocaleString("en-PK")}`
-                      : c.kind === "relation" ? label(c.relation!.table, r[c.key]) || "—"
-                      : <span className={c.key === R.searchKey ? "font-bold" : ""}>{String(r[c.key] ?? "—")}</span>}
+                      <button onClick={(e) => { e.stopPropagation(); toggle(r, c.key); }} aria-label={`Toggle ${c.label}`} title={r[c.key] ? "On: click to turn off" : "Off: click to turn on"} className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 align-middle transition ${r[c.key] ? "bg-green-500 shadow-inner shadow-green-700/30" : "bg-line"}`}><span className={`block h-5 w-5 rounded-full bg-white shadow transition ${r[c.key] ? "translate-x-5" : ""}`} /></button>
+                    ) : c.kind === "money" ? <span className="font-semibold tabular-nums">Rs. {Number(r[c.key] ?? 0).toLocaleString("en-PK")}</span>
+                      : c.kind === "relation" ? label(c.relation!.table, r[c.key]) || <span className="text-muted">—</span>
+                      : r[c.key] === null || r[c.key] === undefined || r[c.key] === "" ? <span className="text-muted">—</span>
+                      : <span className={c.key === R.searchKey ? "font-bold text-fg transition group-hover:text-brand-700 dark:group-hover:text-white" : ""}>{String(r[c.key])}</span>}
                   </td>
                 ))}
-                {R.seo && (() => { const sc = seoScore(r), t = scoreTone(sc); return <td className="px-4 py-2.5"><span title={`SEO: ${t.label}`} className={`rounded-full px-2.5 py-1 text-xs font-bold ${t.bg} ${t.text}`}>{sc}</span></td>; })()}
-                <td className="px-4 py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
-                  <Link href={href(r.id)} className="mr-1 inline-block rounded-full p-2 text-brand-600 hover:bg-brand-50" aria-label="Edit"><Pencil size={16} /></Link>
-                  <button onClick={() => remove(r)} className="rounded-full p-2 text-hot hover:bg-hot/10" aria-label="Delete"><Trash2 size={16} /></button>
+                {R.seo && (() => { const sc = seoScore(r), t = scoreTone(sc); return <td className="px-5 py-3 text-center align-middle"><span title={`SEO: ${t.label}`} className={`rounded-full px-2.5 py-1 text-xs font-bold ${t.bg} ${t.text}`}>{sc}</span></td>; })()}
+                <td className="px-5 py-3 align-middle" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-2">
+                    <Link href={href(r.id)} title="Edit" aria-label="Edit" className={`${iconBtn} border-brand-100 bg-brand-50 text-brand-600 hover:border-brand-600 hover:bg-brand-600 hover:text-white dark:border-brand-900 dark:bg-brand-900/60 dark:text-brand-100`}><Pencil size={16} /></Link>
+                    <button onClick={() => remove(r)} title="Delete" aria-label="Delete" className={`${iconBtn} border-hot/15 bg-hot/5 text-hot hover:border-hot hover:bg-hot hover:text-white`}><Trash2 size={16} /></button>
+                  </div>
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
