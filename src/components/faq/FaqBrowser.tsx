@@ -42,7 +42,8 @@ export default function FaqBrowser({ items }: { items: Faq[] }) {
       {(q || topic) && <p className="mt-4 text-sm text-muted">{total} question{total === 1 ? "" : "s"} found</p>}
 
       <div className="mt-6 space-y-8">
-        <AnimatePresence mode="popLayout">
+        {/* initial={false}: visible straight from the server HTML; only search/topic changes animate */}
+        <AnimatePresence mode="popLayout" initial={false}>
           {groups.map((g) => (
             <motion.section key={g.t} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
               <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-hot"><span className="h-px w-6 bg-hot" />{topicLabel(g.t)}</h2>
