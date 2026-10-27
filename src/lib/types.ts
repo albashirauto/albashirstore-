@@ -10,6 +10,11 @@ export type Brand = {
   logo_fit?: "stretch" | "cover" | "contain" | null;
   /** other names sold under this dealership, e.g. "RP Speedo · RP Loader" */
   sub_brands?: string | null;
+  /** listed as a brand we sell (menu, /brands, home strip) */
+  show_as_brand?: boolean | null;
+  /** we are the dealer (About > Dealership of) */
+  dealer?: boolean | null;
+  dealer_order?: number | null;
   description_html?: string | null; country?: string | null; website?: string | null;
   seo_title?: string | null; seo_description?: string | null; focus_keywords?: string | null;
 };

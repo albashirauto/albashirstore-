@@ -9,7 +9,7 @@ import AboutValues from "@/components/about/AboutValues";
 import AboutVisit from "@/components/about/AboutVisit";
 import CtaBand from "@/components/home/CtaBand";
 import PageHero from "@/components/PageHero";
-import { getAwards, getBrands, getCategories, getFeatures, getPage, getProducts, getSettings, getVehicles } from "@/lib/data";
+import { dealerBrands, getAwards, getBrands, sellBrands, getCategories, getFeatures, getPage, getProducts, getSettings, getVehicles } from "@/lib/data";
 import { teamOf } from "@/lib/location";
 
 export const metadata = { title: "About us" };
@@ -28,7 +28,7 @@ export default async function About() {
       <AboutNumbers stats={[
         { label: "Parts online", value: products.length },
         { label: "Categories", value: categories.length },
-        { label: "Brands", value: brands.length },
+        { label: "Brands", value: sellBrands(brands).length },
         { label: "Bike models", value: vehicles.length },
       ]} />
       <AboutServe />
@@ -36,7 +36,7 @@ export default async function About() {
       <Awards awards={awards} />
       <AboutTeam />
       <AboutValues features={features} />
-      <AboutBrands brands={brands} />
+      <AboutBrands brands={dealerBrands(brands)} />
       <AboutVisit settings={settings} />
       <CtaBand settings={settings} />
     </>

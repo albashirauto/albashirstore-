@@ -8,7 +8,7 @@ import SpeedBands from "@/components/home/SpeedBands";
 import Testimonials from "@/components/home/Testimonials";
 import TrustBar from "@/components/home/TrustBar";
 import WhatWeSell from "@/components/home/WhatWeSell";
-import { countByCategory, getBanners, getBrands, getCategories, getFeatures, getProducts, getSettings, getTrending, getTestimonials, getVehicles, getOfferings } from "@/lib/data";
+import { countByCategory, getBanners, getBrands, getCategories, getFeatures, getProducts, getSettings, getTrending, getTestimonials, getVehicles, getOfferings, sellBrands } from "@/lib/data";
 
 export const revalidate = 60;
 
@@ -25,7 +25,7 @@ export default async function Home() {
       <CampaignHero />
       <Hero banners={banners} vehicles={vehicles} settings={settings} />
       <TrustBar features={features} />
-      <SpeedBands brands={brands.map((b) => ({ label: b.name, href: `/brands/${b.slug}`, logo: b.logo }))} />
+      <SpeedBands brands={sellBrands(brands).map((b) => ({ label: b.name, href: `/brands/${b.slug}`, logo: b.logo }))} />
       <WhatWeSell items={offerings} settings={settings} />
       <Categories categories={categories} counts={counts} />
       <DealZone products={all} />

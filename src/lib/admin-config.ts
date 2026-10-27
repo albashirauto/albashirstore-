@@ -93,11 +93,14 @@ export const RESOURCES: Record<string, Resource> = {
   brands: {
     table: "brands", title: "Brands", singular: "brand", searchKey: "name", orderBy: "sort_order", seo: "brand",
     description: "Honda, RP Speedo, ISH, TQR… Upload a logo once and it shows across the whole website.",
-    columns: [{ key: "logo", label: "Logo", kind: "image" }, { key: "name", label: "Name" }, { key: "country", label: "Country" }, { key: "supplier_name", label: "Supplier" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
+    columns: [{ key: "logo", label: "Logo", kind: "image" }, { key: "name", label: "Name" }, { key: "country", label: "Country" }, { key: "show_as_brand", label: "Brand", kind: "bool" }, { key: "dealer", label: "Dealer", kind: "bool" }, { key: "sort_order", label: "Order" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [
       { key: "name", label: "Brand name", type: "text", required: true },
       { key: "slug", label: "Web address (slug)", type: "slug", from: "name", required: true },
       { key: "logo", label: "Logo", type: "image", cutout: true, help: "PNG with transparent or white background. Shown on product cards, product pages, the menu and brand pages." },
+      { key: "show_as_brand", label: "Brand we sell (menu, Brands page, home)", type: "bool", half: true },
+      { key: "dealer", label: "We are the dealer (About > Dealership of)", type: "bool", half: true },
+      { key: "dealer_order", label: "Dealership order", type: "number", half: true, help: "Lower numbers show first in Dealership of." },
       { key: "sub_brands", label: "Also sold under (optional)", type: "text", help: "Other names of this dealership, shown under the logo. e.g. RP Speedo · RP Loader" },
       { key: "logo_fit", label: "Logo display", type: "select", options: [{ value: "stretch", label: "Stretch to fill the box" }, { value: "cover", label: "Fill the box (trim edges, no stretching)" }, { value: "contain", label: "Original shape (whole logo, may leave space)" }], help: "How the logo fills its box on cards, the menu and brand pages." },
       { key: "country", label: "Country", type: "text", half: true, help: "e.g. Pakistan, Japan, China" },

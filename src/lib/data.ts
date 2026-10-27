@@ -22,6 +22,10 @@ async function list<T>(table: string, demo: T[], order = "sort_order"): Promise<
 
 export const getCategories = () => list<Category>("categories", demoCategories);
 export const getBrands = () => list<Brand>("brands", demoBrands);
+/** brands we sell parts of (menu, /brands, home strip); dealership-only brands are left out */
+export const sellBrands = (all: Brand[]) => all.filter((b) => b.show_as_brand !== false);
+/** brands we are the dealer for, in dealership order */
+export const dealerBrands = (all: Brand[]) => all.filter((b) => b.dealer).sort((a, b) => (a.dealer_order ?? 0) - (b.dealer_order ?? 0));
 export const getVehicles = () => list<Vehicle>("vehicles", demoVehicles);
 export const getFaqs = () => list<Faq>("faqs", demoFaqs);
 

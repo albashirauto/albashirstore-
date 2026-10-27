@@ -10,7 +10,7 @@ export default function SpeedBands({ brands }: { brands: Item[] }) {
 
   return (
     <section aria-label="Brands we stock" className="mx-auto mt-10 max-w-7xl px-4">
-      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.2em] text-muted">Authorised dealer of</p>
+      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.2em] text-muted">Genuine parts from the brands we sell</p>
       <div className="group overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <div className="flex w-max items-center [animation:marquee_50s_linear_infinite] group-hover:[animation-play-state:paused]">
           {row.map((x, i) => (

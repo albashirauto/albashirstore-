@@ -31,8 +31,11 @@ const slugFix: Record<string, string> = {
 };
 demoCategories.forEach((c) => { if (slugFix[c.name]) c.slug = slugFix[c.name]; });
 
-export const demoBrands: Brand[] = ["TQR", "ISH", "RP", "DYL Lubricants", "Odiking"].map((name, i) => ({
-  id: `b${i + 1}`, name, slug: slugify(name), sort_order: i, active: true,
+const DEALERS = ["TQR", "ISH", "RP", "DYL Lubricants", "Odiking"];
+const SELL = ["Odiking", "TQR", "RP", "LZ+", "Honda", "Oditer", "Crownlifan"];
+export const demoBrands: Brand[] = Array.from(new Set([...SELL, ...DEALERS])).map((name, i) => ({
+  id: `b${i + 1}`, name, slug: name === "LZ+" ? "lz-plus" : slugify(name), sort_order: i, active: true,
+  show_as_brand: SELL.includes(name), dealer: DEALERS.includes(name), dealer_order: DEALERS.indexOf(name),
 }));
 
 export const demoVehicles: Vehicle[] = [

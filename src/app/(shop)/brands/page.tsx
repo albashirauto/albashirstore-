@@ -3,7 +3,7 @@ import BrandDirectory from "@/components/brands/BrandDirectory";
 import FeaturedBrands from "@/components/brands/FeaturedBrands";
 import type { BrandInfo } from "@/components/brands/types";
 import CtaBand from "@/components/home/CtaBand";
-import { getBrands, getProducts, getSettings } from "@/lib/data";
+import { getBrands, getProducts, getSettings, sellBrands } from "@/lib/data";
 
 export const metadata = { title: "Brands" };
 export const revalidate = 60;
@@ -12,7 +12,7 @@ export const revalidate = 60;
 export default async function Brands() {
   const [brands, products, settings] = await Promise.all([getBrands(), getProducts(), getSettings()]);
 
-  const info: BrandInfo[] = brands.map((b) => {
+  const info: BrandInfo[] = sellBrands(brands).map((b) => {
     const mine = products.filter((p) => p.brand_id === b.id);
     return {
       ...b,
@@ -27,7 +27,7 @@ export default async function Brands() {
       <PageHero
         crumb="Brands" eyebrow="Trusted makers" title="Brands we stock"
         sub="Genuine and quality-checked parts from the names riders and mechanics trust."
-        stats={[{ label: "Brands", value: brands.length }, { label: "Parts", value: products.length, plus: true }]}
+        stats={[{ label: "Brands", value: info.length }, { label: "Parts", value: products.length, plus: true }]}
       />
       <FeaturedBrands brands={info} />
       <BrandDirectory brands={info} />
