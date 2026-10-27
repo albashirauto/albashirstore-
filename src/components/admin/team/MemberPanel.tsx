@@ -13,7 +13,7 @@ const empty = (): MemberInput => ({ name: "", username: "", email: "", phone: ""
 const PRESETS: { l: string; p: string[] }[] = [
   { l: "Orders desk", p: ["/admin/orders", "/admin/customers"] },
   { l: "Stock & products", p: ["/admin/products", "/admin/categories", "/admin/brands", "/admin/vehicles", "/admin/promotions"] },
-  { l: "Content & blog", p: ["/admin/posts", "/admin/pages", "/admin/faqs", "/admin/testimonials", "/admin/banners", "/admin/features"] },
+  { l: "Content & blog", p: ["/admin/posts", "/admin/pages", "/admin/faqs", "/admin/testimonials", "/admin/awards", "/admin/banners", "/admin/features"] },
 ];
 
 /** Strong, easy-to-read password (no look-alike characters). */

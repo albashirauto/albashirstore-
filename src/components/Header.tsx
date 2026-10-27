@@ -98,7 +98,7 @@ export default function Header({ settings, categories, vehicles, brands }: Props
                 <button className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-brand-600 text-white" aria-label="Search"><Search size={15} /></button>
               </form>
               <div className="grid gap-1 text-lg font-bold">
-                {[["/shop", "Shop all"], ["/parts/motorcycle", "Motorcycle parts"], ["/parts/rickshaw", "Rickshaw parts"], ["/parts/loader", "Loader parts"], ["/parts/cycle", "Cycle parts"], ["/wishlist", "Wishlist"], ["/categories", "Categories"], ["/vehicles", "Shop by bike"], ["/brands", "Brands"], ["/promotions", "Deal zone"], ["/blog", "Blog"], ["/about", "About us"], ["/contact", "Contact"]].map(([h, l]) => (
+                {[["/shop", "Shop all"], ["/parts/motorcycle", "Motorcycle parts"], ["/parts/rickshaw", "Rickshaw parts"], ["/parts/loader", "Loader parts"], ["/parts/cycle", "Cycle parts"], ["/wishlist", "Wishlist"], ["/categories", "Categories"], ["/vehicles", "Shop by bike"], ["/brands", "Brands"], ["/promotions", "Deal zone"], ["/blog", "Blog"], ["/about", "About us"], ["/awards", "Our awards"], ["/contact", "Contact"]].map(([h, l]) => (
                   <Link key={h} href={h} onClick={() => setMenu(false)} className="rounded-xl px-3 py-2.5 hover:bg-soft">{l}</Link>
                 ))}
               </div>

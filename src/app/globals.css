@@ -32,6 +32,7 @@
   --color-brand-600: #1d4fd8;
   --color-brand-700: #153eb0;
   --color-brand-900: #0a1f66;
+  --color-brand-950: #06123f;
   --color-hot: #e11d2e;
   --color-hot-dark: #b8111f;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -54,6 +55,7 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.
 @keyframes spin-rev { to { transform: rotate(-360deg); } }
 @keyframes marquee { to { transform: translateX(-50%); } }
 @keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes shimmer-text { to { background-position: 200% center; } }
 @keyframes marquee-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 @keyframes pulse-ring {
   0% { box-shadow: 0 0 0 0 rgb(225 29 46 / 0.45); }

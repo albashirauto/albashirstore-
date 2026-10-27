@@ -169,6 +169,19 @@ export const RESOURCES: Record<string, Resource> = {
     columns: [{ key: "name", label: "Name" }, { key: "city", label: "City" }, { key: "rating", label: "Stars" }, { key: "active", label: "Live", kind: "bool" }],
     fields: [{ key: "name", label: "Customer name", type: "text", required: true, half: true }, { key: "city", label: "City", type: "text", half: true }, { key: "body", label: "Review", type: "textarea", required: true }, { key: "rating", label: "Stars (1-5)", type: "number", half: true }, sort, active],
   },
+  awards: {
+    table: "awards", title: "Awards & rewards", singular: "award", searchKey: "title", orderBy: "sort_order",
+    description: "Photos of your awards, certificates and trophies. They slide across the home page and fill the Awards page.",
+    columns: [{ key: "image", label: "Photo", kind: "image" }, { key: "title", label: "Title" }, { key: "year", label: "Year" }, { key: "active", label: "Live", kind: "bool" }],
+    fields: [
+      { key: "title", label: "Award name", type: "text", required: true, help: "e.g. Best Dealer 2025" },
+      { key: "image", label: "Photo", type: "image", required: true, help: "Photo of the award, trophy or certificate. Portrait or square looks best." },
+      { key: "given_by", label: "Given by", type: "text", half: true, help: "e.g. Honda Atlas" },
+      { key: "year", label: "Year", type: "text", half: true },
+      { key: "caption", label: "Short note (optional)", type: "textarea" },
+      sort, active,
+    ],
+  },
   faqs: {
     table: "faqs", title: "FAQs", singular: "question", searchKey: "question", orderBy: "sort_order",
     description: "Questions and answers on the Contact page. Only one answer opens at a time.",
@@ -232,6 +245,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     { href: "/admin/pages", label: "Pages" },
     { href: "/admin/faqs", label: "FAQs" },
     { href: "/admin/testimonials", label: "Testimonials" },
+    { href: "/admin/awards", label: "Awards & rewards" },
     { href: "/admin/banners", label: "Home banners" },
     { href: "/admin/media", label: "Media library" },
     { href: "/admin/features", label: "Trust bar" },

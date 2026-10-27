@@ -3,7 +3,7 @@ import {
   demoBanners, demoBrands, demoCategories, demoFeatures, demoPages, demoProducts, demoPromotions,
   demoFaqs, demoSettings, demoTestimonials, demoVehicles,
 } from "./demo";
-import type { Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Review, Settings, Testimonial, Vehicle } from "./types";
+import type { Award, Banner, Brand, Category, Faq, Feature, Page, Post, Product, Promotion, Review, Settings, Testimonial, Vehicle } from "./types";
 import { hasScheme } from "./scheme";
 import { discountPct } from "./format";
 import type { Campaign } from "./campaigns";
@@ -46,6 +46,7 @@ export const getPromotions = () => list<Promotion>("promotions", demoPromotions)
 export const getBanners = () => list<Banner>("banners", demoBanners);
 export const getFeatures = () => list<Feature>("features", demoFeatures);
 export const getTestimonials = () => list<Testimonial>("testimonials", demoTestimonials);
+export const getAwards = () => list<Award>("awards", []);
 export const getPages = () => list<Page>("pages", demoPages, "title");
 
 export async function getSettings(): Promise<Settings> {
