@@ -7,10 +7,16 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { browserClient } from "@/lib/supabase";
+import { refreshStore } from "@/app/admin/refresh";
 import type { Field, Resource } from "@/lib/admin-config";
 import ImageField from "./ImageField";
 import HtmlEditor from "./HtmlEditor";
 import EntitySeoPanel from "./EntitySeoPanel";
+
+/** Tell the store to rebuild its pages so the change shows at once (fire and forget). */
+export const refreshAfterEdit = (db: ReturnType<typeof browserClient>) => {
+  db.auth.getSession().then(({ data }: { data: { session: { access_token: string } | null } }) => { if (data.session) refreshStore(data.session.access_token).catch(() => {}); });
+};
 
 type Row = Record<string, any>;
 type Opts = Record<string, { value: string; label: string }[]>;
@@ -123,6 +129,7 @@ export default function ResourceForm({ resource: R, slug, id }: { resource: Reso
       }
     }
     if (res.error) { setSaving(false); return flash(false, res.error.message.includes("duplicate") ? "That web address (slug) is already used. Change it." : res.error.message); }
+    refreshAfterEdit(db);
     router.push(`${back}?saved=${isNew ? "added" : "saved"}`);
   };
 
@@ -130,6 +137,7 @@ export default function ResourceForm({ resource: R, slug, id }: { resource: Reso
     if (!form || !confirm(`Delete "${form[R.searchKey]}"? This cannot be undone.`)) return;
     const { error } = await db.from(R.table).delete().eq("id", id);
     if (error) return flash(false, error.message);
+    refreshAfterEdit(db);
     router.push(`${back}?saved=deleted`);
   };
 

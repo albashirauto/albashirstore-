@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Check, Inbox, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { browserClient } from "@/lib/supabase";
+import { refreshAfterEdit } from "./ResourceForm";
 import type { Resource } from "@/lib/admin-config";
 import { analyze, entityInput, scoreTone, type SeoEntity } from "@/lib/seo";
 
@@ -75,13 +76,14 @@ export default function ResourceManager({ resource: R, slug }: { resource: Resou
     const { error } = await db.from(R.table).delete().eq("id", r.id);
     if (error) return flash(false, error.message);
     flash(true, "Deleted");
+    refreshAfterEdit(db);
     load();
   };
 
   const toggle = async (r: Row, key: string) => {
     setRows((cur) => cur.map((x) => (x.id === r.id ? { ...x, [key]: !r[key] } : x)));
     const { error } = await db.from(R.table).update({ [key]: !r[key] }).eq("id", r.id);
-    if (error) { flash(false, error.message); load(); }
+    if (error) { flash(false, error.message); load(); } else refreshAfterEdit(db);
   };
 
   const label = (table: string, id: string) => opts[table]?.find((o) => o.value === id)?.label ?? "";
