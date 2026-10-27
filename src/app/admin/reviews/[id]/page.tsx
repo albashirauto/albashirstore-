@@ -82,7 +82,7 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
     <form onSubmit={save} className="space-y-6">
       <div>
         <Link href="/admin/reviews" className="inline-flex items-center gap-1.5 text-sm font-bold text-muted transition hover:text-brand-600"><ArrowLeft size={16} />Product reviews</Link>
-        <h1 className="mt-2 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">{isNew ? "Add review" : "Edit review"}</h1>
+        <h1 className="mt-2 text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">{isNew ? "Add review" : "Edit review"}</h1>
         <p className="mt-1.5 text-muted">{isNew ? "For reviews you got on WhatsApp, Facebook or at the counter. Ask the customer before you post their words." : "Change anything: stars, text, photos, date, status or your reply."}</p>
       </div>
 

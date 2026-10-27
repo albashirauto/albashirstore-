@@ -65,7 +65,7 @@ export default function Team() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Team</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Team</h1>
           <p className="mt-1.5 text-muted">{active} active member{active === 1 ? "" : "s"}. Owners have full access; staff only see what you allow. Only owners can open this page, and only you set team passwords.</p>
         </div>
         <button onClick={() => setPanel({ open: true, m: null })} disabled={state !== "ok"} className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700 disabled:opacity-50"><Plus size={18} />Add team member</button>

@@ -56,7 +56,7 @@ export default function Redirects() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Redirects</h1>
+        <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Redirects</h1>
         <p className="mt-1.5 text-muted">Send old links to the right page, so Google and customers never land on “page not found”. Changing a product, category, brand or post web address adds one automatically.</p>
       </div>
 

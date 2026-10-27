@@ -40,8 +40,8 @@ export default function ByBike({ vehicles }: { vehicles: Vehicle[] }) {
           {shown.map((v, i) => {
             return (
               <motion.div key={v.id} layout initial={{ opacity: 0, y: 16, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4, delay: i * 0.03, ease }}>
-                <Link href={`/vehicles/${v.slug}`} className="group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border border-line bg-card p-4 transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
-                  <span className="relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600 ring-1 ring-brand-100 transition duration-300 group-hover:from-brand-500 group-hover:to-brand-700 group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-500/30 group-hover:ring-transparent dark:from-brand-900 dark:to-brand-900 dark:ring-brand-900">
+                <Link href={`/vehicles/${v.slug}`} className="group relative flex h-full flex-col items-start gap-3 overflow-hidden rounded-2xl border border-line bg-card p-3.5 transition sm:flex-row sm:items-center sm:gap-4 sm:p-4 duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
+                  <span className="relative grid h-14 w-14 shrink-0 place-items-center sm:h-16 sm:w-16 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600 ring-1 ring-brand-100 transition duration-300 group-hover:from-brand-500 group-hover:to-brand-700 group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-500/30 group-hover:ring-transparent dark:from-brand-900 dark:to-brand-900 dark:ring-brand-900">
                     {v.image ? <Image src={v.image} alt="" fill sizes="56px" className="object-cover" /> : <>
                       <VehicleIcon type={v.type} size={34} className="transition duration-500 ease-out group-hover:translate-x-1 group-hover:-rotate-3 group-hover:scale-110" />
                       {/* speed lines on hover */}
@@ -52,10 +52,10 @@ export default function ByBike({ vehicles }: { vehicles: Vehicle[] }) {
                   </span>
                   <span className="min-w-0 flex-1">
                     {v.company && v.company !== "Various" && <span className="block text-xs font-bold uppercase tracking-wider text-hot">{v.company}</span>}
-                    <span className="block truncate font-display text-xl font-bold leading-tight">{v.name}</span>
+                    <span className="line-clamp-2 break-words font-display text-lg font-bold leading-tight sm:text-xl">{v.name}</span>
                     <span className="block text-xs capitalize text-muted">{v.type}</span>
                   </span>
-                  <ArrowRight size={18} className="shrink-0 -translate-x-1 text-brand-600 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
+                  <ArrowRight size={18} className="hidden shrink-0 -translate-x-1 lg:block text-brand-600 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                   <span className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-hot transition duration-500 group-hover:scale-x-100" />
                 </Link>
               </motion.div>

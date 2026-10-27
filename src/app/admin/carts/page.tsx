@@ -56,7 +56,7 @@ export default function Carts() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Abandoned carts</h1>
+        <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Abandoned carts</h1>
         <p className="mt-1.5 text-muted">People who typed their phone at checkout but did not order. A friendly WhatsApp often brings them back.</p>
       </div>
       {msg && <p className="rounded-2xl bg-hot/10 p-4 text-sm font-semibold text-hot">{msg}</p>}

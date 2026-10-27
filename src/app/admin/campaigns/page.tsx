@@ -67,7 +67,7 @@ export default function Campaigns() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Campaigns</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Campaigns</h1>
           <p className="mt-1.5 text-muted">Popups, top bars, home banners and floating badges: welcome messages, 11.11 / 12.12 sales, Eid offers… Only one popup ever shows at a time.</p>
         </div>
         <Link href="/admin/campaigns/new" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-600 to-purple-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5"><Plus size={18} />New campaign</Link>

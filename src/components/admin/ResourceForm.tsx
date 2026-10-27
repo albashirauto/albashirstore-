@@ -156,19 +156,19 @@ export default function ResourceForm({ resource: R, slug, id }: { resource: Reso
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link href={back} className="inline-flex items-center gap-1.5 text-sm font-bold text-muted transition hover:text-brand-600"><ArrowLeft size={16} />{R.title}</Link>
-          <h1 className="mt-2 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">
+          <h1 className="mt-2 break-words text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">
             {isNew ? `Add ${R.singular}` : String(form[R.searchKey] || `Edit ${R.singular}`)}
           </h1>
           <p className="mt-1.5 max-w-2xl text-muted">{isNew ? R.description : `Edit this ${R.singular}. Changes show on the website within about a minute.`}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="hidden gap-2 sm:flex">
           {!isNew && <button type="button" onClick={remove} className="inline-flex items-center gap-1.5 rounded-full border border-line px-5 py-3 font-bold text-hot transition hover:bg-hot/10"><Trash2 size={16} />Delete</button>}
           <button disabled={saving} className="rounded-full bg-brand-600 px-8 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700 disabled:opacity-60">{saving ? "Saving…" : isNew ? `Add ${R.singular}` : "Save changes"}</button>
         </div>
       </div>
 
       <div className={`grid items-start gap-6 ${R.seo ? "xl:grid-cols-[1fr_420px]" : ""}`}>
-        <div className="grid gap-4 rounded-2xl border border-line bg-card p-5 md:grid-cols-2 md:p-6">
+        <div className="grid min-w-0 gap-4 rounded-2xl border border-line bg-card p-4 sm:p-5 md:grid-cols-2 md:p-6">
           {R.fields.map((f) => {
             const v = form[f.key];
             return (
@@ -197,17 +197,19 @@ export default function ResourceForm({ resource: R, slug, id }: { resource: Reso
             );
           })}
         </div>
-        {R.seo && <div className="xl:sticky xl:top-6"><EntitySeoPanel kind={R.seo} form={form} rows={rows} sitename={sitename} /></div>}
+        {R.seo && <div className="min-w-0 xl:sticky xl:top-6"><EntitySeoPanel kind={R.seo} form={form} rows={rows} sitename={sitename} /></div>}
       </div>
 
-      <div className="flex justify-end gap-3">
-        <Link href={back} className="rounded-full border-2 border-line px-6 py-2.5 font-bold">Cancel</Link>
-        <button disabled={saving} className="rounded-full bg-brand-600 px-8 py-2.5 font-bold text-white transition hover:bg-brand-700 disabled:opacity-60">{saving ? "Saving…" : isNew ? `Add ${R.singular}` : "Save changes"}</button>
+      {/* phones: save bar stays at the bottom of the screen */}
+      <div className="sticky bottom-0 z-20 -mx-4 flex gap-2 border-t border-line bg-bg/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:justify-end sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        {!isNew && <button type="button" onClick={remove} aria-label="Delete" className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line text-hot sm:hidden"><Trash2 size={18} /></button>}
+        <Link href={back} className="grid place-items-center rounded-full border-2 border-line px-5 py-2.5 font-bold sm:px-6">Cancel</Link>
+        <button disabled={saving} className="flex-1 rounded-full bg-brand-600 px-8 py-2.5 sm:flex-none font-bold text-white transition hover:bg-brand-700 disabled:opacity-60">{saving ? "Saving…" : isNew ? `Add ${R.singular}` : "Save changes"}</button>
       </div>
 
       <AnimatePresence>
         {msg && (
-          <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} role="status" className={`fixed bottom-6 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 rounded-full px-5 py-3 font-bold text-white shadow-xl ${msg.ok ? "bg-green-600" : "bg-hot"}`}>
+          <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} role="status" className={`fixed bottom-20 left-1/2 z-[70] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center sm:bottom-6 gap-2 rounded-full px-5 py-3 font-bold text-white shadow-xl ${msg.ok ? "bg-green-600" : "bg-hot"}`}>
             {msg.ok && <Check size={18} />}{msg.text}
           </motion.div>
         )}

@@ -78,7 +78,7 @@ export default function Media() {
     <div className="space-y-6" onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={(e) => { if (e.currentTarget === e.target) setDrag(false); }} onDrop={(e) => { e.preventDefault(); setDrag(false); add(e.dataTransfer.files); }}>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Media library</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Media library</h1>
           <p className="mt-1.5 text-muted">{files.length} pictures · {kb(total)} · {unused} not used anywhere. Drag pictures onto this page to upload.</p>
         </div>
         <button onClick={() => input.current?.click()} disabled={busy} className="inline-flex items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark disabled:opacity-60">{busy ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}Upload</button>

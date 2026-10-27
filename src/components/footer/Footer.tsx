@@ -32,7 +32,7 @@ export default function Footer({ settings, categories, pages }: { settings: Sett
             <div className="mt-6"><SocialLinks settings={settings} /></div>
             {(settings.phone || settings.whatsapp) && (
               <div className="mt-6 max-w-sm rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Shop helpline</p>
                   <OpenBadge hours={settings.open_hours} light />
                 </div>

@@ -83,7 +83,7 @@ export default function Dashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-muted">{new Date().toLocaleDateString("en-PK", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
-          <h1 className="mt-1 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">{greet} 👋</h1>
+          <h1 className="mt-1 text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">{greet} 👋</h1>
           <p className="mt-1.5 text-muted">Here is how {settings.store_name || "your store"} is doing.</p>
         </div>
         <div className="flex gap-2">

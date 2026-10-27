@@ -126,7 +126,7 @@ export default function CustomerForm({ id }: { id: string }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link href="/admin/customers" className="inline-flex items-center gap-1.5 text-sm font-bold text-muted transition hover:text-brand-600"><ArrowLeft size={16} />Customers</Link>
-          <h1 className="mt-2 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">{isNew ? "Add customer" : f.name || "Customer"}</h1>
+          <h1 className="mt-2 text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">{isNew ? "Add customer" : f.name || "Customer"}</h1>
           <p className="mt-1.5 text-muted">{isNew ? "Save a customer's details, even before their first order." : orders.length ? `First order ${new Date(orders[orders.length - 1].created_at).toLocaleDateString("en-PK", { month: "long", year: "numeric" })}` : "No orders yet."}</p>
         </div>
         {!isNew && phoneKey(f.phone).length >= 10 && (

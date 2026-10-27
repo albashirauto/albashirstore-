@@ -63,7 +63,7 @@ export default function Coupons() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Coupons</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Coupons</h1>
           <p className="mt-1.5 text-muted">Discount codes for Eid sales, first orders, mechanics or free delivery. Customers type them at checkout.</p>
         </div>
         <Link href="/admin/coupons/new" className="inline-flex items-center gap-2 rounded-full bg-hot px-6 py-3 font-bold text-white shadow-lg shadow-hot/25 transition hover:-translate-y-0.5 hover:bg-hot-dark"><Plus size={18} />New coupon</Link>

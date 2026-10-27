@@ -64,7 +64,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Settings</h1>
+        <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Settings</h1>
         <p className="mt-1.5 text-muted">Store details, logo, team, location, payments, storage, SEO and analytics. Each card has its own Save button.</p>
       </div>
 

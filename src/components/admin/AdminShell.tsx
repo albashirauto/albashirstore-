@@ -48,6 +48,15 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   };
   useEffect(() => { check(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
   useEffect(() => setOpen(false), [path]);
+  // phone menu: lock the page behind it, close with Escape
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", esc);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", esc); };
+  }, [open]);
 
   const logout = async () => { await browserClient().auth.signOut(); setState("login"); };
 
@@ -136,15 +145,20 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-dvh bg-soft">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-bg lg:block">{sidebar}</aside>
-      {open && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setOpen(false)} />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-bg transition-transform lg:hidden ${open ? "translate-x-0" : "-translate-x-full"}`}>{sidebar}</aside>
+      <div className={`fixed inset-0 z-40 bg-brand-950/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`} onClick={() => setOpen(false)} />
+      <aside aria-hidden={!open} className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-bg shadow-2xl transition-transform duration-300 ease-out lg:hidden ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <button onClick={() => setOpen(false)} aria-label="Close menu" className="absolute right-3 top-5 grid h-10 w-10 place-items-center rounded-xl text-muted transition hover:bg-soft hover:text-fg"><X size={20} /></button>
+        {sidebar}
+      </aside>
       <div className="lg:pl-64">
-        <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-bg px-4 py-3 lg:hidden">
-          <button onClick={() => setOpen(!open)} aria-label="Menu">{open ? <X /> : <Menu />}</button>
-          <span className="font-display text-xl font-extrabold uppercase text-brand-700">Store admin</span>
+        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-line bg-bg/90 px-3 py-2 backdrop-blur lg:hidden">
+          <button onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} className="grid h-10 w-10 place-items-center rounded-xl transition hover:bg-soft active:scale-95"><Menu size={22} /></button>
+          <span className="flex min-w-0 flex-1 items-center gap-2 font-display text-xl font-extrabold uppercase text-brand-700 dark:text-white"><Cog size={20} className="shrink-0 animate-spin-slow" /><span className="truncate">Store admin</span></span>
+          {newOrders > 0 && allowed("/admin/orders") && <Link href="/admin/orders" aria-label={`${newOrders} new orders`} className="relative grid h-10 w-10 place-items-center rounded-xl text-fg/75 transition hover:bg-soft"><ClipboardList size={20} /><span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-hot px-1 text-[10px] font-bold text-white">{newOrders}</span></Link>}
+          <Link href="/" target="_blank" aria-label="View store" className="grid h-10 w-10 place-items-center rounded-xl text-fg/75 transition hover:bg-soft"><ExternalLink size={19} /></Link>
         </div>
         {/* builders (campaigns) use the whole screen so the live preview is big enough to read */}
-        <main className={`mx-auto p-4 md:p-8 ${path.startsWith("/admin/campaigns/") ? "max-w-[1700px]" : "max-w-6xl"}`}>
+        <main className={`mx-auto px-4 py-5 sm:px-6 md:p-8 ${path.startsWith("/admin/campaigns/") ? "max-w-[1700px]" : "max-w-6xl"}`}>
           {blocked ? (
             <div className="mx-auto max-w-md rounded-3xl border border-line bg-card p-8 text-center">
               <Lock className="mx-auto text-amber-600" size={34} />

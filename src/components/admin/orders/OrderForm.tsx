@@ -143,7 +143,7 @@ export default function OrderForm({ id }: { id: string }) {
     <form onSubmit={save} className="space-y-6">
       <div>
         <Link href="/admin/orders" className="inline-flex items-center gap-1.5 text-sm font-bold text-muted transition hover:text-brand-600"><ArrowLeft size={16} />Orders</Link>
-        <h1 className="mt-2 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">{editing ? `Edit order #${editing.id.slice(0, 8).toUpperCase()}` : "New order"}</h1>
+        <h1 className="mt-2 text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">{editing ? `Edit order #${editing.id.slice(0, 8).toUpperCase()}` : "New order"}</h1>
         <p className="mt-1.5 text-muted">{editing ? `Placed ${new Date(editing.created_at).toLocaleString("en-PK", { dateStyle: "medium", timeStyle: "short" })}` : "For phone, WhatsApp or walk-in customers."}</p>
       </div>
 

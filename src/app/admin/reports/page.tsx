@@ -126,7 +126,7 @@ export default function Reports() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Reports</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Reports</h1>
           <p className="mt-1.5 text-muted">Sales, profit and customers for any period, compared with the same length of time before.</p>
         </div>
         <button onClick={exportCsv} disabled={!cur.orders} className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-5 py-2.5 text-sm font-bold transition hover:border-brand-500 disabled:opacity-50"><Download size={15} />Export CSV</button>

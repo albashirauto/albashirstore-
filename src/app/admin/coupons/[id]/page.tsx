@@ -70,7 +70,7 @@ export default function CouponEditor({ params }: { params: Promise<{ id: string 
     <form onSubmit={save} className="space-y-6">
       <div>
         <Link href="/admin/coupons" className="inline-flex items-center gap-1.5 text-sm font-bold text-muted transition hover:text-brand-600"><ArrowLeft size={16} />Coupons</Link>
-        <h1 className="mt-2 text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">{isNew ? "New coupon" : c.code}</h1>
+        <h1 className="mt-2 text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">{isNew ? "New coupon" : c.code}</h1>
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">

@@ -146,13 +146,13 @@ export default function ProductList() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase leading-none text-brand-900 dark:text-white md:text-5xl">Products</h1>
+          <h1 className="text-3xl font-extrabold uppercase leading-none text-brand-900 dark:text-white sm:text-4xl md:text-5xl">Products</h1>
           <p className="mt-1.5 text-muted">{rows.length} products · {rows.filter((r) => r.active).length} live on the website</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <ExportButton rows={shown} nameOf={(id) => names.get(id ?? "") ?? ""} />
           <ImportCsv rows={rows} onDone={merge} />
-          <Link href="/admin/products/new" className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><PackagePlus size={18} />Add product</Link>
+          <Link href="/admin/products/new" className="inline-flex items-center justify-center gap-2 max-sm:w-full rounded-full bg-brand-600 px-6 py-3 font-bold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:bg-brand-700"><PackagePlus size={18} />Add product</Link>
         </div>
       </div>
 
@@ -195,8 +195,46 @@ export default function ProductList() {
           <p className="font-semibold">{rows.length ? "No products match" : "No products yet"}</p>
           <Link href="/admin/products/new" className="mt-3 inline-flex items-center gap-1.5 font-bold text-brand-600 hover:text-hot"><PackagePlus size={16} />Add your first product</Link>
         </div>
-      ) : (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-card">
+      ) : (<>
+        {/* phones: one card per product */}
+        <ul className="space-y-2.5 md:hidden">
+          {items.map((r) => {
+            const out = isOut(r), lo = low(r), sc = seoScore.get(r.id) ?? 0, t = scoreTone(sc);
+            return (
+              <li key={r.id} className={`rounded-2xl border bg-card p-3 ${sel.has(r.id) ? "border-brand-500 bg-brand-50/60 dark:bg-brand-900/40" : "border-line"}`}>
+                <div className="flex items-start gap-3">
+                  <input type="checkbox" aria-label={`Select ${r.name}`} checked={sel.has(r.id)} onChange={() => setSel((cur) => { const n = new Set(cur); if (n.has(r.id)) n.delete(r.id); else n.add(r.id); return n; })} className="mt-1 h-5 w-5 shrink-0 accent-brand-600" />
+                  <Link href={`/admin/products/${r.id}`} className="flex min-w-0 flex-1 gap-3">
+                    <span className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-line bg-soft text-muted">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      {r.images?.[0] ? <img src={r.images[0]} alt="" className="h-full w-full object-cover" /> : <ImageOff size={18} />}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 font-bold leading-snug">{r.name}</span>
+                      <span className="mt-0.5 block truncate text-xs text-muted">{[catPair(r)[1] || catPair(r)[0], r.sku].filter(Boolean).join(" · ") || "no SKU"}</span>
+                      <span className="mt-1 block font-extrabold text-brand-700 dark:text-white">{money(r.price)}</span>
+                    </span>
+                  </Link>
+                </div>
+                <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-line pt-2.5">
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${out ? "bg-hot/10 text-hot" : lo ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"}`}>
+                    {out ? "Out" : r.stock_status === "in_stock" ? "In stock" : `${r.stock ?? 0} ${lo ? "low" : "in stock"}`}
+                  </span>
+                  <Link href={`/admin/products/${r.id}#seo`} className={`rounded-full px-2.5 py-1 text-xs font-bold ${t.bg} ${t.text}`}>SEO {sc}</Link>
+                  <button onClick={() => toggleLive(r)} aria-label={r.active ? "Hide from website" : "Show on website"} className="flex items-center gap-1.5 px-1">
+                    <span className={`relative h-5 w-9 rounded-full transition ${r.active ? "bg-brand-600" : "bg-line"}`}><span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${r.active ? "left-[18px]" : "left-0.5"}`} /></span>
+                    <span className="text-xs font-semibold text-muted">{r.active ? "Live" : "Hidden"}</span>
+                  </button>
+                  <span className="ml-auto flex gap-1">
+                    <button onClick={() => duplicate(r)} aria-label="Duplicate" className="grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-brand-50 hover:text-brand-600"><Copy size={16} /></button>
+                    <button onClick={() => removeMany([r.id])} aria-label="Delete" className="grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-hot/10 hover:text-hot"><Trash2 size={16} /></button>
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="hidden overflow-x-auto rounded-2xl border border-line bg-card md:block">
           <table className="w-full min-w-[900px] text-sm">
             <thead className="border-b border-line bg-soft/60 text-left text-xs uppercase tracking-wider text-muted">
               <tr><th className="w-10 pl-4"><input type="checkbox" aria-label="Select all on this page" checked={items.length > 0 && items.every((r) => sel.has(r.id))} onChange={(e) => setSel((cur) => { const n = new Set(cur); items.forEach((r) => (e.target.checked ? n.add(r.id) : n.delete(r.id))); return n; })} className="h-4 w-4 accent-brand-600" /></th><th className="px-3 py-3 font-semibold">Product</th><th className="px-3 font-semibold">Category</th><th className="px-3 font-semibold">Sub-category</th><th className="px-3 text-right font-semibold">Price</th><th className="px-3 font-semibold">Stock</th><th className="px-3 font-semibold">SEO</th><th className="px-3 font-semibold">Website</th><th /></tr>
@@ -250,10 +288,10 @@ export default function ProductList() {
             </tbody>
           </table>
         </div>
-      )}
+      </>)}
 
       {shown.length > PER && (
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <p className="text-muted">Showing <b className="text-fg">{(page - 1) * PER + 1}–{(page - 1) * PER + items.length}</b> of {shown.length}</p>
           <div className="flex items-center gap-2">
             <button onClick={() => setPage((x) => Math.max(1, x - 1))} disabled={page === 1} aria-label="Previous" className="grid h-9 w-9 place-items-center rounded-full border border-line disabled:opacity-40"><ChevronLeft size={16} /></button>

@@ -30,11 +30,11 @@ export default function AdminSeoPanel({ input, editHref, label = "product" }: { 
   const problems = checks.filter((c) => !c.ok).sort((a, b) => Number(!!a.warn) - Number(!!b.warn));
 
   return (
-    <div className="fixed bottom-5 left-5 z-40">
+    <div className="fixed bottom-5 left-3 z-40 sm:left-5">
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6 }}
-            className="mb-3 w-80 origin-bottom-left rounded-2xl border border-line bg-card p-4 shadow-2xl">
+            className="mb-3 w-80 max-w-[calc(100vw-1.5rem)] origin-bottom-left rounded-2xl border border-line bg-card p-4 shadow-2xl">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold">SEO check: {label} <span className="font-normal text-muted">(only you see this)</span></p>
               <button onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 text-muted hover:bg-soft"><X size={15} /></button>
@@ -61,9 +61,9 @@ export default function AdminSeoPanel({ input, editHref, label = "product" }: { 
           </motion.div>
         )}
       </AnimatePresence>
-      <button onClick={() => setOpen(!open)} className={`flex items-center gap-2 rounded-full border-2 bg-card py-1.5 pl-1.5 pr-4 text-sm font-bold shadow-lg transition hover:-translate-y-0.5`} style={{ borderColor: t.ring }}>
+      <button onClick={() => setOpen(!open)} aria-label={`SEO score ${score}`} className={`flex items-center gap-2 rounded-full border-2 bg-card p-1 text-sm sm:py-1.5 sm:pl-1.5 sm:pr-4 font-bold shadow-lg transition hover:-translate-y-0.5`} style={{ borderColor: t.ring }}>
         <span className="grid h-8 w-8 place-items-center rounded-full font-display text-sm font-extrabold text-white" style={{ background: t.ring }}>{score}</span>
-        SEO{problems.filter((c) => !c.warn).length ? ` · ${problems.filter((c) => !c.warn).length} to fix` : ""}
+        <span className="hidden sm:inline">SEO{problems.filter((c) => !c.warn).length ? ` · ${problems.filter((c) => !c.warn).length} to fix` : ""}</span>
       </button>
     </div>
   );
