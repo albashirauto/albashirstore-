@@ -4,13 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Bike, Caravan, Motorbike, Truck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import SectionTitle from "@/components/SectionTitle";
+import VehicleIcon from "@/components/VehicleIcon";
 import type { Vehicle } from "@/lib/types";
 
-const icons = { motorcycle: Motorbike, rickshaw: Caravan, loader: Truck, cycle: Bike } as const;
-const typeIcon = (t?: string) => icons[t as keyof typeof icons] ?? Motorbike;
 const ease = [0.22, 1, 0.36, 1] as const;
 
 /** Type tabs with a sliding highlight, model cards that re-flow smoothly when the filter changes. */
@@ -39,12 +38,17 @@ export default function ByBike({ vehicles }: { vehicles: Vehicle[] }) {
       <motion.div layout className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         <AnimatePresence mode="popLayout">
           {shown.map((v, i) => {
-            const Icon = typeIcon(v.type);
             return (
               <motion.div key={v.id} layout initial={{ opacity: 0, y: 16, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4, delay: i * 0.03, ease }}>
                 <Link href={`/vehicles/${v.slug}`} className="group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border border-line bg-card p-4 transition duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-lg hover:shadow-brand-500/10">
-                  <span className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-brand-50 text-brand-600 transition duration-300 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-900">
-                    {v.image ? <Image src={v.image} alt="" fill sizes="56px" className="object-cover" /> : <Icon size={26} strokeWidth={1.7} className="transition duration-300 group-hover:translate-x-0.5" />}
+                  <span className="relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600 ring-1 ring-brand-100 transition duration-300 group-hover:from-brand-500 group-hover:to-brand-700 group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-500/30 group-hover:ring-transparent dark:from-brand-900 dark:to-brand-900 dark:ring-brand-900">
+                    {v.image ? <Image src={v.image} alt="" fill sizes="56px" className="object-cover" /> : <>
+                      <VehicleIcon type={v.type} size={34} className="transition duration-500 ease-out group-hover:translate-x-1 group-hover:-rotate-3 group-hover:scale-110" />
+                      {/* speed lines on hover */}
+                      <span className="absolute left-1.5 top-1/2 flex -translate-y-1/2 flex-col gap-1 opacity-0 transition duration-300 group-hover:opacity-100">
+                        <span className="h-0.5 w-2.5 rounded-full bg-white/70" /><span className="ml-1 h-0.5 w-2 rounded-full bg-white/50" /><span className="h-0.5 w-2.5 rounded-full bg-white/70" />
+                      </span>
+                    </>}
                   </span>
                   <span className="min-w-0 flex-1">
                     {v.company && v.company !== "Various" && <span className="block text-xs font-bold uppercase tracking-wider text-hot">{v.company}</span>}

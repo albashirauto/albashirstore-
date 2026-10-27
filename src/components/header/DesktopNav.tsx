@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Bike, Caravan, ChevronDown, LayoutGrid, Motorbike, Truck } from "lucide-react";
+import { ArrowRight, ChevronDown, LayoutGrid } from "lucide-react";
+import VehicleIcon from "@/components/VehicleIcon";
 import CategoryIcon from "@/components/CategoryIcon";
 import BrandMark from "@/components/brands/BrandMark";
 import type { Brand, Category, Settings, Vehicle } from "@/lib/types";
@@ -13,7 +14,6 @@ type Mega = "cats" | "bikes" | "brands";
 type Item = { key: string; label: string; href?: string; mega?: Mega; icon?: React.ReactNode; hot?: boolean };
 
 const ease = [0.22, 1, 0.36, 1] as const;
-const typeIcons = { motorcycle: Motorbike, rickshaw: Caravan, loader: Truck, cycle: Bike } as const;
 
 /** Desktop menu bar: sliding hover highlight, active underline and one animated mega panel. */
 export default function DesktopNav({ settings, categories, vehicles, brands }: { settings: Settings; categories: Category[]; vehicles: Vehicle[]; brands: Brand[] }) {
@@ -111,10 +111,9 @@ export default function DesktopNav({ settings, categories, vehicles, brands }: {
                 {mega === "bikes" && (
                   <div className="grid grid-cols-4 gap-8">
                     {groups.map(([type, list], gi) => {
-                      const Icon = typeIcons[type as keyof typeof typeIcons] ?? Motorbike;
                       return (
                         <motion.div key={type} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: gi * 0.05, duration: 0.3, ease }}>
-                          <Link href={`/parts/${type}`} onClick={close} className="group mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted hover:text-brand-600"><Icon size={16} className="text-hot" />{type} parts<ArrowRight size={12} className="opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" /></Link>
+                          <Link href={`/parts/${type}`} onClick={close} className="group mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted hover:text-brand-600"><VehicleIcon type={type} size={18} className="text-hot" />{type} parts<ArrowRight size={12} className="opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" /></Link>
                           <ul className="grid gap-0.5">
                             {list.map((v) => (
                               <li key={v.id}>
